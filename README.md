@@ -45,7 +45,7 @@ For more details about the image visit https://github.com/irinaespejo/docker-mad
 For the first run we recommend using our default files `input.yml` and `input_delphes.yml`.
 To generate the following workflow 
 
-![image of workflow](https://drive.google.com/open?id=1R3voiYZr6dHdHZBIFmF90NYqapq5OXy0)
+![image of the workflow](images/yadage_workflow_instance.png)
 
 run 
 ```bash
