@@ -1,6 +1,6 @@
-#Madminer deplyoment using yadage and docker containerization
+# Madminer deplyoment using yadage and docker containerization
 
-##About: This repository is a  is to create a full deployment of *MadMiner* https://github.com/johannbrehmer/madminer (by Johann Brehmer, Felix Kling, and Kyle Cranmer) that parallelizes its bottlenecks, is reproducible and it facilitates the use of the tool in the community. 
+## About: This repository is a  is to create a full deployment of *MadMiner* https://github.com/johannbrehmer/madminer (by Johann Brehmer, Felix Kling, and Kyle Cranmer) that parallelizes its bottlenecks, is reproducible and it facilitates the use of the tool in the community. 
 To achieve this we have generated a workflow using *yadage* https://github.com/yadage/yadage
 (by Lukas Heinrich) and a containerization of the software dependencies in a *docker image*.
 
@@ -13,7 +13,7 @@ and yadage
 https://yadage.readthedocs.io/en/latest/
 https://yadage.github.io/tutorial/
 
-##How to install the dependencies
+## How to install the dependencies
 
 Local deployment:
 
@@ -40,12 +40,13 @@ To run a container and interact with the bash run
 For more details about the image visit https://github.com/irinaespejo/docker-madminer
 *The point of this repository is to make the life easy for the user so you won't need to figure out yourself the arguments of the scripts on /home/code/ nor how to input new observables. The whole pipeline will be automatically generated when you follow the steps in the section Usage and you will have the chance to input your own parameters, observables, cuts etc. without messing with the docker image.*
 
-##Usage
+## Usage
 For the first run we recommend using our default files `input.yml` and `input_delphes.yml`.
 To generate the following workflow 
 
 ![Alt text](/home/irina/software/madminer-workflow/workflow/workdir/_yadage/yadage_workflow_instance.png
 ?raw=true "workflow")
+
 run 
 ```bash
   yadage-run workdir workflow.yml -p inputfile='"input.yml"' -p njobs="10" -p inputdelphes='"input_delphes.yml"' -d initdir=$PWD --visualize
@@ -58,8 +59,8 @@ to run again the command you must first remove workdir `rm -rf workdir/`
 	- `-d initdir=$PWD` initializes the workflow in the present directory
 	- `--visualize` generates an image of the workflow
 
-##Analysis structure
-###1. Analysis code
+## Analysis structure
+### 1. Analysis code
 configurate.py - Put together inputs and initialize
 	- Initializes MadMiner, add parameters, add benchmarks, set benchmarks from morphing and save.
 	`python code/configurate.py` 
@@ -71,11 +72,8 @@ delphes.py - Run Delphes
 	Pass the events through Delphes, add observables and cuts, save.
 	`python code/delphes.py {h5_file} {event_file} {input_file}` where  `{h5_file}` is the same file as above  `{event_file}` is the file  `tag_1_pythia8_events.hepmc.gz` and `{input_file}{input_file}` is the initial `input_delphes.yml`
 
-###2. Anaylsis workflow
+### 2. Anaylsis workflow
 Without taking into account the inputs ans the map-reduce the general strcture of the workflow is the following
-
-
-WORKFLOW NEEDED
 
 				+--------------+
 				|  Configurate |
