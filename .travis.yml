@@ -1,0 +1,7 @@
+language: python
+python:
+  - "2.7"
+install:
+  - pip install yadage[viz]
+script:
+  -   yadage-run workdir workflow.yml -p inputfile='"input.yml"' -p njobs="10" -p inputdelphes='"input_delphes.yml"' -d initdir=$PWD --visualize
