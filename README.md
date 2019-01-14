@@ -1,4 +1,4 @@
-# Madminer deplyoment using yadage and docker containerization
+# Madminer deployment using yadage and docker containerization
 
 ## About
 This repository is a  is to create a full deployment of *MadMiner* https://github.com/johannbrehmer/madminer (by Johann Brehmer, Felix Kling, and Kyle Cranmer) that parallelizes its bottlenecks, is reproducible and it facilitates the use of the tool in the community. 
@@ -45,7 +45,7 @@ For more details about the image visit https://github.com/irinaespejo/docker-mad
 For the first run we recommend using our default files `input.yml` and `input_delphes.yml`.
 To generate the following workflow 
 
-![Alt text](https://drive.google.com/open?id=1R3voiYZr6dHdHZBIFmF90NYqapq5OXy0 "workflow")
+![image of workflow](https://drive.google.com/open?id=1R3voiYZr6dHdHZBIFmF90NYqapq5OXy0)
 
 run 
 ```bash
