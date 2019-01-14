@@ -5,4 +5,5 @@ install:
   - pip install yadage[viz]
 script:
   -   cd workflow/
+  -   sudo apt-get install graphviz
   -   yadage-run workdir workflow.yml -p inputfile='"input.yml"' -p njobs="2" -p inputdelphes='"input_delphes.yml"' -d initdir=$PWD --visualize
