@@ -1,3 +1,5 @@
+[![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)](https://travis-ci.org/irinaespejo)
+
 # Madminer deployment using yadage and docker containerization
 
 ## About
@@ -22,6 +24,7 @@ Local deployment:
 ```bash
   pip install yadage[viz]
 ```
+Also, you need the graphviz package
 Check it was succesful by running:
 ```bash
   yadage-run -t from-github/testing/local-helloworld workdir workflow.yml -p par=World
