@@ -1,0 +1,31 @@
+#PARAMETERS
+parameters:
+    - parameter_name: 'CWL2'
+      lha_block: 'dim6'
+      lha_id: 2
+      morphing_max_power: 2
+      param_card_transform: '16.52*theta'
+      parameter_range: (-10.,10.)
+
+    - parameter_name: 'CPWL2'
+      lha_block: 'dim6'
+      lha_id: 5
+      morphing_max_power: 2
+      param_card_transform: '16.52*theta'
+      parameter_range: (-10.,10.)
+
+#BENCHMARKS
+benchmarks:
+    - benchmark: 1
+      parameter_name_1: 'CWL2'
+      value_1: 0.
+      parameter_name_2: 'CPWL2'
+      value_2: 0.
+      type: 'sm'
+
+    - benchmark: 2
+      parameter_name_1: 'CWL2'
+      value_1: 10.
+      parameter_name_2: 'CPWL2'
+      value_2: 0.
+      type: 'w'

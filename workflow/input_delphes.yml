@@ -1,0 +1,12 @@
+- name: 'pt_j1'
+  definition: 'j[0].pt'
+  required: False
+  default: 0.
+  cut: 'pt_j1 > 30.'
+
+- name: 'delta_phi_jj'
+  definition: '(j[0].phi() - j[1].phi()) * (-1. + 2.*float(j[0].eta > j[1].eta))'
+  required: True
+  default: 
+  cut: 
+
