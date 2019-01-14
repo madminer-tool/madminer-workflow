@@ -1,6 +1,7 @@
 # Madminer deplyoment using yadage and docker containerization
 
-## About: This repository is a  is to create a full deployment of *MadMiner* https://github.com/johannbrehmer/madminer (by Johann Brehmer, Felix Kling, and Kyle Cranmer) that parallelizes its bottlenecks, is reproducible and it facilitates the use of the tool in the community. 
+## About
+This repository is a  is to create a full deployment of *MadMiner* https://github.com/johannbrehmer/madminer (by Johann Brehmer, Felix Kling, and Kyle Cranmer) that parallelizes its bottlenecks, is reproducible and it facilitates the use of the tool in the community. 
 To achieve this we have generated a workflow using *yadage* https://github.com/yadage/yadage
 (by Lukas Heinrich) and a containerization of the software dependencies in a *docker image*.
 
