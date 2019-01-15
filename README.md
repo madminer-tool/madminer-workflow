@@ -53,6 +53,7 @@ To generate the following workflow
 
 run 
 ```bash
+  cd workflow/
   yadage-run workdir workflow.yml -p inputfile='"input.yml"' -p njobs="10" -p inputdelphes='"input_delphes.yml"' -d initdir=$PWD --visualize
 ```
 to run again the command you must first remove workdir `rm -rf workdir/`
@@ -68,13 +69,14 @@ to run again the command you must first remove workdir `rm -rf workdir/`
 configurate.py - Put together inputs and initialize
 	- Initializes MadMiner, add parameters, add benchmarks, set benchmarks from morphing and save.
 	`python code/configurate.py` 
+	
 generate.py - Generate events scripts
-	Prepare scripts for MadGraph for background and signal events based on previous optimization.
+	- Prepare scripts for MadGraph for background and signal events based on previous optimization.
 	`python code/generate.py {njobs} {h5_file}` where `{njobs}` is the initial parameter  `njobs` and `{h5_file}` is a file generated in configurate.py with the MadMiner configuration.
 
 delphes.py - Run Delphes
-	Pass the events through Delphes, add observables and cuts, save.
-	`python code/delphes.py {h5_file} {event_file} {input_file}` where  `{h5_file}` is the same file as above  `{event_file}` is the file  `tag_1_pythia8_events.hepmc.gz` and `{input_file}{input_file}` is the initial `input_delphes.yml`
+	- Pass the events through Delphes, add observables and cuts, save.
+	 `python code/delphes.py {h5_file} {event_file} {input_file}` where  `{h5_file}` is the same file as above  `{event_file}` is the file  `tag_1_pythia8_events.hepmc.gz` and `{input_file}{input_file}` is the initial `input_delphes.yml`
 
 ### 2. Anaylsis workflow
 Without taking into account the inputs ans the map-reduce the general strcture of the workflow is the following
