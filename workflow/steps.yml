@@ -42,7 +42,7 @@ mg_pythia:
       mkdir {log_directory}
       sh {MG_process_directory}/signal/madminer/scripts/run*.sh {MG_directory} {MG_process_directory}/signal {log_directory}
       ls /home/ -l -R>{outputfile}
-      tar -czvf /home/code/mg_processes/signal/Events/Events.tar.gz /home/code/mg_processes/signal/Events/*/*
+      tar -czvf /home/code/mg_processes/signal/Events/Events.tar.gz /home/code/mg_processes/signal/Events/*/*  /home/code/mg_processes/signal/madminer/cards/benchmark_*.dat
       cp /home/code/mg_processes/signal/Events/Events.tar.gz {mgworkdir} 
   publisher:
     publisher_type: 'fromglob-pub'
@@ -62,7 +62,8 @@ delphes:
       tar -xvf {eventfile} -C /home/extract
       touch /home/log_delphes.log
       mkdir /home/data
-      python code/delphes.py {delphes_configfile} /home/extract/home/code/mg_processes/signal/Events/*/tag_1_pythia8_events.hepmc.gz {inputdelphes} 
+      mv /home/extract/home/code/mg_processes/signal/madminer/cards/benchmark_*.dat /home/extract/home/code/mg_processes/signal/madminer/cards/benchmark.dat
+      python code/delphes.py {delphes_configfile} /home/extract/home/code/mg_processes/signal/Events/* {inputdelphes} /home/extract/home/code/mg_processes/signal/madminer/cards/benchmark.dat
       cp  /home/data/madminer_example_with_data.h5 {dworkdir}
   publisher:
     publisher_type: 'fromglob-pub'
@@ -79,3 +80,4 @@ combine:
     publisher_type: interpolated-pub
     publish:
       merge_folder: '{inputfiles}'
+
