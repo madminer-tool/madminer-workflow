@@ -1,0 +1,13 @@
+version: 0.3.0
+inputs:
+  files:
+    - data/input.yml
+  parameters:
+    inputfile: data/input.yml
+    outputfile: results/plot.txt
+workflow:
+  type: yadage
+  file: workflow/workflow.yml
+outputs:
+  files:
+   - results/plot.txt
