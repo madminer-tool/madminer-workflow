@@ -8,14 +8,13 @@ configurate:
   process:
     process_type: interpolated-script-cmd
     script: |
-      echo hello > {outputfile}
       mkdir /home/data/
       python code/configurate.py {inputfile}
       cp -R /home/data/* {workdir}
   publisher:
     publisher_type: 'frompar-pub'
     outputmap:
-      outputfile: {outputfile}
+      configfile: {configfile}
   
 
 #generate:

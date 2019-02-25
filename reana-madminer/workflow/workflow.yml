@@ -6,7 +6,7 @@ stages:
       parameters:
         workdir: '{workdir}'
         inputfile: {stages: init, output: inputfile, unwrap: true}
-        outputfile: '{workdir}/plot.txt'
+        configfile: '{workdir}/madminer_example.h5'
       step: {$ref: 'workflow/steps.yml#/configurate'}
         
 
