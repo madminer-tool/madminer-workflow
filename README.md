@@ -156,6 +156,18 @@ Without taking into account the inputs ans the map-reduce the general strcture o
 					   |
 					   v
 				+-----------------+
-				| To be continued |
+				|   Sampling      |
+				+-----------------+
+				           |
+					   |
+					   v
+                                +-----------------+
+				|   Training      |
+				+-----------------+
+				           |
+					   |
+					   v
+                                +-----------------+
+				|    Testing      |
 				+-----------------+
 
