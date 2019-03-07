@@ -8,7 +8,7 @@ This repository is a  is to create a full deployment of [MadMiner](https://githu
 To achieve this we have generated a workflow using [yadage](https://github.com/yadage/yadage)
 (by Lukas Heinrich) and a containerization of the software dependencies in a *docker image*.
 
-At the moment only the initial steps in the Madminer workflow are implemented, that is those regarding the generation of events and  the simulators MadGraph+Pythia and Delphes. The implementation of the Machine Learning part is work in progress.
+This repo includes the workflow for the physics processing (config, generation of events with MadGraph, Delphes) and the machine learning processing (configuration, sampling, training) in a modular way. This means that each of this parts has its own workflow setup so that the user can mix-match. For instance, once the physics processes are run, one can play with different hyperparameters or samplings in the machine learning part without having to re-run MadGraph again.
 
 Please, refer to the links for more information and tutorials about MadMiner 
 https://madminer.readthedocs.io/en/latest/index.html
@@ -98,12 +98,13 @@ it might take a long time to finish, once it does download files
 For the first run we recommend using our default files `input.yml` and `input_delphes.yml`.
 To generate the following workflow 
 
-![image of the workflow](images/yadage_workflow_instance.png)
+![image of the workflow](images/workflow-physics.png)
+![image of the workflow](images/workflow-ml.png)
 
 run 
 ```bash
-  cd workflow/
-  yadage-run workdir workflow.yml -p inputfile='"input.yml"' -p njobs="10" -p inputdelphes='"input_delphes.yml"' -d initdir=$PWD --visualize
+  yadage-run workdir workflow-physics/workflow.yml -p inputfile='"workflow-physics/input.yml"' -p njobs="10" -p inputdelphes='"workflow-physics/input_delphes.yml"' -d initdir=$PWD --visualize
+  yadage-run workdir workflow-ml/workflow.yml -p inputfile='"workflow-ml/inputs/input_ML.yaml"' -p ntrainsamples="5" -p combinedfile='"workflow-ml/inputs/madminer_example_with_data_1.h5"' -d initdir=$PWD --visualize
 ```
 to run again the command you must first remove workdir `rm -rf workdir/`
 >what is every element in the command?
