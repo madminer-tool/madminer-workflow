@@ -1,0 +1,3 @@
+#inputs for evaluation step
+model: alices
+plots: True

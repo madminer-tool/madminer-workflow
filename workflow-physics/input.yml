@@ -17,20 +17,22 @@ parameters:
       parameter_range: (-10.,10.)
 
 #BENCHMARKS
+#the number of paramaters for each benchmark must match 
+#the number of paramaters introduced above 
 benchmarks:
     - benchmark: 1
       parameter_name_1: 'CWL2'
       value_1: 0.
       parameter_name_2: 'CPWL2'
       value_2: 0.
-      type: 'sm'
+      name: 'sm'
 
     - benchmark: 2
       parameter_name_1: 'CWL2'
       value_1: 10.
       parameter_name_2: 'CPWL2'
       value_2: 0.
-      type: 'w'
+      name: 'w'
 
 #SETTINGS MORPHING
 set_morphing:
