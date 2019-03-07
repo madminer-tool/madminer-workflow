@@ -1,6 +1,6 @@
 common_env: &common_env
     environment_type: 'docker-encapsulated'
-    image: irinahub/docker-madminer
+    image: irinahub/docker-madminer-physics
     imagetag: 'latest'
     
 configurate:

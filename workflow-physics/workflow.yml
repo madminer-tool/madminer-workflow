@@ -7,7 +7,7 @@ stages:
       workdir: '{workdir}'
       inputfile: {step: init, output: inputfile}
       configfile: '{workdir}/output.txt'
-    step: {$ref: 'steps.yml#/configurate'}
+    step: {$ref: 'workflow-physics/steps.yml#/configurate'}
 
 - name: generate
   dependencies: [configurate]
@@ -19,7 +19,7 @@ stages:
       configfile: {step: 'configurate', output: config_file}
       madminer_dir_signal: '/home/code/mg_processes/signal/madminer'
       madminer_dir_bkg: '/home/code/mg_processes/background/madminer'
-    step: {$ref: 'steps.yml#/generate'}
+    step: {$ref: 'workflow-physics/steps.yml#/generate'}
 
 - name: mgpythia
   dependencies: [generate]
@@ -35,7 +35,7 @@ stages:
     scatter:
       method: zip
       parameters: [eventfolder]
-    step: {$ref: 'steps.yml#/mg_pythia'}
+    step: {$ref: 'workflow-physics/steps.yml#/mg_pythia'}
 
 - name: delphes
   dependencies: [mgpythia]
@@ -47,7 +47,7 @@ stages:
       delphes_configfile: {stages: 'configurate', output: config_file, unwrap: true}
       eventfile: {stages: 'mgpythia', output: postrun_file, unwrap: true}
       outputfile: '{workdir}/output.txt'
-    step: {$ref: steps.yml#/delphes}
+    step: {$ref: workflow-physics/steps.yml#/delphes}
     scatter:
       method: zip
       parameters: [eventfile]
@@ -60,4 +60,4 @@ stages:
     parameters:
       inputfiles: {steps: 'delphes', output: dpostrun_file}
       outputfile: '{workdir}/output.txt'
-    step: {$ref: 'steps.yml#/combine'}
+    step: {$ref: 'workflow-physics/steps.yml#/combine'}

@@ -1,0 +1,13 @@
+version: 0.3.0
+inputs:
+  files:
+    - data/input.yml
+  parameters:
+    inputfile: data/input.yml
+    configfile: results/madminer_example.h5
+workflow:
+  type: yadage
+  file: workflow/workflow.yml
+outputs:
+  files:
+   - results/madminer_example.h5
