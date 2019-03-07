@@ -1,0 +1,70 @@
+#SAMPLING
+
+# if method in ['alice','alices','cascal','carl','rolr', 'rascal'] use
+# method:
+#   theta_0:
+#     sampling_method: choose from 'constant_benchmark_theta(benchmark), multiple_benchmark_thetas(benchmarks), 
+#                                   constant_morphing_theta(theta), multiple_morphing_thetas(thetas), 
+#                                   random_morphing_thetas(n_thetas, prior)'
+#     
+#     '''
+#     schemas for all the sampling methods
+#     '''
+#     sampling_method: 'constant_benchmark_theta'
+#       argument: 'name_of_benchmark'
+#
+#     sampling_method: 'multiple_benchmark_thetas'
+#       argument: ['list_of_benchmarks']
+#
+#     sampling_method: 'constant_morphing_theta'
+#       argument: (n_parameters,)
+#
+#     sampling_method: 'multiple_morphing_thetas'
+#       argument: (n_thetas, n_parameters)
+#
+#
+#   theta_1:
+#     '''
+#     same schema as theta_0
+#     '''
+#
+#
+# if method in ['sally','sallino','scandal']
+# method:
+#   theta:
+#   '''
+#   same schema as theta_0
+#   '''
+
+shuffle: false
+
+method: 'alices'
+theta_0:
+  sampling_method: 'random_morphing_thetas'
+  n_thetas: 100
+  prior:
+    parameter_0:
+      prior_shape: 'gaussian'
+      prior_param_0: 0. 
+      prior_param_1: 10. 
+    parameter_1:
+      prior_shape: 'gaussian'
+      prior_param_0: 0. 
+      prior_param_1: 10.
+    #more pars
+
+theta_1:
+  sampling_method: 'constant_benchmark_theta'
+  argument: 'sm'
+
+
+#TRAINING
+n_samples:
+  train: 100
+  test: 100
+
+test_split: 0.5
+
+batch_size: 100
+
+n_epochs: 2
