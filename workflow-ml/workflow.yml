@@ -9,7 +9,7 @@ stages:
       input_file: {step: init, output: inputfile}
       n_trainsamples: {step: init, output: ntrainsamples}
       outputfile: '{workdir}/outputfile.txt'
-    step: {$ref: 'steps.yml#/sampling'}
+    step: {$ref: 'workflow-ml/steps.yml#/sampling'}
 
 - name: training
   dependencies: [sampling]
@@ -23,7 +23,7 @@ stages:
     scatter:
       method: zip
       parameters: [trainfolder]
-    step: {$ref: 'steps.yml#/training'}
+    step: {$ref: 'workflow-ml/steps.yml#/training'}
 
 #- name: evaluating
 #  dependencies: [training]
