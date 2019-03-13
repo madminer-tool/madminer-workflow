@@ -17,7 +17,7 @@ and yadage
 https://yadage.readthedocs.io/en/latest/
 https://yadage.github.io/tutorial/
 
-## How to install the dependencies
+## Install the dependencies and run the workflows
 Installing the dependiencies depends on how you want to run the workflow: locally using yadage alone or in a REANA cluster.
 
 ### Local yadage-pure deployment
