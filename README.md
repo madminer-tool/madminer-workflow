@@ -18,6 +18,7 @@ https://yadage.readthedocs.io/en/latest/
 https://yadage.github.io/tutorial/
 
 ## How to install the dependencies
+Installing the dependiencies depends on how you want to run the workflow: locally using yadage alone or in a REANA cluster.
 
 ### Local yadage-pure deployment
 
@@ -32,16 +33,21 @@ Check it was succesful by running:
 ```
 It should output lines similar to this one `2019-01-11 09:51:51,601 |         yadage.utils |   INFO | setting up backend multiproc:auto with opts {}` and no errors. Refer to the yadage links above for more details.
 
-2) Pull the docker image irinahub/docker-madminer
-This step is optional because the image will be pulled automatically in the Usage steps. However you may want to familirize yourself with the image and its contents. If you don't have docker installed follow https://docs.docker.com/install/
-To pull the image run
+2) Pull the docker image/s 
+This step is optional because the image will be pulled automatically in the Usage steps. However you may want to familirize yourself with the images and their contents. If you don't have docker installed follow https://docs.docker.com/install/
+We built 3 docker images: `irinahub/docker-madminer-physics` contanis MadGraph, Pythia, Delphes and the code for that pipeline, `irinahub/docker-madminer-ml` contains the ML requisites and the code for that pipeline and `irinahub/docker-madminer` is only for logistics purposes, it contains the newest version of the madminer library.
+
+To pull an image run, for instance,
 ```bash
-  docker pull irinahub/docker-madminer
+  docker pull irinahub/docker-madminer-physics
 ```
 To run a container and interact with the bash run
 ```bash
-  docker run -it irinahub/docker-madminer bash
+  docker run -it irinahub/docker-madminer-physics bash
 ```
+There you will find the software installed in the directory `software/` and the code in `code/`, note that to run the code you will have to upload the inputs.
+
+
 For more details about the image visit https://github.com/irinaespejo/docker-madminer
 *The point of this repository is to make the life easy for the user so you won't need to figure out yourself the arguments of the scripts on /home/code/ nor how to input new observables. The whole pipeline will be automatically generated when you follow the steps in the section Usage and you will have the chance to input your own parameters, observables, cuts etc. without messing with the docker image.*
 
@@ -104,6 +110,7 @@ To generate the following workflow
 run 
 ```bash
   yadage-run workdir workflow-physics/workflow.yml -p inputfile='"workflow-physics/input.yml"' -p njobs="10" -p inputdelphes='"workflow-physics/input_delphes.yml"' -d initdir=$PWD --visualize
+  rm -rf workdir/
   yadage-run workdir workflow-ml/workflow.yml -p inputfile='"workflow-ml/inputs/input_ML.yaml"' -p ntrainsamples="5" -p combinedfile='"workflow-ml/inputs/madminer_example_with_data_1.h5"' -d initdir=$PWD --visualize
 ```
 to run again the command you must first remove workdir `rm -rf workdir/`
