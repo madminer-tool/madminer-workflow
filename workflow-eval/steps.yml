@@ -5,7 +5,6 @@ evaluating:
       mkdir /home/data
       mkdir /home/data/samples
       mkdir /home/models
-      tar -xvzf {evalfolder} -C {eval_folder_path}
       ls -lR > {outputfile}
   publisher:
     publisher_type: interpolated-pub
@@ -17,7 +16,7 @@ evaluating:
     imagetag: 'latest'
 
 
-#python code/evaluation.py {input_evaluation} {eval_folder_path}
+
 #evaluating:
 #  process:
 #    process_type: interpolated-script-cmd
@@ -25,9 +24,7 @@ evaluating:
 #      mkdir /home/data
 #      mkdir /home/data/samples
 #      mkdir /home/models
-#      tar -xvzf {evalfolder} -C {eval_folder_path}/training_*
-#      python code/evaluation.py {input_evaluation} {eval_folder_path}
-#      cp -R  {evalworkdir}
+#      ls -lR > {outputfile}
 #  publisher:
 #    publisher_type: interpolated-pub
 #    publish:
@@ -36,5 +33,3 @@ evaluating:
 #    environment_type: docker-encapsulated
 #    image: irinahub/docker-madminer-ml
 #    imagetag: 'latest'
-#
-#
