@@ -5,6 +5,7 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         evalworkdir: '{workdir}'
+        eval_folder: {step: init, output: evalfolder}
         input_evaluation: {step: init, output: inputevalfile}
         eval_folder_path: '/home/models'
         outputfile: '{workdir}/outputfile.txt'
@@ -19,7 +20,7 @@ stages:
 #      parameters:
 #        evalworkdir: '{workdir}'
 #        input_evaluation: {step: init, output: inputevalfile}
-#        eval_folder: {step: init, output: evalfolder}
+#        
 #        eval_folder_path: '/home/models'
 #        outputfile: '{workdir}/outputfile.txt'
 #      step: {$ref: 'steps.yml#/evaluating'}
