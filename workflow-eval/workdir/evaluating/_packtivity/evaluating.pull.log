@@ -1,4 +1,0 @@
-2019-03-20 13:08:38,441 | pack.evaluating.pull |   INFO | starting file logging for topic: pull
-2019-03-20 13:08:38,964 | pack.evaluating.pull |   INFO | latest: Pulling from irinahub/docker-madminer-ml
-2019-03-20 13:08:38,965 | pack.evaluating.pull |   INFO | Digest: sha256:1d1bb7491b48e1c1c2a25f3c6bd102dda1ffba87ab3c37134d8fecca17f0a81d
-2019-03-20 13:08:38,965 | pack.evaluating.pull |   INFO | Status: Image is up to date for irinahub/docker-madminer-ml:latest
