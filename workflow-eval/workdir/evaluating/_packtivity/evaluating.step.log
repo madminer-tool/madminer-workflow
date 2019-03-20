@@ -1,0 +1,71 @@
+2019-03-20 13:08:38,336 | pack.evaluating.step |   INFO | starting file logging for topic: step
+2019-03-20 13:08:38,440 | pack.evaluating.step |  DEBUG | script is:
+2019-03-20 13:08:38,440 | pack.evaluating.step |  DEBUG | 
+--------------
+mkdir /home/data
+mkdir /home/data/samples
+mkdir /home/models
+ls -lR > /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/outputfile.txt
+
+--------------
+2019-03-20 13:08:38,440 | pack.evaluating.step |  DEBUG | 
+--------------
+run in docker container image: irinahub/docker-madminer-ml
+with env: default env
+resources: []
+--------------
+    
+2019-03-20 13:08:38,440 | pack.evaluating.step |  DEBUG | do_auth: False do_cvmfs: False
+2019-03-20 13:08:38,441 | pack.evaluating.step |  DEBUG | rspec is
+{
+    "mounts": [
+        {
+            "source": "/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating", 
+            "readonly": false, 
+            "destination": "/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating", 
+            "type": "bind"
+        }, 
+        {
+            "source": "/home/irina/Projects/workflows/workflow-madminer/workflow-eval", 
+            "readonly": false, 
+            "destination": "/home/irina/Projects/workflows/workflow-madminer/workflow-eval", 
+            "type": "bind"
+        }
+    ], 
+    "image": "irinahub/docker-madminer-ml:latest", 
+    "workdir": null, 
+    "argv": [
+        "sh", 
+        "-c", 
+        "sh"
+    ], 
+    "stdin": "mkdir /home/data\nmkdir /home/data/samples\nmkdir /home/models\nls -lR > /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/outputfile.txt\n"
+}
+2019-03-20 13:08:38,441 | pack.evaluating.step |  DEBUG | command: 
+docker pull irinahub/docker-madminer-ml:latest
+2019-03-20 13:08:38,441 | pack.evaluating.step |  DEBUG | stdin if any: None
+2019-03-20 13:08:38,447 | pack.evaluating.step |  DEBUG | started subprocess with pid 25719. now wait to finish
+2019-03-20 13:08:38,964 | pack.evaluating.step |  DEBUG | process children: []
+2019-03-20 13:08:38,965 | pack.evaluating.step |  DEBUG | container execution subprocess finished. return code: 0
+2019-03-20 13:08:38,965 | pack.evaluating.step |  DEBUG | moving on from subprocess execution: docker pull irinahub/docker-madminer-ml:latest
+2019-03-20 13:08:38,965 | pack.evaluating.step |  DEBUG | finally for docker pull irinahub/docker-madminer-ml:latest
+2019-03-20 13:08:38,965 | pack.evaluating.step |  DEBUG | command: 
+docker run --rm -i --cidfile /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/_packtivity/evaluating.cid     -v /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:rw -v /home/irina/Projects/workflows/workflow-madminer/workflow-eval:/home/irina/Projects/workflows/workflow-madminer/workflow-eval:rw irinahub/docker-madminer-ml:latest sh -c sh
+2019-03-20 13:08:38,965 | pack.evaluating.step |  DEBUG | stdin if any: mkdir /home/data
+mkdir /home/data/samples
+mkdir /home/models
+ls -lR > /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/outputfile.txt
+
+2019-03-20 13:08:38,966 | pack.evaluating.step |  DEBUG | stdin: 
+mkdir /home/data
+mkdir /home/data/samples
+mkdir /home/models
+ls -lR > /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/outputfile.txt
+
+2019-03-20 13:08:38,967 | pack.evaluating.step |  DEBUG | argv: ['docker', 'run', '--rm', '-i', '--cidfile', '/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/_packtivity/evaluating.cid', '-v', '/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:rw', '-v', '/home/irina/Projects/workflows/workflow-madminer/workflow-eval:/home/irina/Projects/workflows/workflow-madminer/workflow-eval:rw', 'irinahub/docker-madminer-ml:latest', 'sh', '-c', 'sh']
+2019-03-20 13:08:38,975 | pack.evaluating.step |  DEBUG | started subprocess with pid 25736. now wait to finish
+2019-03-20 13:08:39,503 | pack.evaluating.step |  DEBUG | process children: []
+2019-03-20 13:08:40,215 | pack.evaluating.step |  DEBUG | container execution subprocess finished. return code: 0
+2019-03-20 13:08:40,215 | pack.evaluating.step |  DEBUG | moving on from subprocess execution: docker run --rm -i --cidfile /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/_packtivity/evaluating.cid     -v /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:rw -v /home/irina/Projects/workflows/workflow-madminer/workflow-eval:/home/irina/Projects/workflows/workflow-madminer/workflow-eval:rw irinahub/docker-madminer-ml:latest sh -c sh
+2019-03-20 13:08:40,216 | pack.evaluating.step |  DEBUG | finally for docker run --rm -i --cidfile /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/_packtivity/evaluating.cid     -v /home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating:rw -v /home/irina/Projects/workflows/workflow-madminer/workflow-eval:/home/irina/Projects/workflows/workflow-madminer/workflow-eval:rw irinahub/docker-madminer-ml:latest sh -c sh
+2019-03-20 13:08:40,237 | pack.evaluating.step |   INFO | publishing data: <TypedLeafs: {u'outputfile': u'/home/irina/Projects/workflows/workflow-madminer/workflow-eval/workdir/evaluating/outputfile.txt'}>

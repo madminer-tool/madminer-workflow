@@ -1,0 +1,9 @@
+========== ADAGE LOG BEGIN at 2019-03-20T13:08:37.696816 ==========
+---------- snapshot at 2019-03-20T13:08:37.696862
+---------- snapshot at 2019-03-20T13:08:38.138249
+name: init obj: </init:0|defined|known> submitted: True
+name: evaluating obj: </evaluating:0|defined|known> submitted: False
+---------- snapshot at 2019-03-20T13:08:44.684849
+name: init obj: </init:0|success|known> submitted: True
+name: evaluating obj: </evaluating:0|success|known> submitted: True
+========== ADAGE LOG END at 2019-03-20T13:08:44.685069 ==========
