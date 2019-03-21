@@ -3,10 +3,10 @@ evaluating:
     process_type: interpolated-script-cmd
     script: |
       mkdir /home/data
-      mkdir /home/data/samples
+      mkdir /home/data/test
       mkdir /home/models
-      tar -zxvf {eval_folder} -C {eval_folder_path}
-      python code/evaluation.py {input_evaluation} {eval_folder_path}/home/models
+      tar -zxvf {eval_folder} -C /home/models
+      python code/evaluation.py {input_evaluation} /home/models/home/models {madminer_file}
       ls -lR > {outputfile}
   publisher:
     publisher_type: interpolated-pub

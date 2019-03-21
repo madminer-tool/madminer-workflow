@@ -7,7 +7,7 @@ stages:
         evalworkdir: '{workdir}'
         eval_folder: {step: init, output: evalfolder}
         input_evaluation: {step: init, output: inputevalfile}
-        eval_folder_path: '/home/models'
+        madminer_file: {step: init, output: madminerfile}
         outputfile: '{workdir}/outputfile.txt'
       step: {$ref: 'steps.yml#/evaluating'}
 
