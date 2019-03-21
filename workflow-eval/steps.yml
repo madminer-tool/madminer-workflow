@@ -5,9 +5,11 @@ evaluating:
       mkdir /home/data
       mkdir /home/data/test
       mkdir /home/models
+      mkdir /home/plots
       tar -zxvf {eval_folder} -C /home/models
       python code/evaluation.py {input_evaluation} /home/models/home/models {madminer_file}
-      ls -lR > {outputfile}
+      cp /home/data/test/*_hat*.npy {evalworkdir}
+      cp -R /home/plots {evalworkdir}
   publisher:
     publisher_type: interpolated-pub
     publish:
