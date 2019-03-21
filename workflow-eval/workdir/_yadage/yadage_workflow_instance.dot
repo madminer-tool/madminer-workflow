@@ -1,0 +1,35 @@
+digraph G {
+subgraph cluster_ {
+color=blue;
+label="";
+style=solid;
+subgraph cluster_init {
+color=grey;
+label=init;
+labeljust=l;
+style=dashed;
+}
+
+"bed648a4-e81b-407d-94e6-b35e3587c10b" [color=blue, fixedsize=True, height=0.2, label="", shape=diamond, width=0.2];
+"bed648a4-e81b-407d-94e6-b35e3587c10b__evalfolder" [color=red, label="[evalfolder]"];
+"bed648a4-e81b-407d-94e6-b35e3587c10b" -> "bed648a4-e81b-407d-94e6-b35e3587c10b__evalfolder";
+"bed648a4-e81b-407d-94e6-b35e3587c10b__inputevalfile" [color=red, label="[inputevalfile]"];
+"bed648a4-e81b-407d-94e6-b35e3587c10b" -> "bed648a4-e81b-407d-94e6-b35e3587c10b__inputevalfile";
+"bed648a4-e81b-407d-94e6-b35e3587c10b__madminerfile" [color=red, label="[madminerfile]"];
+"bed648a4-e81b-407d-94e6-b35e3587c10b" -> "bed648a4-e81b-407d-94e6-b35e3587c10b__madminerfile";
+subgraph cluster_evaluating {
+color=grey;
+label=evaluating;
+labeljust=l;
+style=dashed;
+"c0e3712e-7950-4888-95b5-e3d8559a281d" [color=blue, label="evaluating[0]", shape=box];
+"c0e3712e-7950-4888-95b5-e3d8559a281d__outputfile" [color=red, label="[outputfile]"];
+"c0e3712e-7950-4888-95b5-e3d8559a281d" -> "c0e3712e-7950-4888-95b5-e3d8559a281d__outputfile";
+}
+
+}
+
+"bed648a4-e81b-407d-94e6-b35e3587c10b__inputevalfile" -> "c0e3712e-7950-4888-95b5-e3d8559a281d";
+"bed648a4-e81b-407d-94e6-b35e3587c10b__evalfolder" -> "c0e3712e-7950-4888-95b5-e3d8559a281d";
+"bed648a4-e81b-407d-94e6-b35e3587c10b__madminerfile" -> "c0e3712e-7950-4888-95b5-e3d8559a281d";
+}
