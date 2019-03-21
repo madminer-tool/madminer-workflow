@@ -3,10 +3,13 @@ evaluating:
     process_type: interpolated-script-cmd
     script: |
       mkdir /home/data
-      mkdir /home/data/samples
+      mkdir /home/data/test
       mkdir /home/models
-      tar -xvzf {evalfolder} -C {eval_folder_path}
-      ls -lR > {outputfile}
+      mkdir /home/plots
+      tar -zxvf {eval_folder} -C /home/models
+      python code/evaluation.py {input_evaluation} /home/models/home/models {madminer_file}
+      cp /home/data/test/*_hat*.npy {evalworkdir}
+      cp -R /home/plots {evalworkdir}
   publisher:
     publisher_type: interpolated-pub
     publish:
@@ -17,7 +20,7 @@ evaluating:
     imagetag: 'latest'
 
 
-#python code/evaluation.py {input_evaluation} {eval_folder_path}
+
 #evaluating:
 #  process:
 #    process_type: interpolated-script-cmd
@@ -25,9 +28,7 @@ evaluating:
 #      mkdir /home/data
 #      mkdir /home/data/samples
 #      mkdir /home/models
-#      tar -xvzf {evalfolder} -C {eval_folder_path}/training_*
-#      python code/evaluation.py {input_evaluation} {eval_folder_path}
-#      cp -R  {evalworkdir}
+#      ls -lR > {outputfile}
 #  publisher:
 #    publisher_type: interpolated-pub
 #    publish:
@@ -36,5 +37,3 @@ evaluating:
 #    environment_type: docker-encapsulated
 #    image: irinahub/docker-madminer-ml
 #    imagetag: 'latest'
-#
-#
