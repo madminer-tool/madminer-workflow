@@ -1,3 +1,8 @@
 #inputs for evaluation step
 model: alices
 plots: True
+
+test:
+  sampling_method: 'constant_benchmark_theta'
+  argument: 'sm'
+  nsamples: 100
