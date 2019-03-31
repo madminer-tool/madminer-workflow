@@ -62,9 +62,6 @@ for i in range(n_trainsamples):
             prior = [ (str(tuple_0['prior_shape']), float(tuple_0['prior_param_0']), float(tuple_0['prior_param_1'])), \
                       (str(tuple_1['prior_shape']), float(tuple_1['prior_param_0']), float(tuple_1['prior_param_1']))  ] 
             
-            print('tests debugging')
-            print( eval(theta0_sampling)(theta_0['n_thetas'], prior) )
-
 
             x, theta0, theta1, y, r_xz, t_xz = sa.extract_samples_train_ratio(
                 theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior),
