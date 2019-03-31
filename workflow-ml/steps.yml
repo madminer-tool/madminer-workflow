@@ -13,7 +13,7 @@ sampling:
     globexpression: 'Samples_*.tar.gz'
   environment:
     environment_type: docker-encapsulated
-    image: irinahub/docker-madminer-ml
+    image: madminertool/docker-madminer-ml
     imagetag: 'latest'
 
 training:
@@ -33,7 +33,7 @@ training:
       trained_file: '{trained_file}'
   environment:
     environment_type: docker-encapsulated
-    image: irinahub/docker-madminer-ml
+    image: madminertool/docker-madminer-ml
     imagetag: 'latest'
 
 #
