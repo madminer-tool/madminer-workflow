@@ -3,7 +3,7 @@
 # Dockerfile for MG5 Pythia Delphes and patches for Madminer deployment
 #
 
-FROM irinahub/docker-madminer:latest
+FROM madminertool/docker-madminer:latest
 
 USER root 
 
