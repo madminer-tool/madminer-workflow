@@ -1,5 +1,5 @@
 [![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)](https://travis-ci.org/irinaespejo)
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://opensource.org/licenses/mit-license.php)
+
 
 # Madminer deployment using yadage and docker containerization
 
