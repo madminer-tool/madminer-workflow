@@ -49,8 +49,29 @@ Check it was succesful by running:
   yadage-run -t from-github/testing/local-helloworld workdir workflow.yml -p par=World
 ```
 It should output lines similar to this one `2019-01-11 09:51:51,601 |         yadage.utils |   INFO | setting up backend multiproc:auto with opts {}` and no errors. Refer to the yadage links above for more details.
-*
 
+
+#### Deploy with yadage
+For the first run we recommend using our default files `input.yml` and `input_delphes.yml`.
+To generate the following workflow 
+
+![image of the workflow](images/workflow-physics.png)
+![image of the workflow](images/workflow-ml.png)
+
+run 
+```bash
+  yadage-run workdir workflow-physics/workflow.yml -p inputfile='"workflow-physics/input.yml"' -p njobs="10" -p inputdelphes='"workflow-physics/input_delphes.yml"' -d initdir=$PWD --visualize
+  rm -rf workdir/
+  yadage-run workdir workflow-ml/workflow.yml -p inputfile='"workflow-ml/inputs/input_ML.yaml"' -p ntrainsamples="5" -p combinedfile='"workflow-ml/inputs/madminer_example_with_data_1.h5"' -d initdir=$PWD --visualize
+```
+to run again the command you must first remove workdir `rm -rf workdir/`
+>what is every element in the command?
+	- `workdir` is creating a new dir where all the intermediate and output files will be saved.
+	- `workflow.yml` is the file that connects the different stages of the workflow, it must be placed in the working directory
+	- all the parameters are preceed by `-p`: `njobs` is the number of maps in the workflow, `inputfile` has the parameters and `input_delphes.yml` for observables and cuts.
+	- `-d initdir=$PWD` initializes the workflow in the present directory
+	- `--visualize` generates an image of the workflow
+	
 ### Local REANA deployment
 To deploy Madminer locally using [REANA](http://www.reana.io/) we will use Minikube as emulator for a cluster. Here we will give basic steps to set up Minikube as a `reana-cluster`. Please refer to https://reana-cluster.readthedocs.io/en/latest/gettingstarted.html  for more details. You will need to have [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) v0.28.2 and [Kubernettes](https://kubernetes.io/docs/tasks/tools/install-kubectl/) v1.11.2  installed.
 
@@ -100,26 +121,7 @@ it might take a long time to finish, once it does download files
 ```
 
 
-## Usage
-For the first run we recommend using our default files `input.yml` and `input_delphes.yml`.
-To generate the following workflow 
 
-![image of the workflow](images/workflow-physics.png)
-![image of the workflow](images/workflow-ml.png)
-
-run 
-```bash
-  yadage-run workdir workflow-physics/workflow.yml -p inputfile='"workflow-physics/input.yml"' -p njobs="10" -p inputdelphes='"workflow-physics/input_delphes.yml"' -d initdir=$PWD --visualize
-  rm -rf workdir/
-  yadage-run workdir workflow-ml/workflow.yml -p inputfile='"workflow-ml/inputs/input_ML.yaml"' -p ntrainsamples="5" -p combinedfile='"workflow-ml/inputs/madminer_example_with_data_1.h5"' -d initdir=$PWD --visualize
-```
-to run again the command you must first remove workdir `rm -rf workdir/`
->what is every element in the command?
-	- `workdir` is creating a new dir where all the intermediate and output files will be saved.
-	- `workflow.yml` is the file that connects the different stages of the workflow, it must be placed in the working directory
-	- all the parameters are preceed by `-p`: `njobs` is the number of maps in the workflow, `inputfile` has the parameters and `input_delphes.yml` for observables and cuts.
-	- `-d initdir=$PWD` initializes the workflow in the present directory
-	- `--visualize` generates an image of the workflow
 
 ## Analysis structure
 ### 1. Analysis code
