@@ -40,9 +40,13 @@ mg_pythia:
       cp /home/extract/home/code/mg_processes/signal/madminer/scripts/run*.sh {MG_process_directory}/signal/madminer/scripts
       cp /home/extract/home/code/mg_processes/signal/madminer/cards/*.dat  {MG_process_directory}/signal/madminer/cards
       mkdir {log_directory}
+      echo 5
       sh {MG_process_directory}/signal/madminer/scripts/run*.sh {MG_directory} {MG_process_directory}/signal {log_directory}
+      echo 6
       ls /home/ -l -R>{outputfile}
+      echo 7
       tar -czvf /home/code/mg_processes/signal/Events/Events.tar.gz /home/code/mg_processes/signal/Events/*/*  /home/code/mg_processes/signal/madminer/cards/benchmark_*.dat
+      echo 8
       cp /home/code/mg_processes/signal/Events/Events.tar.gz {mgworkdir} 
   publisher:
     publisher_type: 'fromglob-pub'
