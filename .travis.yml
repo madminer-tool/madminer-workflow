@@ -1,10 +1,38 @@
+notifications:
+  email:
+    recipients:
+    - iem244@nyu.edu
+sudo: required
+services:
+- docker
 language: python
 python:
-  - "2.7"
+- '2.7'
 install:
-  - pip install yadage[viz]
+- pip install yadage[viz]
 script:
-  -   sudo apt-get install graphviz
-  -   yadage-run workdir workflow-physics/workflow.yml -p inputfile='"workflow-physics/input.yml"' -p njobs="2" -p inputdelphes='"workflow-physics/input_delphes.yml"' -d initdir=$PWD --visualize
-  -   rm -rf workdir
-  -   yadage-run workdir workflow-ml/workflow.yml -p inputfile='"workflow-ml/inputs/input_ML.yaml"' -p ntrainsamples="5" -p combinedfile='"workflow-ml/inputs/madminer_example_with_data_1.h5"' -d initdir=$PWD --visualize
+- sudo apt-get install graphviz
+- yadage-run workdir workflow-physics/workflow.yml -p inputfile='"workflow-physics/input.yml"'
+  -p njobs="2" -p inputdelphes='"workflow-physics/input_delphes.yml"' -d initdir=$PWD
+  --visualize
+- rm -rf workdir
+- yadage-run workdir workflow-ml/workflow.yml -p inputfile='"workflow-ml/inputs/input_ML.yaml"'
+  -p ntrainsamples="5" -p combinedfile='"workflow-ml/inputs/madminer_example_with_data_1.h5"'
+  -d initdir=$PWD --visualize
+jobs:
+  include:
+  - stage: docker
+    install:
+    - echo none
+    script:
+    - echo none
+    deploy:
+      provider: script
+      script: sh docker_push.sh
+      on:
+        branch: master
+      condition: "$TRAVIS_PULL_REQUEST = false"
+env:
+  global:
+  - secure: wl2ch4vtaedIWTL5xLTNmO/oN/M0Fx+asohjTMlJfFLPgKdBOZ6YMSeAB7u7rit+CXouvvu5AtWn03ELTaB3zWgtf4EiKMGC/j4yGSr5XStd10ll2QE6zdav81IWJ9SHT8j6To/+yvTqJZ9pGD6vrY80TExrjy+cLhk7YmEZHo1IR6Ea5y84YZ0b4Yo7pilKSJieLnljooH4PUqcMwukF3ZyEfnpHhj0GOpF2ZXLaXQCTauBOoX2KZSUGrUeo4Ed1k0jFl2j7QNE1Sfufj6vzweVNdwj6ZT0RTN2bQDMTJv8nv4V0srHZauuJc0tChw/3FC1BAH4MdrOIAkx6aUoeqXPan+6kjdAQhdI1XPrjahvw0kUH4Mm/Jl/ShRwghD3RCbyMO/ASWW/3bVKjjHEicZxaXdbNY1FlqT7bWbYNeVzSgTFkzeB7Cy5TCLv8drDDdP/8QIr1MSWVFemANYR2bqx6LYQSeSkDAkFeSMZtpHAfHmkzQf7XE5AUMr/wWge0OdCOs6R7meMafLugBGBF5tTrwGSXY/lACYjlHEv2wrSFv+tfDsw/jCoVOI4owJuZVXB0JpDDbZxyhUE4gk7l5scaD8Cl/Fcn3sbRYT5Cue5NqQyH+0dwpRMzzSJcch+GGtmEzKZp+qorfeUrN/QwmI8FNuaLyMOUZF1bAk1RXE=
+  - secure: pzrYNChcXrlJBsJ8fVu2sgPFGBKYiLfc6ZuXxuMD1C+NArIjEegVNZ3Mwb1FmDMeZHw6iRETvj205oUEo5rDq85Sy+6h8UaIGtOkfsWieezFNctUMW3Pjo6GUpkqvZ3ZojadNeyDK4yhby6rGuee+z2SAAT3B+ziQWGhVvdbxOWHIXPkdxnv28kqnRnN0+kdg70jYDiVJggHeF9GRnfVd4rRbjfVHoEYduW5AXlNA4N1bAChXmDjp7o12j11frZEq2jkUR+ly4fagqWsOvNKwRFepsSgHuO01xxuUUv1uezz2SqrqsOuGsudZwvhrHluyKZg6MKSWPE6tO7z+vgZvVqTejFR1iMjA58N92XSGFcYeFfqpUK3a3/ydQH+EkpA07QA5mBEoVUgNP3lQ8beKm/8o2W7qQ8Sj4Olixm/bAswp/xrQr8V/sO+/M/u64Mv9jdfsx8EdLTWtu/vERNttMvjGTs/rQHchKcvijNimVs/ROetg6y95h5bKmkanIteODgegbUb7VhETewbnM44QAEqtOglbxaujZ2BVJF/+lrCuvMo0Z4we3j/u9JQJmHxXccNutpleqsnp/wJMoJPjW/CGQW9aUJ/HmfpVkWH/0K/lc3kvCAgNKJueETR8S60BJ4TTnJR+baHFhsU4fHAczazLoJ8SUjtIfoYXs5U+JA=
