@@ -45,9 +45,10 @@ miner.run_multiple(
     #initial_command='source activate python2'
 
 #create file to link benchmark_i to run_i.sh
-for i in range(m):
+for i in range(njobs):
+    j = njobs%m
     f= open("/home/code/mg_processes/signal/madminer/cards/benchmark_"+str(i)+".dat","w+")
-    f.write( "{}".format(benchmarks[i]) )
+    f.write( "{}".format(benchmarks[j]) )
     f.close()
 
 #background
