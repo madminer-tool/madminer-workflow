@@ -73,6 +73,10 @@ to run again the command you must first remove workdir `rm -rf workdir/`
 	- `--visualize` generates an image of the workflow
 	
 ### Local REANA deployment
+
+_This is work in progress_
+
+
 To deploy Madminer locally using [REANA](http://www.reana.io/) we will use Minikube as emulator for a cluster. Here we will give basic steps to set up Minikube as a `reana-cluster`. Please refer to https://reana-cluster.readthedocs.io/en/latest/gettingstarted.html  for more details. You will need to have [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) v0.28.2 and [Kubernettes](https://kubernetes.io/docs/tasks/tools/install-kubectl/) v1.11.2  installed.
 
 Run (`-vm--driver`  may depend on the OS)
