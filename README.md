@@ -14,13 +14,13 @@ Please, refer to the links for more information and tutorials about [MadMiner](h
 
 
 ## Docker images
-MadMiner is a set of complex tools with many steps and for that reason we considered better to split the software dependencies and the code for the workflow in two docker images plus another one containing the latest MadMiner library version. All of the official images are hosted in the [madminertool](https://cloud.docker.com/u/madminertool/repository/list) DockerHub.
+MadMiner is a set of complex tools with many steps and for that reason we considered better to split the software dependencies and the code for the workflow in two docker images plus another one containing the latest MadMiner library version. All of the official images are hosted in the [madminertool](https://hub.docker.com/u/madminertool) DockerHub.
 
-- [madminertool/docker-madminer](https://cloud.docker.com/u/madminertool/repository/docker/madminertool/docker-madminer)
+- [madminertool/docker-madminer](https://hub.docker.com/r/madminertool/docker-madminer)
 Contains only latest version of MadMiner
-- [madminertool/docker-madminer-phyics](https://cloud.docker.com/u/madminertool/repository/docker/madminertool/docker-madminer-physics)
+- [madminertool/docker-madminer-phyics](https://hub.docker.com/r/madminertool/docker-madminer-physics)
 Contains the code necessary to configure, generate and process events according to MadMiner. You will also find the software dependencies in the directory `/home/software`
-- [madminertool/docker-madminer-ml](https://cloud.docker.com/u/madminertool/repository/docker/madminertool/docker-madminer-ml)
+- [madminertool/docker-madminer-ml](https://hub.docker.com/r/madminertool/docker-madminer-ml)
 Contains the code necessary to configure, train and evaluate in the MadMiner framework.
 
 To pull any of the images and see its content
