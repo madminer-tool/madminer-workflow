@@ -1,2 +1,5 @@
-workflow-physics/workdir/
-workflow-ml/workdir
+workdir/
+docker/docker-madminer-physics/MG5_aMC_v2_6_2
+docker/docker-madminer-physics/patch
+docker/docker-madminer-ml/test
+README.md

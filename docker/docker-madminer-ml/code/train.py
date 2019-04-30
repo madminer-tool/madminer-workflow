@@ -1,23 +1,18 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-#import logging
 import numpy as np
-#import matplotlib
-#from matplotlib import pyplot as plt
-#%matplotlib inline
-
 import yaml
 import sys
+import os
+import logging
+import math
 
 from madminer.core import MadMiner
-from madminer.delphes import DelphesProcessor
-from madminer.sampling import combine_and_shuffle
+from madminer import sampling
 from madminer.sampling import SampleAugmenter
-from madminer.sampling import constant_benchmark_theta, multiple_benchmark_thetas, random_morphing_thetas
-from madminer.ml import MLForge
+from madminer.ml import ParameterizedRatioEstimator, ScoreEstimator, Ensemble
 from madminer.plotting import plot_2d_morphing_basis, plot_distributions
 
-print('init')
 samples_path = str(sys.argv[1])
 
 input_file = sys.argv[2]
@@ -25,24 +20,40 @@ with open(input_file) as f:
     inputs = yaml.safe_load(f)
 
 
-forge = MLForge()
-print('starting to train')
+# get method from inputs
+path_split = os.path.split(os.path.abspath(samples_path))
 
-forge.train(
-    method=str(inputs['method']),
-    theta0_filename=samples_path+'/theta0_train.npy',
-    x_filename=samples_path+'/x_train.npy',
-    y_filename=samples_path+'/y_train.npy',
-    r_xz_filename=samples_path+'/r_xz_train.npy',
-    t_xz0_filename=samples_path+'/t_xz_train.npy',
-    n_hidden=(20,20),
-    alpha=10.,
+sub_folder = path_split[1] 
+
+method = str(sub_folder.split("_", 3)[1])
+
+
+# training options
+
+if(method in ['sally', 'sallino']):
+    estimator = ScoreEstimator()
+    estimator.train(
+        method=method,
+        x=samples_path+'/x_'+method+'_train.npy',
+        t_xz=samples_path+'/t_xz_'+method+'_train.npy',
+    )
+    estimator.save('/home/models/'+method)
+
+
+
+if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
+    estimator = ParameterizedRatioEstimator(n_hidden=(100,100,100))
+    estimator.train(
+    method=method,
+    alpha=float(inputs['alpha']),
+    theta=samples_path+'/theta0_'+method+'_train.npy',
+    x=samples_path+'/x_'+method+'_train.npy',
+    y=samples_path+'/y_'+method+'_train.npy',
+    r_xz=samples_path+'/r_xz_'+method+'_train.npy',
+    t_xz=samples_path+'/t_xz_'+method+'_train.npy',
     n_epochs=int(inputs['n_epochs']),
-    validation_split=0.3,
+    validation_split=float(inputs['validation_split']),
     batch_size=int(inputs['batch_size'])
-)
-
-print('finished to train')
-
-forge.save('/home/models/'+str(inputs['method']))
+    )
+    estimator.save('/home/models/'+method)
 

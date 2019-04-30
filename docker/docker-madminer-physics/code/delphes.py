@@ -6,14 +6,27 @@ import numpy as np
 #%matplotlib inline
 import sys 
 import yaml
+import six
+import os
+import logging
+from collections import OrderedDict
+
 from madminer.core import MadMiner
-from madminer.plotting import plot_2d_morphing_basis
-from madminer.delphes import DelphesProcessor
+from madminer.delphes import DelphesReader
 from madminer.sampling import combine_and_shuffle
-from madminer.sampling import SampleAugmenter
-from madminer.sampling import constant_benchmark_theta, multiple_benchmark_thetas
-from madminer.sampling import constant_morphing_theta, multiple_morphing_thetas, random_morphing_thetas
-from madminer.ml import MLForge
+
+from madminer.utils.interfaces.madminer_hdf5 import (
+    save_events_to_madminer_file,
+    load_madminer_settings,
+    save_nuisance_setup_to_madminer_file,
+)
+from madminer.utils.interfaces.delphes import run_delphes
+from madminer.utils.interfaces.delphes_root import parse_delphes_root_file
+from madminer.utils.interfaces.hepmc import extract_weight_order
+from madminer.utils.interfaces.lhe import parse_lhe_file, extract_nuisance_parameters_from_lhe_file
+
+logger = logging.getLogger(__name__)
+
 
 h5_file = sys.argv[1]
 event_path = sys.argv[2]
@@ -22,7 +35,7 @@ benchmark_file = sys.argv[4]
 
 mg_dir = '/home/software/MG5_aMC_v2_6_2'
 
-dp = DelphesProcessor(h5_file)
+dp = DelphesReader(h5_file)
 
 #### get benchmark name of the job
 file = open(benchmark_file,'r')
@@ -36,16 +49,15 @@ dp.add_sample(
     hepmc_filename=event_path + '/tag_1_pythia8_events.hepmc.gz', #'/home/code/mg_processes/signal/Events/run_01/tag_1_pythia8_events.hepmc.gz'
     is_background=False,
     sampled_from_benchmark='sm',
-    weights='lhe',
+    weights='lhe'
 )
-#benchmark,
 
 dp.run_delphes(
     delphes_directory=mg_dir + '/Delphes',
     delphes_card='/home/code/cards/delphes_card.dat',
-    log_file='/home/log_delphes.log'
+    log_file='/home/log_delphes.log')
     #initial_command='source activate python2'
-)
+
 
 
 ########### add observables and cuts from input file
@@ -67,4 +79,4 @@ for cut in dict_all['cuts']:
 
 dp.analyse_delphes_samples()#reference_benchmark=benchmark
 
-dp.save('/home/data/madminer_example_with_data.h5')
+dp.save("/home/data/madminer_example_with_data_"+str(benchmark)+".h5")

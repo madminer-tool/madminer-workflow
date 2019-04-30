@@ -1,5 +1,0 @@
-2019-03-21 16:52:23,793 |  pack.evaluating.run |   INFO | starting file logging for topic: run
-2019-03-21 16:52:24,362 |  pack.evaluating.run |   INFO | home/models/alices_settings.json
-2019-03-21 16:52:24,363 |  pack.evaluating.run |   INFO | home/models/alices_state_dict.pt
-2019-03-21 16:52:24,363 |  pack.evaluating.run |   INFO | home/models/alices_x_means.npy
-2019-03-21 16:52:24,363 |  pack.evaluating.run |   INFO | home/models/alices_x_stds.npy
