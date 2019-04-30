@@ -1,0 +1,157 @@
+#
+#   INIT
+#
+
+# PARAMETERS
+# If an option is missing, its default value will be assigned
+
+njobs: 3
+
+parameters:
+  - parameter_name: 'CWL2'
+    lha_block: 'dim6'
+    lha_id: 2
+    #morphing_max_power: 2
+    param_card_transform: '16.52*theta'
+    parameter_range: (-10.,10.)
+
+  - parameter_name: 'CPWL2'
+    lha_block: 'dim6'
+    lha_id: 5
+    morphing_max_power: 2
+    param_card_transform: '16.52*theta'
+    parameter_range: (-10.,10.)
+
+# BENCHMARKS
+# the number of paramaters for each benchmark must match 
+# the number of paramaters introduced above 
+benchmarks:
+  - benchmark: 1
+    parameter_name_1: 'CWL2'
+    value_1: 0.
+    parameter_name_2: 'CPWL2'
+    value_2: 0.
+    name: 'sm'
+
+  - benchmark: 2
+    parameter_name_1: 'CWL2'
+    value_1: 10.
+    parameter_name_2: 'CPWL2'
+    value_2: 0.
+    name: 'w'
+
+# SETTINGS MORPHING
+set_morphing:
+  - setting: 1
+    include_existing_benchmarks: True
+    n_trials: 1000
+    max_overall_power: 2
+
+
+#
+#   DELPHES
+#
+
+observables:
+  - name: 'pt_j1'
+    definition: 'j[0].pt'
+    required: False
+    default: 0. 
+
+  - name: 'delta_phi_jj'
+    definition: '(j[0].phi() - j[1].phi()) * (-1. + 2.*float(j[0].eta > j[1].eta))'
+    required: True
+    default:  
+
+cuts:
+  - cut: 1
+    expression: 'pt_j1 > 30.'
+
+#
+#   ML
+#
+
+# SAMPLING
+
+shuffle: false
+
+include_nuisance_parameters: false
+
+methods: ['sally', 'alices']
+
+sally:
+  theta:
+    sampling_method: 'benchmark'
+    argument: 'sm'
+
+alices:
+  theta_0:
+    sampling_method: 'random_morphing_points'
+    n_thetas: 20
+    prior:
+      parameter_0:
+        prior_shape: 'gaussian'
+        prior_param_0: 0. 
+        prior_param_1: 1. 
+      parameter_1:
+        prior_shape: 'gaussian'
+        prior_param_0: 0. 
+        prior_param_1: 1.
+      parameter_2:
+        prior_shape: 'gaussian'
+        prior_param_0: 0. 
+        prior_param_1: 1.
+  theta_1:
+    sampling_method: 'benchmark' 
+    argument: 'sm'
+
+
+# TRAINING
+
+n_samples:
+  train: 1000 #y
+  test: 100
+
+batch_size: 100
+
+n_epochs: 2
+
+alpha: 10.
+
+validation_split: 0.3
+
+n_hidden: [20,20]
+
+
+# EVALUATION
+uselumi: 3000.
+
+test_split: 0.5
+
+# region of theory we want to proof
+asymptotic_limits: 
+  bool: true
+  region:
+    theta0_min: -2.
+    theta0_max:  2.
+    theta1_min: -2.
+    theta1_max:  2.
+    theta2_min: -0.001
+    theta2_max:  0.001
+    resolution:  25
+  theta_true: [0.,0.,0.]
+  hist_vars: pt_aa
+  include_xsec: [True, False]
+  n_samples_per_theta: 1000
+  
+fisher_information:
+  bool: false
+  theta_true: [0.,0.,0.]
+  observable: pt_aa
+
+# PLOTTING
+plotting:
+  all_methods: True
+  all_methods_separate: True
+  correlations: False
+  rates: True

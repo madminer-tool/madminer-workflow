@@ -5,18 +5,20 @@ import numpy as np
 #from matplotlib import pyplot as plt
 #%matplotlib inline
 import sys 
+import yaml
 from madminer.core import MadMiner
 from madminer.plotting import plot_2d_morphing_basis
-from madminer.delphes import DelphesProcessor
 from madminer.sampling import combine_and_shuffle
 from madminer.sampling import SampleAugmenter
-from madminer.sampling import constant_benchmark_theta, multiple_benchmark_thetas
-from madminer.sampling import constant_morphing_theta, multiple_morphing_thetas, random_morphing_thetas
-from madminer.ml import MLForge
 
 
-njobs = int(sys.argv[1])
-h5_file = sys.argv[2]
+input_file = str(sys.argv[1])
+with open(input_file) as f:
+    dict_all = yaml.safe_load(f)
+
+njobs =  int(sys.argv[2])
+
+h5_file = str(sys.argv[3])
 
 mg_dir = '/home/software/MG5_aMC_v2_6_2'
 
@@ -29,7 +31,8 @@ miner.load(h5_file)
 benchmarks = [str(i) for i in miner.benchmarks]
 m = len(benchmarks)
 
-print(benchmarks)
+print('list of benchmarks', benchmarks)
+
 
 miner.run_multiple(
     only_prepare_script=True,
@@ -46,9 +49,10 @@ miner.run_multiple(
 
 #create file to link benchmark_i to run_i.sh
 for i in range(njobs):
-    j = njobs%m
-    f= open("/home/code/mg_processes/signal/madminer/cards/benchmark_"+str(i)+".dat","w+")
+    j = i%m
+    f = open("/home/code/mg_processes/signal/madminer/cards/benchmark_"+str(i)+".dat","w+")
     f.write( "{}".format(benchmarks[j]) )
+    print('generate.py', i, benchmarks[j])
     f.close()
 
 #background
@@ -64,7 +68,9 @@ miner.run_multiple(
     pythia8_card_file='/home/code/cards/pythia8_card.dat',
     log_directory='/home/code/logs/background')
 
-for i in range(m):
+for i in range(njobs):
+    j = i%m
+    print('generate.py',i, benchmarks[j])
     f= open("/home/code/mg_processes/background/madminer/cards/benchmark_"+str(i)+".dat","w+")
-    f.write( "{}".format(benchmarks[i]) )
+    f.write( "{}".format(benchmarks[j]) )
     f.close()

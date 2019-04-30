@@ -9,12 +9,10 @@ import yaml
 import inspect
 from madminer.core import MadMiner
 from madminer.plotting import plot_2d_morphing_basis
-from madminer.delphes import DelphesProcessor
 from madminer.sampling import combine_and_shuffle
 from madminer.sampling import SampleAugmenter
-from madminer.sampling import constant_benchmark_theta, multiple_benchmark_thetas
-from madminer.sampling import constant_morphing_theta, multiple_morphing_thetas, random_morphing_thetas
-from madminer.ml import MLForge
+from madminer.sampling import benchmark, benchmarks
+from madminer.sampling import morphing_point, morphing_points, random_morphing_points
 
 
 mg_dir = '/home/software/MG5_aMC_v2_6_2'
@@ -22,8 +20,7 @@ mg_dir = '/home/software/MG5_aMC_v2_6_2'
 miner = MadMiner()#(debug=False)
 
 input_file = str(sys.argv[1])
-print(input_file)
-print(type(input_file))
+
 
 ########### ADD  parameters and benchmarks from input file
 

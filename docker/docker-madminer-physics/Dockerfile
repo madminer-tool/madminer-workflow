@@ -10,6 +10,7 @@ USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget ca-certificates python gfortran build-essential ghostscript vim libboost-all-dev
 
+
 #
 # MadGraph + Pythia + Delphes
 #
@@ -32,8 +33,6 @@ RUN echo "install pythia8" | /home/software/${MG_VERSION}/bin/mg5_aMC
 RUN echo "install pythia-pgs" | /home/software/${MG_VERSION}/bin/mg5_aMC
 RUN echo "install Delphes" | /home/software/${MG_VERSION}/bin/mg5_aMC
 
-#disable autoupdate MG
-#RUN rm /home/software/${MG_VERSION}/input/.autoupdate
 
 
 #
@@ -52,17 +51,14 @@ ENV MG_PATH /home/software/${MG_VERSION}
 
 #run patches with MG directory
 RUN python patch.py ${MG_PATH}
-#WORKDIR MG_PATH/Delphes
-#RUN make
 
-#
-#CODE FOR THE PHYSICS WORKFLOW
-#
 
 #extra python library
 RUN pip install PyYAML 
 
-#code for the workflow
+#
+#CODE FOR THE PHYSICS WORKFLOW
+#
 WORKDIR /home
 COPY /code ./code
 
