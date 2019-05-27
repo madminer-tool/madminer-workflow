@@ -106,7 +106,6 @@ for method in methods:
                     theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior),
                     theta1=eval(theta1_sampling)(theta_1['argument']),
                     n_samples=int(inputs['n_samples']['train']),
-                    test_split=test_split,
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'      
                 )
@@ -121,7 +120,6 @@ for method in methods:
                     theta0=eval(theta0_sampling)(theta_0['argument']),
                     theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior),
                     n_samples=int(inputs['n_samples']['train']),
-                    test_split=test_split,
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'      
                 )
@@ -141,7 +139,6 @@ for method in methods:
                     theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior0),
                     theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior1),
                     n_samples=int(inputs['n_samples']['train']),
-                    test_split=test_split,
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'      
                 )
@@ -151,8 +148,7 @@ for method in methods:
                 x, theta0, theta1, y, r_xz, t_xz = sampler.sample_train_ratio(
                     theta0=benchmark('w'),
                     theta1=benchmark('sm'),
-                    n_samples=100,
-                    test_split=test_split,
+                    n_samples=int(inputs['n_samples']['train']),
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'
                 )
@@ -181,7 +177,6 @@ for method in methods:
                 x, theta0, theta1, y, r_xz, t_xz = sample_train_local(
                     theta=eval(theta_sampling)(theta_input['n_thetas'], prior),
                     n_samples=int(inputs['n_samples']['train']),
-                    test_split=test_split,
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'      
                 )
@@ -190,7 +185,6 @@ for method in methods:
                 _ = sampler.sample_train_local(
                     theta=eval(theta_sampling)(theta_input['argument']),
                     n_samples=int(inputs['n_samples']['train']),
-                    test_split=test_split,
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'
                 )
@@ -209,7 +203,6 @@ for method in methods:
                 x, theta0, theta1, y, r_xz, t_xz = train_samples_density(
                     theta=eval(theta_sampling)(theta['n_thetas'], prior),
                     n_samples=int(inputs['n_samples']['train']),
-                    test_split=test_split,
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'      
                 )
@@ -218,32 +211,9 @@ for method in methods:
                 x, theta0, theta1, y, r_xz, t_xz = sampler.train_samples_density(
                     theta=eval(theta_sampling)(theta['argument']),
                     n_samples=int(inputs['n_samples']['train']),
-                    test_split=test_split,
                     folder='/home/data/Samples_'+str(method)+'_'+str(i),
                     filename=method+'_train'
                 )
+    
 
-    #     
 
-
-# TEST SAMPLE
-method = 'alices'
-theta0_sampling = inputs[str(method)]['theta_0']['sampling_method'] #sampling method for theta0
-theta1_sampling = inputs[str(method)]['theta_1']['sampling_method'] #sampling method for theta1
-theta_0 = inputs[str(method)]['theta_0'] #parameters for theta0 sampling
-theta_1 = inputs[str(method)]['theta_1'] #parameters for theta0 sampling
-
-prior = []
-for p in range(parameters):
-    this_tuple = theta_0['prior']['parameter_'+str(p)]
-    prior.append( (str(this_tuple['prior_shape']), float(this_tuple['prior_param_0']), float(this_tuple['prior_param_1'])) )
-
-_ = sampler.sample_train_ratio(
-  theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior),
-  theta1=eval(theta1_sampling)(theta_1['argument']),
-  n_samples=int(inputs['n_samples']['train']),
-  test_split=test_split,
-  folder='/home/test',
-  filename='test',
-  switch_train_test_events=True     
-)
