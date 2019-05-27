@@ -75,60 +75,36 @@ to run again the command you must first remove workdir `rm -rf workdir/`
 	- `-d initdir=$PWD` initializes the workflow in the present directory
 	- `--visualize` generates an image of the workflow
 	
-### Local REANA deployment
+### deploy with REANA
 
-_This is work in progress_
-
-
-To deploy Madminer locally using [REANA](http://www.reana.io/) we will use Minikube as emulator for a cluster. Here we will give basic steps to set up Minikube as a `reana-cluster`. Please refer to https://reana-cluster.readthedocs.io/en/latest/gettingstarted.html  for more details. You will need to have [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) v0.28.2 and [Kubernettes](https://kubernetes.io/docs/tasks/tools/install-kubectl/) v1.11.2  installed.
-
-Run (`-vm--driver`  may depend on the OS)
+To deploy Madminer locally using [REANA](http://www.reana.io/)  use Minikube as emulator for a cluster. Please refer to https://reana-cluster.readthedocs.io/en/latest/gettingstarted.html  for more details. 
+Select one of the folders for the example you want to run
 
 ```bash
-$ minikube start --kubernetes-version="v1.11.2" --vm-driver kvm2
-
 $ virtualenv ~/.virtualenvs/myreana
-
 $ source ~/.virtualenvs/myreana/bin/activate
-
-(myreana) $ pip install reana-cluster
-
-(myreana) $ reana-cluster init
-
-(myreana) $ reana-cluster status
-
-(myreana) $ eval $(reana-cluster env --include-admin-token)
-```
-with this you have set up a local `reana-cluster`. Now let's set up the` reana-client` where you will run the analysis. Please refer to https://reana-client.readthedocs.io/en/latest/gettingstarted.html  for more details.
-
-```bash
 (myreana) $ pip install reana-client
-```
-check connectivity to `reana-cluster`
-```bash
+# enter credentials for REANA-cluster
+(myreana) $ export REANA_ACCESS_TOKEN = [..]
+(myreana) $ export REANA_SERVER_URL = [..]
+# or for minikube deployment
+(myreana) $ eval $(reana-cluster env --include-admin-token)
+# check connectivity to `reana-cluster`
 (myreana) $ reana-client ping
-```
-
-Create the analysis
-
-```bash
+# create the analysis
 (myreana) $ reana-client create -n my-analysis
-
 (myreana) $ export REANA_WORKON=my-analysis
-
-(myreana) $ reana-client upload ./data
-
+(myreana) $ reana-client upload ./inputs/input.yml
 (myreana) $ reana-client start
-
 (myreana) $ reana-client status
 ```
-it might take a long time to finish, once it does download files
+it might take some time to finish depending on the job, once it does download files
 ```bash
 (myreana) $ reana-client download <path/to/file/on/reana/workon>
 ```
-
-
-
+ 
+### ttH example
+In case you have an augmented data file 
 
 ## Analysis structure
 ### 1. Analysis code
