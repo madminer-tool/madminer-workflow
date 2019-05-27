@@ -37,8 +37,8 @@ if(method in ['sally', 'sallino']):
         x=samples_path+'/x_'+method+'_train.npy',
         t_xz=samples_path+'/t_xz_'+method+'_train.npy',
     )
-    estimator.save('/home/models/'+method)
-
+    os.mkdir('/home/models/'+method)
+    estimator.save('/home/models/'+method+'/'+method)
 
 
 if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
@@ -55,5 +55,6 @@ if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
     validation_split=float(inputs['validation_split']),
     batch_size=int(inputs['batch_size'])
     )
-    estimator.save('/home/models/'+method)
+    os.mkdir('/home/models/'+method)
+    estimator.save('/home/models/'+method+'/'+method)
 

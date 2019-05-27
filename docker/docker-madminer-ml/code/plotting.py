@@ -133,7 +133,7 @@ with open(inputs_file) as f:
 	inputs = yaml.safe_load(f)
 
 #folder with trained files
-results_folder_path = str(sys.argv[2]) 
+#results_folder_path = str(sys.argv[2]) 
 
 
 # get variables form input
@@ -149,64 +149,80 @@ plotting =  inputs['plotting']
 variables_to_plot = dict()
 
 # LOAD 
-gridfiles = []
-for root, dirs, files in os.walk(results_folder_path):
-  for file in files:
-    if file.endswith('grid.npy'):
-      gridfiles.append(os.path.join(root, file))
-gridpath = gridfiles[0]
+# gridfiles = []
+# for root, dirs, files in os.walk(results_folder_path):
+#   for file in files:
+#     if file.endswith('grid.npy'):
+#       gridfiles.append(os.path.join(root, file))
+# gridpath = gridfiles[0]
 
-variables_to_plot['theta_grid'] = np.load(gridpath)
+variables_to_plot['theta_grid'] = np.load('/home/rates/grid.npy')  #np.load(gridpath)
 
-ratefiles = []
-for root, dirs, files in os.walk(results_folder_path):
-  for file in files:
-    if file.endswith('rate.npy'):
-      ratefiles.append(os.path.join(root, file))
-ratepath = ratefiles[0]
+# ratefiles = []
+# for root, dirs, files in os.walk(results_folder_path):
+#   for file in files:
+#     if file.endswith('rate.npy'):
+#       ratefiles.append(os.path.join(root, file))
+# ratepath = ratefiles[0]
 
-variables_to_plot['p_values_expected_rate'], variables_to_plot['best_fit_expected_rate'] = np.load(ratepath)
-
-
-histofiles = []
-for root, dirs, files in os.walk(results_folder_path):
-  for file in files:
-    if file.endswith('histo.npy'):
-      histofiles.append(os.path.join(root, file))
-histopath = histofiles[0]
-
-variables_to_plot['p_values_expected_histo'], variables_to_plot['best_fit_expected_histo'] = np.load(histopath)
+variables_to_plot['p_values_expected_rate'], variables_to_plot['best_fit_expected_rate'] = np.load('/home/rates/rate.npy')  #np.load(ratepath)
 
 
-histo_kinfiles = []
-for root, dirs, files in os.walk(results_folder_path):
-  for file in files:
-    if file.endswith('histo_kin.npy'):
-      histo_kinfiles.append(os.path.join(root, file))
-histo_kinpath = histo_kinfiles[0]
+# histofiles = []
+# for root, dirs, files in os.walk(results_folder_path):
+#   for file in files:
+#     if file.endswith('histo.npy'):
+#       histofiles.append(os.path.join(root, file))
+# histopath = histofiles[0]
 
-variables_to_plot['p_values_expected_histo_kin'], variables_to_plot['best_fit_expected_histo_kin'] = np.load(histo_kinpath)
+variables_to_plot['p_values_expected_histo'], variables_to_plot['best_fit_expected_histo'] = np.load('/home/rates/histo.npy')
+
+
+# histo_kinfiles = []
+# for root, dirs, files in os.walk(results_folder_path):
+#   for file in files:
+#     if file.endswith('histo_kin.npy'):
+#       histo_kinfiles.append(os.path.join(root, file))
+# histo_kinpath = histo_kinfiles[0]
+
+variables_to_plot['p_values_expected_histo_kin'], variables_to_plot['best_fit_expected_histo_kin'] = np.load('/home/rates/histo_kin.npy')
 
 
 
 # this is for the method histrograms
-methods = next(os.walk(results_folder_path))[1]
+methods = inputs['methods']
 
 for method in methods:
-  methodfiles = []
-  for root, dirs, files in os.walk(results_folder_path+'/'+method):
-    for file in files:
-      if (file.endswith('.npy') and file.startswith(method)):
-        methodfiles.append(os.path.join(root, file))
+  if(method in ['alice','alices','cascal','carl','rolr', 'rascal'] ):
+    variables_to_plot['p_values_expected_'+method] = np.load('/home/results/'+method+'/ml/'+method+'.npy')[0]
+    variables_to_plot['best_fit_expected_'+method] = np.load('/home/results/'+method+'/ml/'+method+'.npy')[1]
+    variables_to_plot['p_values_expected_'+method+'_kin'] = np.load('/home/results/'+method+'/ml/'+method+'_kin.npy')[0]
+    variables_to_plot['best_fit_expected_'+method+'_kin'] = np.load('/home/results/'+method+'/ml/'+method+'_kin.npy')[1]
+
+
+  if(method in ['sally','sallino'] ):
+    variables_to_plot['p_values_expected_'+method] = np.load('/home/results/'+method+'/histo/'+method+'.npy')[0]
+    variables_to_plot['best_fit_expected_'+method] = np.load('/home/results/'+method+'/histo/'+method+'.npy')[1]
+    variables_to_plot['p_values_expected_'+method+'_kin'] = np.load('/home/results/'+method+'/histo/'+method+'_kin.npy')[0]
+    variables_to_plot['best_fit_expected_'+method+'_kin'] = np.load('/home/results/'+method+'/histo/'+method+'_kin.npy')[1]    
+
+
+# for method in methods:
+#   methodfiles = []
+#   for root, dirs, files in os.walk(results_folder_path+'/'+method):
+#     for file in files:
+#       if (file.endswith('.npy') and file.startswith(method)):
+#         methodfiles.append(os.path.join(root, file))
   
-  #kin / not kin
-  for option_file in methodfiles: 
-    if(option_file.endswith('kin.npy')):
-      variables_to_plot['p_values_expected_'+method+'_kin'] = np.load(option_file)[0]
-      variables_to_plot['best_fit_expected_'+method+'_kin'] = np.load(option_file)[1]
-    else:
-      variables_to_plot['p_values_expected_'+method+''] = np.load(option_file)[0]
-      variables_to_plot['best_fit_expected_'+method+''] = np.load(option_file)[1]
+#   #kin / not kin
+#   for option_file in methodfiles: 
+#     if(option_file.endswith('kin.npy')):
+#       variables_to_plot['p_values_expected_'+method+'_kin'] = np.load(option_file)[0]
+#       variables_to_plot['best_fit_expected_'+method+'_kin'] = np.load(option_file)[1]
+#     else:
+#       variables_to_plot['p_values_expected_'+method+''] = np.load(option_file)[0]
+#       variables_to_plot['best_fit_expected_'+method+''] = np.load(option_file)[1]
+
 
 
 
@@ -225,41 +241,21 @@ if( plotting['all_methods']==True ):
   fig = plt.figure(figsize=(6,5))
   ax = plt.gca()
 
-  #IRINA ALICES-dependent?
+  #alices depeent
   cmin, cmax = 1.e-3, 1.
+  method_pvalue = str(inputs['plotting']['all_methods_pvalue'])
   pcm = ax.pcolormesh(
-      theta0_edges, theta1_edges, variables_to_plot['p_values_expected_alices_kin'].reshape((resolution, resolution)),
+      theta0_edges, theta1_edges, variables_to_plot['p_values_expected_'+method_pvalue+'_kin'].reshape((resolution, resolution)),
       norm=matplotlib.colors.LogNorm(vmin=cmin, vmax=cmax),
       cmap='Greys_r'
   )
   cbar = fig.colorbar(pcm, ax=ax, extend='both')
 
 
-  #rate
-  plt.contour(
-    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_rate'].reshape((resolution, resolution)),
-    levels=[0.61],
-    linestyles='-', colors='black'
-  )
-
-  #histo
-  plt.contour(
-      theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo'].reshape((resolution, resolution)),
-      levels=[0.61],
-      linestyles='-', colors='limegreen'
-  )
-
-  plt.contour(
-      theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo_kin'].reshape((resolution, resolution)),
-      levels=[0.61],
-      linestyles='--', colors='limegreen'
-  )
-
-
   #methods
   random.seed(5)
   for method in methods:
-    print('plotting ',method)
+    print('plotting...... ',method)
     if(method=='sally'):
     	color='C0'
     if(method=='alice'):
@@ -290,28 +286,54 @@ if( plotting['all_methods']==True ):
         label = (method+'-kin').upper()
     )
 
+
+  #rate
+  plt.contour(
+    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_rate'].reshape((resolution, resolution)),
+    levels=[0.61],
+    linestyles='-', colors='black'
+    
+  )
   plt.scatter(
-    variables_to_plot['theta_grid'][ variables_to_plot['best_fit_expected_rate'] ][0], variables_to_plot['theta_grid'][ variables_to_plot['best_fit_expected_rate'] ][1],
+    variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_rate'] ][0], variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_rate'] ][1],
     s=80., color='black', marker='*',
     label="xsec"
+    )
+
+  #histo
+  plt.contour(
+    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo'].reshape((resolution, resolution)),
+    levels=[0.61],
+    linestyles='-', colors='limegreen',
+    label="Histo"
   )
+
   plt.scatter(
-        variables_to_plot['theta_grid'][  variables_to_plot['best_fit_expected_histo'] ][0], variables_to_plot['theta_grid'][  variables_to_plot['best_fit_expected_histo'] ][1],
-        s=80., color='limegreen', marker='*',
-        label="Histo"
+    variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_histo'] ][0], variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_histo'] ][1],
+    s=80., color='limegreen', marker='*',
+    label="Histo"
   )
+
+  #kin
+  plt.contour(
+    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo_kin'].reshape((resolution, resolution)),
+    levels=[0.61],
+    linestyles='--', colors='limegreen'
+  )
+
+
   plt.scatter(
-        variables_to_plot['theta_grid'][  variables_to_plot['best_fit_expected_histo_kin'] ][0], variables_to_plot['theta_grid'][  variables_to_plot['best_fit_expected_histo_kin'] ][1],
-        s=80., color='limegreen', marker='+',
-        label="Histo-Kin"
-  )
+    variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_histo_kin'] ][0], variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_histo_kin'] ][1],
+    s=80., color='limegreen', marker='+',
+    label="Histo-Kin"
+    )
 
 
   #Finish plot
   plt.legend()
   plt.xlabel(r'$\theta_0$')
   plt.ylabel(r'$\theta_1$')
-  cbar.set_label('Expected p-value (ALICES-Kinematics)')
+  cbar.set_label('Expected p-value ('+method_pvalue.upper()+'-Kinematics)')
 
   plt.tight_layout()
   plt.savefig('/home/plots/all_methods.png')
