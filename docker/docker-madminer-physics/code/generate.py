@@ -28,6 +28,8 @@ miner.load(h5_file)
 
 ##################################################################################
 #signal
+
+
 benchmarks = [str(i) for i in miner.benchmarks]
 m = len(benchmarks)
 
@@ -46,6 +48,8 @@ miner.run_multiple(
     pythia8_card_file='/home/code/cards/pythia8_card.dat',
     log_directory='/home/code/logs/signal')
     #initial_command='source activate python2'
+
+print(benchmarks[0:njobs%m]+benchmarks*int(njobs/m))
 
 #create file to link benchmark_i to run_i.sh
 for i in range(njobs):
