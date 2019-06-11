@@ -1,4 +1,4 @@
-![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)](https://travis-ci.org/irinaespejo)
+![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)]
 
 # Madminer deployment using yadage and docker containerization
 
@@ -36,49 +36,14 @@ If you want to check the Dockerfile for the last two images go to `worklow-madmi
 ## Install the dependencies and run the workflows
 Installing the dependiencies depends on how you want to run the workflow: locally using yadage alone or in a REANA cluster.
 
-### Local yadage-pure deployment
 
-Install yadage and the dependencies to visualize workflows [viz]
-```bash
-  pip install yadage[viz]
-```
-Also, you need the graphviz package
-Check it was succesful by running:
-```bash
-  yadage-run -t from-github/testing/local-helloworld workdir workflow.yml -p par=World
-```
-It should output lines similar to this one `2019-01-11 09:51:51,601 |         yadage.utils |   INFO | setting up backend multiproc:auto with opts {}` and no errors. Refer to the yadage links above for more details.
-
-
-#### Deploy with yadage
-
-_An update is needed here_
-
-For the first run we recommend using our default files `input.yml` and `input_delphes.yml`.
-To generate the following workflow 
-
-![image of the workflow](images/workflow-physics.png)
-![image of the workflow](images/workflow-ml.png)
-
-run 
-```bash
-  $ yadage-run workdir workflow-physics/workflow.yml -p inputfile='"workflow-physics/input.yml"' -p njobs="10" -p inputdelphes='"workflow-physics/input_delphes.yml"' -d initdir=$PWD --visualize
-  $ rm -rf workdir/
-  $ yadage-run workdir workflow-ml/workflow.yml -p inputfile='"workflow-ml/inputs/input_ML.yaml"' -p ntrainsamples="5" -p combinedfile='"workflow-ml/inputs/madminer_example_with_data_1.h5"' -d initdir=$PWD --visualize
-```
-to run again the command you must first remove workdir `rm -rf workdir/`
->what is every element in the command?
-	- `workdir` is creating a new dir where all the intermediate and output files will be saved.
-	- `workflow.yml` is the file that connects the different stages of the workflow, it must be placed in the working directory
-	- all the parameters are preceed by `-p`: `njobs` is the number of maps in the workflow, `inputfile` has the parameters and `input_delphes.yml` for observables and cuts.
-	- `-d initdir=$PWD` initializes the workflow in the present directory
-	- `--visualize` generates an image of the workflow
 	
 ### deploy with REANA
 
 To deploy Madminer locally using [REANA](http://www.reana.io/)  use Minikube as emulator for a cluster. Please refer to https://reana-cluster.readthedocs.io/en/latest/gettingstarted.html  for more details. 
-Select one of the folders for the example you want to run
+If you have access to a REANA cluster, then you will only need to introduce the credentials as below.
 
+Move to the directory `example-full` and run
 ```bash
 $ virtualenv ~/.virtualenvs/myreana
 $ source ~/.virtualenvs/myreana/bin/activate
@@ -92,17 +57,52 @@ $ source ~/.virtualenvs/myreana/bin/activate
 (myreana) $ reana-client ping
 # create the analysis
 (myreana) $ reana-client create -n my-analysis
-(myreana) $ export REANA_WORKON=my-analysis
+(myreana) $ export REANA_WORKON=my-analysis.1
 (myreana) $ reana-client upload ./inputs/input.yml
 (myreana) $ reana-client start
 (myreana) $ reana-client status
 ```
-it might take some time to finish depending on the job, once it does download files
+it might take some time to finish depending on the job and the cluster, once it does list and download  the files
 ```bash
+(myreana) $ reana-client ls
 (myreana) $ reana-client download <path/to/file/on/reana/workon>
 ```
+the command `reana-client ls` will display that there is one folder containing the results from each step. You can download any intermediate result you are interested in for example
 
-### ttH example
+
+### deploy locally with yadage
+
+Install yadage and the dependencies to visualize workflows [viz]
+```bash
+  pip install yadage[viz]
+```
+Also, you need the graphviz package
+Check it was succesful by running:
+```bash
+  yadage-run -t from-github/testing/local-helloworld workdir workflow.yml -p par=World
+```
+It should output lines similar to this one `2019-01-11 09:51:51,601 |         yadage.utils |   INFO | setting up backend multiproc:auto with opts {}` and no errors. Refer to the yadage links above for more details.
+
+
+For the first run we recommend using our default files `input.yml`. Also, decreasing `njobs` and `ntrainsamples` will be faster.
+To generate the following workflow 
+
+![image of the workflow](images/yadage_workflow_instance_full.png)
+
+move to the directory of the example and run 
+```bash
+  sudo rm -rf workdir  && yadage-run   workdir workflow.yml  -p inputfile='"inputs/input.yml"'  -p njobs="6"  -p ntrainsamples="2"  -d initdir=$PWD --visualize
+```
+to run again the command you must first remove workdir `rm -rf workdir/`
+>what is every element in the command?
+	- `workdir` is creating a new dir where all the intermediate and output files will be saved.
+	- `workflow.yml` is the file that connects the different stages of the workflow, it must be placed in the working directory
+	- all the parameters are preceed by `-p`: `njobs` is the number of maps in the physics workflow, `ntrainsamples` is the same as `njobs` but to scale the traning sample process, `inputfile` has a configuration of all the parameters and options.
+	- `-d initdir=$PWD` initializes the workflow in the present directory
+	- `--visualize` generates an image of the workflow
+
+
+### running only one part of the workflow
 In case you have an augmented data file 
 
 ## Analysis structure
@@ -134,7 +134,7 @@ Without taking into account the inputs ans the map-reduce the general strcture o
 				+--------------+
 				|   Generate   |
 				+--------------+
-	   				 |
+	   				   |
 					   |
 					   v
 				+--------------+
@@ -152,16 +152,16 @@ Without taking into account the inputs ans the map-reduce the general strcture o
 				+-----------------+
 				|   Sampling      |
 				+-----------------+
-				     |
+				           |
 					   |
 					   v
-        +-----------------+
+                                +-----------------+
 				|   Training      |
 				+-----------------+
-				     |
+				           |
 					   |
 					   v
-        +-----------------+
+                                +-----------------+
 				|    Testing      |
 				+-----------------+
 
