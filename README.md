@@ -1,4 +1,4 @@
-![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)]
+![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)
 
 # Madminer deployment using yadage and docker containerization
 
@@ -42,8 +42,11 @@ Installing the dependiencies depends on how you want to run the workflow: locall
 
 To deploy Madminer locally using [REANA](http://www.reana.io/)  use Minikube as emulator for a cluster. Please refer to https://reana-cluster.readthedocs.io/en/latest/gettingstarted.html  for more details. 
 If you have access to a REANA cluster, then you will only need to introduce the credentials as below.
+To generate the following workflow 
 
-Move to the directory `example-full` and run
+![image of the workflow](images/yadage_workflow_instance_full.png)
+
+move to the directory `example-full/` and run
 ```bash
 $ virtualenv ~/.virtualenvs/myreana
 $ source ~/.virtualenvs/myreana/bin/activate
@@ -67,7 +70,8 @@ it might take some time to finish depending on the job and the cluster, once it 
 (myreana) $ reana-client ls
 (myreana) $ reana-client download <path/to/file/on/reana/workon>
 ```
-the command `reana-client ls` will display that there is one folder containing the results from each step. You can download any intermediate result you are interested in for example
+the command `reana-client ls` will display that there is one folder containing the results from each step. You can download any intermediate result you are interested in for example `combine/combined_delphes.h5`, `evaluating_0/
+Results.tar.gz` or all the plots available in `plotting/`.
 
 
 ### deploy locally with yadage
@@ -85,9 +89,7 @@ It should output lines similar to this one `2019-01-11 09:51:51,601 |         ya
 
 
 For the first run we recommend using our default files `input.yml`. Also, decreasing `njobs` and `ntrainsamples` will be faster.
-To generate the following workflow 
 
-![image of the workflow](images/yadage_workflow_instance_full.png)
 
 move to the directory of the example and run 
 ```bash
@@ -103,7 +105,7 @@ to run again the command you must first remove workdir `rm -rf workdir/`
 
 
 ### running only one part of the workflow
-In case you have an augmented data file 
+The image of the workflow above shows how 2 workflows are united
 
 ## Analysis structure
 ### 1. Analysis code
