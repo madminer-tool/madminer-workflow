@@ -56,7 +56,7 @@ stages:
       scheduler_type: 'singlestep-stage'
       parameters:
         cworkdir: '{workdir}'
-        inputfiles: {steps: 'delphes', output: dpostrun_file}
+        inputfiles: {stages: 'delphes', output: dpostrun_file}
       step: {$ref: 'steps.yml#/combine'}
 
 
