@@ -14,8 +14,7 @@ import h5py
 from madminer.limits import AsymptoticLimits
 from madminer import sampling
 from madminer.sampling import SampleAugmenter
-from madminer.ml import ParameterizedRatioEstimator, ScoreEstimator, Ensemble, DoubleParameterizedRatioEstimator
-from madminer import sampling
+from madminer.ml import ParameterizedRatioEstimator, ScoreEstimator, Ensemble, DoubleParameterizedRatioEstimator, LikelihoodEstimator
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -68,73 +67,140 @@ def generate_test_data_ratio(method):
     parameters = len(hf['parameters']['names'])
     sa = SampleAugmenter(h5_file, include_nuisance_parameters=False)
 
-    theta0_sampling = inputs['evaluation'][str(method)]['theta_0']['sampling_method'] #sampling method for theta0
-    theta1_sampling = inputs['evaluation'][str(method)]['theta_1']['sampling_method'] #sampling method for theta1
-    theta_0 = inputs['evaluation'][str(method)]['theta_0'] #parameters for theta0 sampling
-    theta_1 = inputs['evaluation'][str(method)]['theta_1'] #parameters for theta0 sampling
 
-    if (theta0_sampling == 'random_morphing_points' and theta1_sampling != 'random_morphing_points' ): 
-        
+    if( len(inputs['evaluation'][str(method)])==1 ): #only one theta
+
+      theta_sampling = inputs['evaluation'][str(method)]['theta']['sampling_method']
+      theta = inputs['evaluation'][str(method)]['theta']
+      if(theta_sampling != 'random_morphing_points'):
+
+        x, theta, y, r_xz, t_xz, n_effective = sa.sample_test(
+        theta=eval(theta_sampling)(theta['argument']),
+        n_samples=inputs['n_samples']['test'],
+        folder='/home/test/'+method+'/',
+        filename='test',
+        switch_train_test_events=False
+        )
+
+      else:
+
         prior = []
         for p in range(parameters):
-            this_tuple = theta_0['prior']['parameter_'+str(p)]
+            this_tuple = theta['prior']['parameter_'+str(p)]
+            prior.append( (str(this_tuple['prior_shape']), float(this_tuple['prior_param_0']), float(this_tuple['prior_param_1'])) )
+
+        x, theta, y, r_xz, t_xz, n_effective = sa.sample_test(
+        theta=eval(theta_sampling)(theta_['n_thetas'], prior),
+        n_samples=inputs['n_samples']['test'],
+        folder='/home/test/'+method+'/',
+        filename='test',
+        switch_train_test_events=False,
+        )
+
+
+    elif( en(inputs['evaluation'][str(method)])==2 ): #two thetas
+
+      theta0_sampling = inputs['evaluation'][str(method)]['theta_0']['sampling_method'] #sampling method for theta0
+      theta1_sampling = inputs['evaluation'][str(method)]['theta_1']['sampling_method'] #sampling method for theta1
+      theta_0 = inputs['evaluation'][str(method)]['theta_0'] #parameters for theta0 sampling
+      theta_1 = inputs['evaluation'][str(method)]['theta_1'] #parameters for theta0 sampling
+
+      if (theta0_sampling == 'random_morphing_points' and theta1_sampling != 'random_morphing_points' ): 
+          
+          prior = []
+          for p in range(parameters):
+              this_tuple = theta_0['prior']['parameter_'+str(p)]
+              prior.append( (str(this_tuple['prior_shape']), float(this_tuple['prior_param_0']), float(this_tuple['prior_param_1'])) )
+
+
+          x,th0,th1,y,r_xz,t_xz = sa.sample_train_ratio(
+              theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior),
+              theta1=eval(theta1_sampling)(theta_1['argument']),
+              n_samples=inputs['n_samples']['test'],
+              folder='/home/test/'+method+'/',
+              filename='test',
+              switch_train_test_events=False,
+              )      
+              
+
+      elif (theta1_sampling == 'random_morphing_points' and theta0_sampling != 'random_morphing_points'):  
+          tuple_0 = theta_1['prior']['parameter_0'] #tuple for parameter 0
+          tuple_1 = theta_1['prior']['parameter_1'] #tuple for parameter 1
+          prior = [ (str(tuple_0['prior_shape']), float(tuple_0['prior_param_0']), float(tuple_0['prior_param_1'])), \
+                    (str(tuple_1['prior_shape']), float(tuple_1['prior_param_0']), float(tuple_1['prior_param_1']))  ]
+
+          x, theta0, theta1, y, r_xz, t_xz = sa.sample_train_ratio(
+              theta0=eval(theta0_sampling)(theta_0['argument']),
+              theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior),
+              n_samples=inputs['n_samples']['test'],
+              folder='/home/test/'+method+'/',
+              filename='test',
+              switch_train_test_events=False,     
+          )
+
+      elif (theta0_sampling == 'random_morphing_points' and theta1_sampling == 'random_morphing_points'): 
+          tuple0_0 = theta_0['prior']['parameter_0'] #tuple for parameter 0
+          tuple0_1 = theta_0['prior']['parameter_1'] #tuple for parameter 1
+          prior0 = [ (str(tuple0_0['prior_shape']), float(tuple0_0['prior_param_0']), float(tuple0_0['prior_param_1'])), \
+                             (str(tuple0_1['prior_shape']), float(tuple0_1['prior_param_0']), float(tuple0_1['prior_param_1']))  ]
+                  
+          tuple1_0 = theta_1[method]['prior']['parameter_0'] #tuple for parameter 0
+          tuple1_1 = theta_1[method]['prior']['parameter_1'] #tuple for parameter 1
+          prior1 = [ (str(tuple1_0['prior_shape']), float(tuple1_0['prior_param_0']), float(tuple1_0['prior_param_1'])), \
+                         (str(tuple1_1['prior_shape']), float(tuple1_1['prior_param_0']), float(tuple1_1['prior_param_1']))  ]
+
+          x, theta0, theta1, y, r_xz, t_xz = sa.sample_train_ratio(
+              theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior0),
+              theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior1),
+              n_samples=inputs['n_samples']['test'],
+              folder='/home/test/'+method+'/',
+              filename='test',
+              switch_train_test_events=False,     
+          )
+
+
+      else:
+          x, theta0, theta1, y, r_xz, t_xz, n_effective= sa.sample_train_ratio(
+              theta0=eval(theta0_sampling)(theta_0['argument']),
+              theta1=eval(theta1_sampling)(theta_1['argument']),
+              n_samples=inputs['n_samples']['test'],
+              folder='/home/test/'+method+'/',
+              filename='test',
+              switch_train_test_events=False
+          )
+
+def generate_test_data_score(method):
+    # get number of paramenters
+    hf = h5py.File(h5_file, 'r')
+    parameters = len(hf['parameters']['names'])
+    sa = SampleAugmenter(h5_file, include_nuisance_parameters=False)
+
+    theta_input = inputs[str(method)]['theta']
+    theta_sampling = theta_input['sampling_method']
+    
+    if (theta_sampling == 'random_morphing_points'): 
+                
+        prior = []
+        for p in range(parameters):
+            this_tuple = theta_input['prior']['parameter_'+str(p)]
             prior.append( (str(this_tuple['prior_shape']), float(this_tuple['prior_param_0']), float(this_tuple['prior_param_1'])) )
 
 
-        x,th0,th1,y,r_xz,t_xz = sa.sample_train_ratio(
-            theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior),
-            theta1=eval(theta1_sampling)(theta_1['argument']),
+        x, theta0, theta1, y, r_xz, t_xz = sample_train_local(
+            theta=eval(theta_sampling)(theta_input['n_thetas'], prior),
+            n_samples=inputs['n_samples']['test'],
+            folder='/home/test/'+method+'/',
+            filename='test',
+            switch_train_test_events=False,      
+        )
+
+    if (theta_sampling == 'benchmark'): 
+        _ = sa.sample_train_local(
+            theta=eval(theta_sampling)(theta_input['argument']),
             n_samples=inputs['n_samples']['test'],
             folder='/home/test/'+method+'/',
             filename='test',
             switch_train_test_events=False,
-            )      
-            
-
-    elif (theta1_sampling == 'random_morphing_points' and theta0_sampling != 'random_morphing_points'):  
-        tuple_0 = theta_1['prior']['parameter_0'] #tuple for parameter 0
-        tuple_1 = theta_1['prior']['parameter_1'] #tuple for parameter 1
-        prior = [ (str(tuple_0['prior_shape']), float(tuple_0['prior_param_0']), float(tuple_0['prior_param_1'])), \
-                  (str(tuple_1['prior_shape']), float(tuple_1['prior_param_0']), float(tuple_1['prior_param_1']))  ]
-
-        x, theta0, theta1, y, r_xz, t_xz = sa.sample_train_ratio(
-            theta0=eval(theta0_sampling)(theta_0['argument']),
-            theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior),
-            n_samples=inputs['n_samples']['test'],
-            folder='/home/test/'+method+'/',
-            filename='test',
-            switch_train_test_events=False,     
-        )
-
-    elif (theta0_sampling == 'random_morphing_points' and theta1_sampling == 'random_morphing_points'): 
-        tuple0_0 = theta_0['prior']['parameter_0'] #tuple for parameter 0
-        tuple0_1 = theta_0['prior']['parameter_1'] #tuple for parameter 1
-        prior0 = [ (str(tuple0_0['prior_shape']), float(tuple0_0['prior_param_0']), float(tuple0_0['prior_param_1'])), \
-                           (str(tuple0_1['prior_shape']), float(tuple0_1['prior_param_0']), float(tuple0_1['prior_param_1']))  ]
-                
-        tuple1_0 = theta_1[method]['prior']['parameter_0'] #tuple for parameter 0
-        tuple1_1 = theta_1[method]['prior']['parameter_1'] #tuple for parameter 1
-        prior1 = [ (str(tuple1_0['prior_shape']), float(tuple1_0['prior_param_0']), float(tuple1_0['prior_param_1'])), \
-                       (str(tuple1_1['prior_shape']), float(tuple1_1['prior_param_0']), float(tuple1_1['prior_param_1']))  ]
-
-        x, theta0, theta1, y, r_xz, t_xz = sa.sample_train_ratio(
-            theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior0),
-            theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior1),
-            n_samples=inputs['n_samples']['test'],
-            folder='/home/test/'+method+'/',
-            filename='test',
-            switch_train_test_events=False,     
-        )
-
-
-    else:
-        _= sa.sample_train_ratio(
-            theta0=eval(theta0_sampling)(theta_0['argument']),
-            theta1=eval(theta1_sampling)(theta_1['argument']),
-            n_samples=inputs['n_samples']['test'],
-            folder='/home/test/'+method+'/',
-            filename='test',
-            switch_train_test_events=False
         )
 
 
@@ -163,16 +229,19 @@ method = str(path_split[1])
 if(inputs['asymptotic_limits']['bool']):
 
     asymptotic = inputs['asymptotic_limits']
-    theta0_min, theta0_max = float(asymptotic['region']['theta0_min']), float(asymptotic['region']['theta0_max'])
-    theta1_min, theta1_max = float(asymptotic['region']['theta1_min']), float(asymptotic['region']['theta1_max'])
-    theta2_min, theta2_max = float(asymptotic['region']['theta2_min']), float(asymptotic['region']['theta2_max'])
-    resolution = int(asymptotic['region']['resolution'])
-    resolutions = [resolution,resolution,1]
+
+    theta_ranges=[]
+    for this_theta in asymptotic['region']:
+      theta_min, theta_max = asymptotic['region'][str(this_theta)]
+      theta_ranges.append((theta_min,theta_max))
+    
+    print('theta range...', theta_ranges)
+    
+    resolutions = asymptotic['resolutions']
+    print('resolutions...',resolutions)
     n_samples_theta = int(asymptotic['n_samples_per_theta'])
     xsec = asymptotic['include_xsec']
-    theta_true = [ float(asymptotic['theta_true'][0]),\
-                   float(asymptotic['theta_true'][1]), \
-                   float(asymptotic['theta_true'][2]) ]
+    theta_true = asymptotic['theta_true']
 
 
     limits = AsymptoticLimits(h5_file)
@@ -181,11 +250,11 @@ if(inputs['asymptotic_limits']['bool']):
 
     theta_grid, p_values_expected_xsec, best_fit_expected_xsec = limits.expected_limits(
     theta_true=theta_true,
-    theta_ranges=[(theta0_min, theta0_max), (theta1_min, theta1_max), (theta2_min, theta2_max)],
+    theta_ranges=theta_ranges,
     mode="rate",
     include_xsec=True,
     resolutions=resolutions,
-    luminosity=uselumi*1000.)
+    luminosity=uselumi)
     
     np.save('/home/rates/grid.npy',theta_grid)
     np.save('/home/rates/rate.npy',[p_values_expected_xsec, best_fit_expected_xsec])
@@ -212,12 +281,12 @@ if(inputs['asymptotic_limits']['bool']):
         # histogram + save
         _ , p_values_expected_histo, best_fit_expected_histo = limits.expected_limits(
             theta_true=theta_true,
-            theta_ranges=[(theta0_min, theta0_max), (theta1_min, theta1_max), (theta2_min, theta2_max)],
+            theta_ranges=theta_ranges,
             mode="histo",
             hist_vars=[ unicode(str(asymptotic['hist_vars'])) ],
             include_xsec=bool_xsec,
             resolutions=resolutions,
-            luminosity=uselumi*1000.)
+            luminosity=uselumi)
 
         if (bool_xsec==True):
             np.save('/home/rates/histo.npy',[p_values_expected_histo, best_fit_expected_histo])
@@ -233,12 +302,12 @@ if(inputs['asymptotic_limits']['bool']):
         if( method in ['alice','alices','cascal','carl','rolr', 'rascal'] ):
             theta_grid, p_values_expected_method, best_fit_expected_method = limits.expected_limits(
             theta_true=theta_true,
-            theta_ranges=[(theta0_min, theta0_max), (theta1_min, theta1_max), (theta2_min, theta2_max)],
+            theta_ranges=theta_ranges,
             mode="ml",
             model_file=eval_folder_path+'/'+method,
             include_xsec=bool_xsec,
             resolutions=resolutions,
-            luminosity=uselumi*1000.)
+            luminosity=uselumi)
             resultsdir = '/home/results/'+method+'/ml'
             if not os.path.isdir(resultsdir):
                 os.makedirs(resultsdir)
@@ -255,12 +324,12 @@ if(inputs['asymptotic_limits']['bool']):
         if( method in ['sally', 'sallino'] ):
             theta_grid , p_values_expected_method, best_fit_expected_method = limits.expected_limits(
             theta_true=theta_true,
-            theta_ranges=[(theta0_min, theta0_max), (theta1_min, theta1_max), (theta2_min, theta2_max)],
+            theta_ranges=theta_ranges,
             mode="histo",
             model_file= eval_folder_path+'/'+method, 
             include_xsec=bool_xsec,
             resolutions=resolutions,
-            luminosity=uselumi*1000.)
+            luminosity=uselumi)
 
             resultsdir = '/home/results/'+method+'/histo'
             if not os.path.isdir(resultsdir):
@@ -299,7 +368,6 @@ if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
 
   #generate test data
   generate_test_data_ratio(method)
-  pass
 
   forge = ParameterizedRatioEstimator() 
   forge.load(eval_folder_path+'/'+method)  #'methods/alices'
@@ -334,7 +402,7 @@ if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
   
   #Calc expected number of events 
   _,xs,_=sa.cross_sections(theta=sampling.morphing_point(theta_true))
-  nevents = uselumi*1000.*xs[0]
+  nevents = uselumi*xs[0]
 
 
   #Get LLR
@@ -383,6 +451,97 @@ if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
   np.save('/home/results/'+method+'/score.npy', score)
 
 
+if(method in ['sally','sallino']):
+
+  #generate test data
+  generate_test_data_score(method)
+
+  forge = LikelihoodEstimator()
+  forge.load(eval_folder_path+'/'+method)  #'methods/alices'
+
+  theta_grid=np.load('/home/rates/grid.npy')
+  xs_grid=np.load('/home/rates/xs_grid.npy')
+  redo_limits=False
+
+ 
+  # From Asymptotic Limits: _calculate_xsecs
+  limits = AsymptoticLimits(h5_file)
+  xs_limits = limits._calculate_xsecs([theta_true],test_split=float(inputs['test_split']))[0]
+  print ("AsymptoticLimits (_calculate_xsecs): ", xs_limits)
+
+  # From Sample Augmenter cross_sections
+  sa = SampleAugmenter(h5_file, include_nuisance_parameters=False)
+  _,xs_sa,_=sa.cross_sections(theta=sampling.morphing_point(theta_true))
+  print ("SampleAugmenter (cross_sections) : ", xs_sa[0])
+
+  # From Sample Augmenter: weighted_events
+  _,w=sa.weighted_events(theta='sm')
+  xs_we=sum(w)
+  print ("SampleAugmenter (weighted_events): ", xs_we)
+
+  # From Sample Augmenter: xsecs
+  xs_xsecs,_=sa.xsecs(thetas=[theta_true], events='train',  test_split=float(inputs['test_split']))
+  print ("SampleAugmenter (xsecs) : ", xs_xsecs[0])
+
+  
+  #n_test = int(inputs['n_samples']['test'])
+  #data,_,_=sa.sample_train_plain(theta=sampling.morphing_point(theta_true),n_samples=n_test) 
+  
+  #Calc expected number of events 
+  _,xs,_=sa.cross_sections(theta=sampling.morphing_point(theta_true))
+  nevents = uselumi*xs[0]
+
+
+  #Get LLR
+  out_llr=[]
+  out_llr_raw=[]
+  out_llr_rescaled=[]
+  out_llr_substracted=[]
+  out_pval=[]
+  out_theta=[]
+
+  for i,theta_element in enumerate(theta_grid):
+    
+    llr,_=forge.evaluate_score(
+        theta=np.array([theta_element]),
+        x='/home/test/'+method+'/x_test.npy'
+    )
+    
+    llr_raw= sum(llr[0])/n_test
+    llr_rescaled= nevents*llr_raw 
+    
+    out_llr.append(llr)
+    out_llr_raw.append(llr_raw)
+    out_llr_rescaled.append(llr_rescaled)
+    out_theta.append(theta_element)
+
+  llrmin = np.argmin(out_llr_rescaled)
+  out_llr_substracted,_=limits._subtract_ml(out_llr_rescaled) 
+  out_pval=limits.asymptotic_p_value(out_llr_substracted) 
+    
+  #save to files
+  print('Saving Raw mean -2 log r  to file: ', '/home/results/'+method+'/llr_raw.npy')
+  np.save('/home/results/'+method+'/llr_raw.npy', out_llr_raw)
+
+  print('Saving Rescaled -2 log r  to file: /home/results/'+method+'/llr_rescaled.npy')
+  np.save('/home/results/'+method+'/llr_rescaled.npy', out_llr_rescaled)
+
+  print('Saving Raw mean Min-subtracted -2 log r to file: ', '/home/results/'+method+'/llr_substracted.npy')
+  np.save('/home/results/'+method+'/llr_substracted.npy', out_llr_substracted)
+
+  print('Saving p-values  to file: ', '/home/results/'+method+'/p_values.npy')
+  np.save('/home/results/'+method+'/p_values.npy', out_pval)
+
+  print('Saving score  to file: ', '/home/results/'+method+'/score.npy')
+  np.save('/home/results/'+method+'/score.npy', score)
+
+
+
+
+
+
+
+
 
   # evaluation = inputs['evaluation']['theta_each']
   # theta_each = np.linspace( float(evaluation['start']), float(evaluation['stop']), int(evaluation['num']) ) 
@@ -399,13 +558,6 @@ if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
 if(method in ['alice2','alices2','cascal2','carl2','rolr2', 'rascal2']):
   forge = DoubleParameterizedRatioEstimator() 
   forge.load(eval_folder_path+'/'+method)  #'methods/alices'
-
-
-if(method in ['sally','sallino']):
-  forge = ScoreEstimator() 
-  forge.load(eval_folder_path+'/'+method)  #'methods/alices'
-
-
 
 
 # #?

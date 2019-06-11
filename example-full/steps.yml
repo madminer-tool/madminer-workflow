@@ -1,0 +1,159 @@
+common_env_physics: &common_env_physics
+    environment_type: 'docker-encapsulated'
+    image: madminertool/docker-madminer-physics
+    imagetag: 'latest'
+    
+common_env_ml: &common_env_ml
+    environment_type: 'docker-encapsulated'
+    image: madminertool/docker-madminer-ml
+    imagetag: 'latest'
+    
+
+configurate:
+  environment: *common_env_physics
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      python code/configurate.py {inputfile}
+      cp -R /home/data/*.h5 {workdir}
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: config_file
+    globexpression: '*.h5' 
+
+
+generate:
+  environment: *common_env_physics
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      python code/generate.py {inputfile} {njobs} {configfile}
+      mkdir {madminer_dir_signal}/zips
+      for i in `seq 0 $(({njobs}-1))`; do tar -czvf /home/folder_$i.tar.gz {madminer_dir_signal}/scripts/run_$i.sh {madminer_dir_signal}/cards/*$i.dat ; done
+      cp -R /home/folder_*.tar.gz {workdir}
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: script_files
+    globexpression: 'folder_*.tar.gz'
+
+
+mg_pythia:
+  environment: *common_env_physics
+  process:
+    process_type: interpolated-script-cmd 
+    script: |
+      mkdir /home/extract
+      tar -xvf {eventfolder} -C /home/extract
+      cp /home/extract/home/code/mg_processes/signal/madminer/scripts/run*.sh {MG_process_directory}/signal/madminer/scripts
+      cp /home/extract/home/code/mg_processes/signal/madminer/cards/*.dat  {MG_process_directory}/signal/madminer/cards
+      mkdir {log_directory}
+      sh {MG_process_directory}/signal/madminer/scripts/run*.sh {MG_directory} {MG_process_directory}/signal {log_directory}
+      tar -czvf /home/code/mg_processes/signal/Events/Events.tar.gz /home/code/mg_processes/signal/Events/*/*  /home/code/mg_processes/signal/madminer/cards/benchmark_*.dat
+      cp /home/code/mg_processes/signal/Events/Events.tar.gz {mgworkdir} 
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: postrun_file
+    globexpression: 'Events.tar.gz'
+  
+
+delphes:
+  environment: *common_env_physics
+  process:
+    process_type: interpolated-script-cmd 
+    script: |
+      mkdir /home/extract
+      tar -xvf {eventfile} -C /home/extract
+      tar -xvf {delphes_configfile} -C /home/extract
+      touch /home/log_delphes.log
+      mkdir /home/data
+      mv /home/extract/home/code/mg_processes/signal/madminer/cards/benchmark_*.dat /home/extract/home/code/mg_processes/signal/madminer/cards/benchmark.dat
+      python code/delphes.py {delphes_configfile} /home/extract/home/code/mg_processes/signal/Events/* {inputfile} /home/extract/home/code/mg_processes/signal/madminer/cards/benchmark.dat
+      cp  -R /home/data/* {dworkdir}
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: dpostrun_file
+    globexpression: 'madminer_example_with_data_*.h5' 
+
+
+combine:
+  environment: *common_env_physics
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      echo '{inputfiles}'
+      python code/combine.py '{inputfiles}'
+      cp -R /home/combined_delphes.h5 {cworkdir}
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: data_file
+    globexpression: 'combined_delphes.h5'
+
+sampling:
+  environment: *common_env_ml
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      mkdir /home/data
+      mkdir /home/data/samples
+      python code/configurate_ml.py {n_trainsamples} {data_file} {input_file}
+      cd /home/data
+      cp -R /home/data/Samples_* {sampleworkdir}
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: sampling_file
+    globexpression: 'Samples_*'
+  
+
+training:
+  environment: *common_env_ml
+  process:
+    process_type: interpolated-script-cmd 
+    script: |
+      mkdir /home/models
+      cp -R {trainfolder} /home
+      python code/train.py /home/Samples_*/ {input_file}
+      tar -czvf /home/Model.tar.gz /home/models
+      cp -R /home/Model.tar.gz  {trainworkdir}
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: trained_file
+    globexpression: 'Model.tar.gz'
+  
+ 
+evaluating:
+  environment: *common_env_ml
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      mkdir /home/models
+      mkdir /home/test
+      mkdir /home/results
+      mkdir /home/rates/
+      tar -xvf {trained_file} -C /home/models --strip-components 2
+      python code/evaluation.py {input_file} /home/models/* {data_file}
+      tar -czvf /home/Results.tar.gz /home/results /home/rates /home/test /home/models
+      cp -R /home/Results.tar.gz  {evalworkdir}
+      ls -lR
+  publisher:
+    publisher_type: interpolated-pub
+    publish:
+      results_file: '{evalworkdir}/Results.tar.gz'
+  
+
+
+plotting:
+  environment: *common_env_ml
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      mkdir /home/plots
+      echo hello
+      for file in {results_file}; do tar -xvf "$file" -C .  --strip-components 1 ; done
+      python code/plotting.py {input_file} 
+      ls -lR
+      cp -R /home/plots {plotworkdir}
+  publisher:
+    publisher_type: interpolated-pub
+    publish:
+      outputfile: '{outputfile}'
+  

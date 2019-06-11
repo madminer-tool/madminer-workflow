@@ -48,7 +48,7 @@ dp.add_sample(
     lhe_filename=event_path + '/unweighted_events.lhe.gz', #'/home/code/mg_processes/signal/Events/run_01/unweighted_events.lhe.gz'
     hepmc_filename=event_path + '/tag_1_pythia8_events.hepmc.gz', #'/home/code/mg_processes/signal/Events/run_01/tag_1_pythia8_events.hepmc.gz'
     is_background=False,
-    sampled_from_benchmark='sm',
+    sampled_from_benchmark=benchmark,#'sm',
     weights='lhe'
 )
 

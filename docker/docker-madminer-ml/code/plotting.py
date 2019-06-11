@@ -138,12 +138,16 @@ with open(inputs_file) as f:
 
 # get variables form input
 asymptotic = inputs['asymptotic_limits']
-theta0_min, theta0_max = float(asymptotic['region']['theta0_min']), float(asymptotic['region']['theta0_max'])
-theta1_min, theta1_max = float(asymptotic['region']['theta1_min']), float(asymptotic['region']['theta1_max'])
-theta2_min, theta2_max = float(asymptotic['region']['theta2_min']), float(asymptotic['region']['theta2_max'])
+theta_ranges=[]
+for this_theta in asymptotic['region']:
+  theta_min, theta_max = asymptotic['region'][str(this_theta)]
+  theta_ranges.append((theta_min,theta_max))
+
+theta0_min, theta0_max = asymptotic['region']['theta0_min_max']
+theta1_min, theta1_max = asymptotic['region']['theta1_min_max']
+#theta2_min, theta2_max = asymptotic['region']['theta2_min_max']
 n_samples_theta = int(asymptotic['n_samples_per_theta'])
-resolution = int(asymptotic['region']['resolution'])
-resolutions = [resolution,resolution,1]
+resolutions = asymptotic['resolutions']
 plotting =  inputs['plotting']
 
 variables_to_plot = dict()
@@ -230,12 +234,13 @@ for method in methods:
 
 if( plotting['all_methods']==True ):
   # get bin sizes and positions
-  theta0_bin_size = (theta0_max - theta0_min)/(resolution - 1)
-  theta0_edges = np.linspace(theta0_min - theta0_bin_size/2, theta0_max + theta0_bin_size/2, resolution + 1)
-  theta0_centers = np.linspace(theta0_min, theta0_max, resolution)
-  theta1_bin_size = (theta1_max - theta1_min)/(resolution - 1)
-  theta1_edges = np.linspace(theta1_min - theta1_bin_size/2, theta1_max + theta1_bin_size/2, resolution + 1)
-  theta1_centers = np.linspace(theta1_min, theta1_max, resolution)
+  theta0_bin_size = (theta0_max - theta0_min)/(resolutions[0] - 1)
+  theta0_edges = np.linspace(theta0_min - theta0_bin_size/2, theta0_max + theta0_bin_size/2, resolutions[0] + 1)
+  theta0_centers = np.linspace(theta0_min, theta0_max, resolutions[0])
+  theta1_bin_size = (theta1_max - theta1_min)/(resolutions[1] - 1)
+  theta1_edges = np.linspace(theta1_min - theta1_bin_size/2, theta1_max + theta1_bin_size/2, resolutions[1] + 1)
+  theta1_centers = np.linspace(theta1_min, theta1_max, resolutions[1])
+
 
   #define plot
   fig = plt.figure(figsize=(6,5))
@@ -244,8 +249,11 @@ if( plotting['all_methods']==True ):
   #alices depeent
   cmin, cmax = 1.e-3, 1.
   method_pvalue = str(inputs['plotting']['all_methods_pvalue'])
+
+  print('edges shapes.....', theta0_edges.shape, theta1_edges.shape, variables_to_plot['p_values_expected_'+method_pvalue+'_kin'].shape)
+
   pcm = ax.pcolormesh(
-      theta0_edges, theta1_edges, variables_to_plot['p_values_expected_'+method_pvalue+'_kin'].reshape((resolution, resolution)),
+      theta0_edges, theta1_edges, variables_to_plot['p_values_expected_'+method_pvalue+'_kin'].reshape([ resolutions[0], resolutions[1] ]),
       norm=matplotlib.colors.LogNorm(vmin=cmin, vmax=cmax),
       cmap='Greys_r'
   )
@@ -266,30 +274,30 @@ if( plotting['all_methods']==True ):
       color='magenta'
 
     plt.contour(
-      theta0_centers, theta0_centers, variables_to_plot['p_values_expected_'+method].reshape((resolution, resolution)),
+      theta0_centers, theta0_centers, variables_to_plot['p_values_expected_'+method].reshape([ resolutions[0], resolutions[1] ]),
       levels=[0.61],
       linestyles='-', colors=color
     )
     plt.contour(
-      theta0_centers, theta0_centers, variables_to_plot['p_values_expected_'+method+'_kin'].reshape((resolution, resolution)),
+      theta0_centers, theta0_centers, variables_to_plot['p_values_expected_'+method+'_kin'].reshape([ resolutions[0], resolutions[1] ]),
       levels=[0.61],
       linestyles='--', colors=color
     )
     plt.scatter(
-        variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method] ][0], variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method] ][1],
-        s=80., color=color, marker='*',
-        label = method.upper()
+      variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method] ][0], variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method] ][1],
+      s=80., color=color, marker='*',
+      label = method.upper()
     )
     plt.scatter(
-        variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method+'_kin'] ][0], variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method+'_kin'] ][1],
-        s=80., color=color, marker='+',
-        label = (method+'-kin').upper()
+      variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method+'_kin'] ][0], variables_to_plot['theta_grid'][variables_to_plot['best_fit_expected_'+method+'_kin'] ][1],
+      s=80., color=color, marker='+',
+      label = (method+'-kin').upper()
     )
 
 
   #rate
   plt.contour(
-    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_rate'].reshape((resolution, resolution)),
+    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_rate'].reshape([ resolutions[0], resolutions[1] ]),
     levels=[0.61],
     linestyles='-', colors='black'
     
@@ -302,7 +310,7 @@ if( plotting['all_methods']==True ):
 
   #histo
   plt.contour(
-    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo'].reshape((resolution, resolution)),
+    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo'].reshape([ resolutions[0], resolutions[1] ]),
     levels=[0.61],
     linestyles='-', colors='limegreen',
     label="Histo"
@@ -316,7 +324,7 @@ if( plotting['all_methods']==True ):
 
   #kin
   plt.contour(
-    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo_kin'].reshape((resolution, resolution)),
+    theta0_centers, theta0_centers, variables_to_plot['p_values_expected_histo_kin'].reshape([ resolutions[0], resolutions[1] ]),
     levels=[0.61],
     linestyles='--', colors='limegreen'
   )
@@ -363,60 +371,176 @@ if( plotting['all_methods_separate'] == True ):
     titles=plotinput[:,2],
     theta0range=[theta0_min,theta0_max],
     theta1range=[theta1_min,theta1_max],
-    resolution=resolution
+    resolution=resolutions[0]
   )
 
 
 if(plotting['correlations']==True):
-  # Joint LLR
-    theta0_test=np.load('/home/test/theta0_test.npy')
-    theta1_test=np.load('/home/test/theta1_test.npy')
 
-    r_truth_test=np.load('/home/test/r_xz_test.npy')
-    r_truth_test=r_truth_test.flatten()
-    llr_truth_test=[math.log(r) for r in r_truth_test ] 
-    llr_truth_test=np.array(llr_truth_test)
+  for method in inputs['plotting']['correlations_methods']:
 
-    # Estimated LLR
-    from madminer.ml import ParameterizedRatioEstimator
-    estimator_load = ParameterizedRatioEstimator()
-    estimator_load.load('/home/test/alices')
 
-    llr_ml_test,_=estimator_load.evaluate_log_likelihood_ratio(
-        theta='/home/test/theta0_test.npy',
-        x='/home/test/x_test.npy',
+    if(method in ['alice','alices','cascal','carl','rolr', 'rascal']):
+      # Joint LLR
+      if(len(inputs['evaluation'][method])==1):
+        
+        theta_test=np.load('/home/test/'+method+'/theta_test.npy')
+
+        r_truth_test=np.load('/home/test/'+method+'/r_xz_test.npy')
+        r_truth_test=r_truth_test.flatten()
+        llr_truth_test=[math.log(r) for r in r_truth_test ] 
+        llr_truth_test=np.array(llr_truth_test)
+
+        # Estimated LLR
+        from madminer.ml import ParameterizedRatioEstimator
+        estimator_load = ParameterizedRatioEstimator()
+        estimator_load.load('/home/models/'+method+'/'+method)
+
+        llr_ml_test,_=estimator_load.evaluate_log_likelihood_ratio(
+          theta='/home/test/'+method+'/theta_test.npy',
+          x='/home/test/'+method+'/x_test.npy',
+          evaluate_score=False,
+          test_all_combinations=False,
+        )
+
+        #Define Colormap
+        from matplotlib import cm
+        from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+        oldcolors = cm.get_cmap('Greens', 256)
+        newcolors = oldcolors(np.linspace(0, 1, 256))
+        newcolors[:5, :] = np.array([1, 1, 1, 1])
+        newcolormap = ListedColormap(newcolors)
+
+
+        #Plot
+        myrange=(-2,2)
+
+        fig, ax = plt.subplots(1,1)
+        fig.set_size_inches(5,5)
+
+        ax.hist2d(
+          llr_truth_test,
+          llr_ml_test,
+          bins=(40, 40), 
+          range=(myrange,myrange),
+          cmap=newcolormap,
+        )
+
+        ax.set_xlabel('LLR: Truth')
+        ax.set_ylabel('LLR: Estimated')
+
+        plt.title('Correlation '+method.upper())
+        plt.tight_layout()
+        plt.savefig('/home/plots/correlation_'+method.upper()+'.png')
+
+
+
+      if(len(inputs['evaluation'][method])==2):
+        theta0_test=np.load('/home/test/'+method+'/theta0_test.npy')
+        theta1_test=np.load('/home/test/'+method+'/theta1_test.npy')
+
+        r_truth_test=np.load('/home/test/'+method+'/r_xz_test.npy')
+        r_truth_test=r_truth_test.flatten()
+        llr_truth_test=[math.log(r) for r in r_truth_test ] 
+        llr_truth_test=np.array(llr_truth_test)
+
+        # Estimated LLR
+        from madminer.ml import ParameterizedRatioEstimator
+        estimator_load = ParameterizedRatioEstimator()
+        estimator_load.load('/home/models/'+method+'/'+method)
+
+        llr_ml_test,_=estimator_load.evaluate_log_likelihood_ratio(
+          theta='/home/test/'+method+'/theta0_test.npy',
+          x='/home/test/'+method+'/x_test.npy',
+          evaluate_score=False,
+          test_all_combinations=False,
+        )
+
+        #Define Colormap
+        from matplotlib import cm
+        from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+        oldcolors = cm.get_cmap('Greens', 256)
+        newcolors = oldcolors(np.linspace(0, 1, 256))
+        newcolors[:5, :] = np.array([1, 1, 1, 1])
+        newcolormap = ListedColormap(newcolors)
+
+
+        #Plot
+        myrange=(-2,2)
+
+        fig, ax = plt.subplots(1,1)
+        fig.set_size_inches(5,5)
+
+        ax.hist2d(
+          llr_truth_test,
+          llr_ml_test,
+          bins=(40, 40), 
+          range=(myrange,myrange),
+          cmap=newcolormap,
+        )
+
+        ax.set_xlabel('LLR: Truth')
+        ax.set_ylabel('LLR: Estimated')
+
+        plt.title('Correlation '+method.upper())
+        plt.tight_layout()
+        plt.savefig('/home/plots/correlation_'+method.upper()+'.png')
+
+    
+
+    if(method in ['sally','sallino']):
+
+      pass
+      
+      # Joint LLR
+      theta0_test=np.load('/home/test/'+method+'/theta0_test.npy')
+
+      r_truth_test=np.load('/home/test/'+method+'/r_xz_test.npy')
+      r_truth_test=r_truth_test.flatten()
+      llr_truth_test=[math.log(r) for r in r_truth_test ] 
+      llr_truth_test=np.array(llr_truth_test)
+
+      # Estimated LLR
+      from madminer.ml import ParameterizedRatioEstimator
+      estimator_load = ParameterizedRatioEstimator()
+      estimator_load.load('/home/models/'+method+'/'+method)
+
+      llr_ml_test,_=estimator_load.evaluate_log_likelihood_ratio(
+        theta='/home/test/'+method+'/theta0_test.npy',
+        x='/home/test/'+method+'/x_test.npy',
         evaluate_score=False,
         test_all_combinations=False,
-    )
+      )
 
-    #Define Colormap
-    from matplotlib import cm
-    from matplotlib.colors import ListedColormap, LinearSegmentedColormap
-    oldcolors = cm.get_cmap('Greens', 256)
-    newcolors = oldcolors(np.linspace(0, 1, 256))
-    newcolors[:5, :] = np.array([1, 1, 1, 1])
-    newcolormap = ListedColormap(newcolors)
+      #Define Colormap
+      from matplotlib import cm
+      from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+      oldcolors = cm.get_cmap('Greens', 256)
+      newcolors = oldcolors(np.linspace(0, 1, 256))
+      newcolors[:5, :] = np.array([1, 1, 1, 1])
+      newcolormap = ListedColormap(newcolors)
 
 
-    #Plot
-    myrange=(-2,2)
+      #Plot
+      myrange=(-2,2)
 
-    fig, ax = plt.subplots(1,1)
-    fig.set_size_inches(5,5)
+      fig, ax = plt.subplots(1,1)
+      fig.set_size_inches(5,5)
 
-    ax.hist2d(
+      ax.hist2d(
         llr_truth_test,
         llr_ml_test,
         bins=(40, 40), 
         range=(myrange,myrange),
         cmap=newcolormap,
-    )
+      )
 
-    ax.set_xlabel('LLR: Truth')
-    ax.set_ylabel('LLR: Estimated')
+      ax.set_xlabel('LLR: Truth')
+      ax.set_ylabel('LLR: Estimated')
 
-    plt.tight_layout()
-    plt.savefig('/home/plots/correlation.png')
+      plt.title('Correlation '+method.upper())
+      plt.tight_layout()
+      plt.savefig('/home/plots/correlation_'+method.upper()+'.png')
 
 
 

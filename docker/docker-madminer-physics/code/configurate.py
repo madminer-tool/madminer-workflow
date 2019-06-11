@@ -20,7 +20,7 @@ mg_dir = '/home/software/MG5_aMC_v2_6_2'
 miner = MadMiner()#(debug=False)
 
 input_file = str(sys.argv[1])
-
+print('inputfile:  ',input_file)
 
 ########### ADD  parameters and benchmarks from input file
 
@@ -74,12 +74,10 @@ for benchmark in dict_all['benchmarks']:
 
 ###########
 
-
 #SET morphing
-settings = dict_all['set_morphing'][0]
+settings = dict_all['set_morphing']
 miner.set_morphing(
-    include_existing_benchmarks=bool(settings['include_existing_benchmarks']),
-    n_trials=int(settings['n_trials']),
+    include_existing_benchmarks=True,
     max_overall_power=int(settings['max_overall_power'])
 )
 
@@ -93,3 +91,4 @@ miner.set_morphing(
 #)
 
 miner.save('/home/data/madminer_example.h5')
+

@@ -143,7 +143,6 @@ for method in methods:
                     filename=method+'_train'      
                 )
 
-
             else:
                 x, theta0, theta1, y, r_xz, t_xz = sampler.sample_train_ratio(
                     theta0=benchmark('w'),
@@ -166,14 +165,16 @@ for method in methods:
         if method in ['sally','sallino']:
             theta_input = inputs[str(method)]['theta']
             theta_sampling = theta_input['sampling_method']
-               #parameters for theta  sampling
+            #parameters for theta  sampling
 
             if (theta_sampling == 'random_morphing_points'): 
-                tuple_0 = theta_sampling['prior']['parameter_0'] #tuple for parameter 0
-                tuple_1 = theta_sampling['prior']['parameter_1'] #tuple for parameter 1
-                prior = [ (str(tuple_0['prior_shape']), float(tuple_0['prior_param_0']), float(tuple_0['prior_param_1'])), \
-                            (str(tuple_1['prior_shape']), float(tuple_1['prior_param_0']), float(tuple_1['prior_param_1']))  ] 
                 
+                prior = []
+                for p in range(parameters):
+                    this_tuple = theta_input['prior']['parameter_'+str(p)]
+                    prior.append( (str(this_tuple['prior_shape']), float(this_tuple['prior_param_0']), float(this_tuple['prior_param_1'])) )
+
+
                 x, theta0, theta1, y, r_xz, t_xz = sample_train_local(
                     theta=eval(theta_sampling)(theta_input['n_thetas'], prior),
                     n_samples=int(inputs['n_samples']['train']),
