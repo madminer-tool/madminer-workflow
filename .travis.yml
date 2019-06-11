@@ -12,8 +12,8 @@ install:
 - pip install yadage[viz]
 script:
 - sudo apt-get install graphviz
-- yadage-run workdir workflow.yml -p inputfile='"inputs/input.yml"' -p njobs="2"  -d initdir=$PWD --visualize
-jobs:
+- cd example-full/
+- sudo rm -rf workdir  && yadage-run   workdir workflow.yml  -p inputfile='"inputs/input.yml"'  -p njobs="6"  -p ntrainsamples="2"  -d initdir=$PWD --visualize
   include:
   - stage: docker
     install:
