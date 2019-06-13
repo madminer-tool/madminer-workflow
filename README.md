@@ -1,11 +1,11 @@
 ![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)
 
-# Madminer deployment using yadage and docker containerization
+# Madminer deployment using REANA, yadage and docker containerization
 
 ## About
 This repository is a  is to create a full deployment of [MadMiner](https://github.com/johannbrehmer/madminer) (by Johann Brehmer, Felix Kling, and Kyle Cranmer) that parallelizes its bottlenecks, is reproducible and it facilitates the use of the tool in the community. 
 To achieve this we have generated a workflow using [yadage](https://github.com/yadage/yadage)
-(by Lukas Heinrich) and a containerization of the software dependencies in several docker images.
+(by Lukas Heinrich) and a containerization of the software dependencies in several docker images. The pipeline can be run with [REANA](http://www.reanahub.io/) a data analysis platform
 
 This repo includes the workflow for the physics processing (config, generation of events with MadGraph, Delphes) and the machine learning processing (configuration, sampling, training) in a modular way. This means that each of this parts has its own workflow setup so that the user can mix-match. For instance, once the physics processes are run, one can play with different hyperparameters or samplings in the machine learning part without having to re-run MadGraph again.
 
@@ -50,7 +50,7 @@ move to the directory `example-full/` and run
 ```bash
 $ virtualenv ~/.virtualenvs/myreana
 $ source ~/.virtualenvs/myreana/bin/activate
-(myreana) $ pip install reana-client
+(myreana) $ pip install reana-client==0.5.0
 # enter credentials for REANA-cluster
 (myreana) $ export REANA_ACCESS_TOKEN = [..]
 (myreana) $ export REANA_SERVER_URL = [..]
