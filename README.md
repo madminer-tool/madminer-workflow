@@ -9,7 +9,7 @@ To achieve this we have generated a workflow using [yadage](https://github.com/y
 
 This repo includes the workflow for the physics processing (config, generation of events with MadGraph, Delphes) and the machine learning processing (configuration, sampling, training) in a modular way. This means that each of this parts has its own workflow setup so that the user can mix-match. For instance, once the physics processes are run, one can play with different hyperparameters or samplings in the machine learning part without having to re-run MadGraph again.
 
-Please, refer to the links for more information and tutorials about [MadMiner](https://madminer.readthedocs.io/en/latest/index.html) [tutorial] (https://github.com/johannbrehmer/madminer/blob/master/examples/tutorial/tutorial_1.ipynb) and [yadage](https://yadage.readthedocs.io/en/latest/) [tutorial](https://yadage.github.io/tutorial/)
+Please, refer to the links for more information and tutorials about [MadMiner](https://madminer.readthedocs.io/en/latest/index.html) [tutorial](https://github.com/diana-hep/madminer/tree/master/examples/tutorial_particle_physics) and [yadage](https://yadage.readthedocs.io/en/latest/) [tutorial](https://yadage.github.io/tutorial/)
 
 
 ## Docker images
