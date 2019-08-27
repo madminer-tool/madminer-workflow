@@ -14,27 +14,22 @@ configurate:
   process:
     process_type: interpolated-script-cmd
     script: |
-      ls -lR /
-      pwd
       python /madminer/code/configurate.py {inputfile}
+      cp -R /madminer/data/*.h5 {workdir}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: config_file
     globexpression: '*.h5' 
-
-#cd /home
-#python code/configurate.py {inputfile}
-#cp -R /home/data/*.h5 {workdir}
 
 generate:
   environment: *common_env_physics
   process:
     process_type: interpolated-script-cmd
     script: |
-      python /home/code/generate.py {inputfile} {njobs} {configfile}
+      python /madminer/code/generate.py {inputfile} {njobs} {configfile}
       mkdir {madminer_dir_signal}/zips
-      for i in `seq 0 $(({njobs}-1))`; do tar -czvf /home/folder_$i.tar.gz {madminer_dir_signal}/scripts/run_$i.sh {madminer_dir_signal}/cards/*$i.dat ; done
-      cp -R /home/folder_*.tar.gz {workdir}
+      for i in `seq 0 $(({njobs}-1))`; do tar -czvf /madminer/folder_$i.tar.gz {madminer_dir_signal}/scripts/run_$i.sh {madminer_dir_signal}/cards/*$i.dat ; done
+      cp -R /madminer/folder_*.tar.gz {workdir}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: script_files

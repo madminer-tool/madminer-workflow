@@ -8,18 +8,18 @@ stages:
         inputfile: {stages: init, output: inputfile, unwrap: true}
       step: {$ref: 'steps.yml#/configurate'}
 
-  # - name: generate
-  #   dependencies: [configurate]
-  #   scheduler:
-  #     scheduler_type: singlestep-stage
-  #     parameters:
-  #       workdir: '{workdir}'
-  #       inputfile: {stages: init, output: inputfile, unwrap: true}
-  #       configfile: {stages: 'configurate', output: config_file, unwrap: true}
-  #       njobs: {stages: 'init', output: njobs}
-  #       madminer_dir_signal: '/home/code/mg_processes/signal/madminer'
-  #       madminer_dir_bkg: '/home/code/mg_processes/background/madminer'
-  #     step: {$ref: 'steps.yml#/generate'}
+  - name: generate
+    dependencies: [configurate]
+    scheduler:
+      scheduler_type: singlestep-stage
+      parameters:
+        workdir: '{workdir}'
+        inputfile: {stages: init, output: inputfile, unwrap: true}
+        configfile: {stages: 'configurate', output: config_file, unwrap: true}
+        njobs: {stages: 'init', output: njobs}
+        madminer_dir_signal: '/madminer/code/mg_processes/signal/madminer'
+        madminer_dir_bkg: '/madminer/code/mg_processes/background/madminer'
+      step: {$ref: 'steps.yml#/generate'}
 
   # - name: mgpythia
   #   dependencies: [generate]
