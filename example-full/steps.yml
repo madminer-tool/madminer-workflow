@@ -6,7 +6,7 @@ common_env_physics: &common_env_physics
 common_env_ml: &common_env_ml
     environment_type: 'docker-encapsulated'
     image: madminertool/docker-madminer-ml
-    imagetag: 'test'
+    imagetag: 'latest'
     
 
 configurate:
