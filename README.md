@@ -18,9 +18,9 @@ MadMiner is a set of complex tools with many steps and for that reason we consid
 - [madminertool/docker-madminer](https://hub.docker.com/r/madminertool/docker-madminer)
 Contains only latest version of MadMiner
 - [madminertool/docker-madminer-phyics](https://hub.docker.com/r/madminertool/docker-madminer-physics)
-Contains the code necessary to configure, generate and process events according to MadMiner. You will also find the software dependencies in the directory `/home/software`
+Contains the code necessary to configure, generate and process events according to MadMiner. You will also find the software dependencies in the directory `/home/software`. Dockerfile [here](https://github.com/scailfin/workflow-madminer/blob/master/docker-images/docker-madminer-physics/Dockerfile)
 - [madminertool/docker-madminer-ml](https://hub.docker.com/r/madminertool/docker-madminer-ml)
-Contains the code necessary to configure, train and evaluate in the MadMiner framework.
+Contains the code necessary to configure, train and evaluate in the MadMiner framework. Dockerfile [here](https://github.com/scailfin/workflow-madminer/blob/master/docker-images/docker-madminer-ml/Dockerfile)
 
 To pull any of the images and see its content
 
