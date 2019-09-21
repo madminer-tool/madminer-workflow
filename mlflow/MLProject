@@ -1,0 +1,11 @@
+name: docker-example
+
+docker_env:
+  image:  bengal1/docker-madminer-physics:mlflow
+
+entry_points:
+  main:
+    parameters:
+      alpha: float
+      l1_ratio: {type: float, default: 0.1}
+    command: "python /madminer/code/configurate.py /inputs/input.yml"

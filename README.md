@@ -1,5 +1,51 @@
 ![Build status](https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master)
 
+# Madminer Deployment using MLFlow
+This repository intends to create a full deployment of 
+[MadMiner](https://github.com/johannbrehmer/madminer) (by Johann Brehmer, Felix 
+Kling, and Kyle Cranmer) that runs on the OpenSource ML platform, 
+[MLFlow](https://www.mlflow.org)
+
+## To deploy in Kubernetes
+The inputs for `configurate` are mounted as a ConfigMap. This is deployed
+into the cluster with 
+```bash
+kubectl create -f kube/input_configmap.yml
+```
+
+It writes intermediate data to a persistent volume. For testing on a single
+node cluster, you can create the persistent volume claim with
+```bash
+kubectl create -f kube/pv.yml
+kubectl create -f kube/pvc.yml
+```
+
+## Build the Physics Docker Image
+Build the docker image for the MadGraph physics container with
+```bash
+docker login
+cd docker-images/docker-madminer-physics
+docker build -t <username>/docker-madminer-physics:mlflow .
+```
+Where <username> is your dockerhub username. MLFlow is going to create a docker
+image derived off this image and push it to dockerhub so the image needs to be 
+tagged with your username.
+
+## Run the physics package in MLFlow
+MLFlow's workflow is controlled by the file `mlflow/MLProject`. It defines the
+image to be used along with a fake parameter that represents the 
+hyperparameters that could be set to adjust the training.
+
+The file `mlflow/kubernetes_job_template.yaml` is a template for the job
+that will be launched into the cluster. It shows how the configmap and 
+persistent volume will be mounted into each pod.
+
+```bash
+pip install mlflow mlflow run mlflow -P alpha=0.5 --backend kubernetes --backend-config mlflow/kubernetes_config.json
+
+```
+
+ 
 # Madminer deployment using REANA, yadage and docker containerization
 
 ## About

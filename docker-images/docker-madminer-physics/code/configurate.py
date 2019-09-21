@@ -23,7 +23,7 @@ input_file = str(sys.argv[1])
 print('inputfile:  ',input_file)
 
 ########### ADD  parameters and benchmarks from input file
-
+dict_all = {}
 with open(input_file) as f:
     # use safe_load instead load
     dict_all = yaml.safe_load(f)
@@ -91,5 +91,5 @@ miner.set_morphing(
 #    yrange=(-10.,10.)
 #)
 
-miner.save('/madminer/data/madminer_example.h5')
+miner.save('/data/madminer_example.h5')
 

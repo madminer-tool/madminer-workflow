@@ -1,0 +1,5 @@
+{
+    "kube-context": "docker-for-desktop",
+    "kube-job-template-path": "mlflow/kubernetes_job_template.yaml",
+    "repository-uri": "bengal1/docker-madminer-physics"
+}

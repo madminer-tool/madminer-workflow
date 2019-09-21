@@ -2,3 +2,7 @@ example-full/workdir/
 docker-images/docker-madminer-physics/MG5_aMC_v2_6_2/
 docker-images/docker-madminer-physics/MG5_aMC_v2_6_2/mg_processes/
 README.md
+.idea
+data
+mlruns
+
