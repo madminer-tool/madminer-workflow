@@ -213,3 +213,96 @@ Without taking into account the inputs ans the map-reduce the general strcture o
 				|    Testing      |
 				+-----------------+
 
+
+# Running MadMiner With MLFlow
+As an experiment, we are testing MadMiner using the open source Maching Learning
+platform, [MLFlow](https://mlflow.org/)
+
+## Configure MLFlow
+We are using the new kubernetes support for MLFlow. We found a little 
+deficiency in the functionality that makes testing harder than it should be
+and have proposed a pull request to fix it. In the mean time we will need to 
+use our fork of MLFlow.
+
+Building the MLFlow command line is easy. There are a few extra steps to build 
+the UI, so we will jump through some hoops to skip that step
+
+
+*First create two virtualenvs*
+Make sure you have python 3 installed.
+
+```bash
+virtualenv ~/.virtualenvs/madminer
+source ~/.virtualenvs/mlflow/bin/activate
+```
+
+*Launch the MLFlow Tracking UI*
+In a terminal window activate the ui's virtual environment, install the 
+published mlflow and launch
+
+```bash
+source ~/.virtualenvs/mlflow/bin/activate
+pip install mlflow
+mlflow ui
+```
+
+*Checkout The Fork and Install*
+```bash
+source ~/.virtualenvs/madminer/bin/activategit clone https://github.com/scailfin/mlflow.git
+cd mlflow
+git checkout  k8s_mflow_tracking_url
+```
+
+
+Now install into your virtual environment with 
+```bash
+python setup.py install
+```
+
+*Running the Configurate Job*
+In this repo you will build the madminer physics docker image
+
+```bash
+cd docker-images/docker-madminer-physics
+```
+
+You need to make sure there is a copy of `MG5_aMC_v2_6_2` in this directory
+
+```bash
+docker build -t <your dockerhub user>/docker-madminer-physics:mlflow .       
+```
+
+*Create Kubernetes Objects*
+We have three kubernetes objects that the job depends on 
+* input_configmap.yml - This contains a yaml file that controls the configurate
+job.
+* pv - Creates a persistent volume that the different jobs share and allow you 
+to access the outputs
+* pvc - Creates persistent volume claim that will bind each job to the volume
+
+Edit `kube/pv` so the hostpath points to an absolute directory on your desktop
+
+Then deploy the objects to your cluster with 
+```bash
+kubectl create -f kube/pv.yml
+kubectl create -f kube/pvc.yml
+kubectl create -f kube/input_configmap.yml
+``` 
+
+*Update the MLProject*
+The folder `mlflow` contains the actual project we will run. Edit 
+`mlflow/kubernetes_config.json` so the `repository-uri` has your docker hub 
+username.
+
+*Ready to Run your First Job!*
+```bash
+export MLFLOW_TRACKING_URI=http://localhost:5000  
+export K8S_MLFLOW_TRACKING_URI=http://host.docker.internal:5000   
+mlflow run mlflow -P alpha=0.5 --backend kubernetes --backend-config mlflow/kubernetes_config.json
+```
+
+You should see the job build a derived docker image, push to your dockerhub and 
+then run. The steps will show up in the ui.
+
+The `-P alpha=0.5` is just a demonstration of passing parameters into the run
+that get tracked by the ui.
