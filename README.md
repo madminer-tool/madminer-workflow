@@ -188,89 +188,96 @@ rm -rf workdir/
 
 ## Analysis structure
 
-### 1. Analysis code
-In the Physics case:
+# Running MadMiner With MLFlow
+As an experiment, we are testing MadMiner using the open source Maching Learning
+platform, [MLFlow](https://mlflow.org/)
 
-- `configurate.py`: initializes MadMiner, add parameters, add benchmarks and set morphing benchmarks.
+## Configure MLFlow
+We are using the new kubernetes support for MLFlow. We found a little 
+deficiency in the functionality that makes testing harder than it should be
+and have proposed a pull request to fix it. In the mean time we will need to 
+use our fork of MLFlow.
 
-    ```bash
-    python code/configurate.py
-    ```
-
-- `generate.py`: prepares MadGraph scripts for background and signal events based on previous optimization. Run it with:
-    - `{njobs}` as the initial parameter `njobs`.
-    - `{h5_file}` as the MadMiner configuration file (from the previous `configurate.py` execution).
-
-    ```bash
-    python code/generate.py {njobs} {h5_file}
-    ```
-
-- `delphes.py`: runs Delphes by passing the inputs, adding observables, adding cuts and saving. Run it with:
-    - `{h5_file}` as the MadMiner configuration file.
-    - `{event_file}` as `tag_1_pythia8_events.hepmc.gz`.
-    - `{input_file}` as the initial `input_delphes.yml` file.
-
-    ```bash
-    python code/delphes.py {h5_file} {event_file} {input_file}
-    ```
-
-### 2. Analysis workflow
-Without taking into account the inputs and the map-reduce, the general workflow structure is the following:
-
-                +--------------+
-                |  Configurate |
-                +--------------+
-                        |
-                        |
-                        v
-                +--------------+
-                |   Generate   |
-                +--------------+
-                        |
-                        |
-                        v
-                +--------------+
-                |   MG+Pythia  |
-                +--------------+
-                        |
-                        |
-                        v
-                +--------------+
-                |   Delphes    |
-                +--------------+
-                        |
-                        |
-                        v
-                +--------------+
-                |   Sampling   |
-                +--------------+
-                        |
-                        |
-                        v
-                +--------------+
-                |   Training   |
-                +--------------+
-                        |
-                        |
-                        v
-                +--------------+
-                |    Testing   |
-                +--------------+
+Building the MLFlow command line is easy. There are a few extra steps to build 
+the UI, so we will jump through some hoops to skip that step
 
 
-[madminer-ph-docker-file]: https://github.com/scailfin/workflow-madminer/blob/master/docker-images/docker-madminer-physics/Dockerfile
-[madminer-ph-docker-image]: https://hub.docker.com/r/madminertool/docker-madminer-physics
-[madminer-ml-docker-file]: https://github.com/scailfin/workflow-madminer/blob/master/docker-images/docker-madminer-ml/Dockerfile
-[madminer-ml-docker-image]: https://hub.docker.com/r/madminertool/docker-madminer-ml
-[madminer-raw-docker-image]: https://hub.docker.com/r/madminertool/docker-madminer
+*First create two virtualenvs*
+Make sure you have python 3 installed.
 
-[madminer-dockerhub]: https://hub.docker.com/u/madminertool
-[madminer-docs]: https://madminer.readthedocs.io/en/latest/index.html
-[madminer-repo]: https://github.com/diana-hep/madminer
-[madminer-tutorial]: https://github.com/diana-hep/madminer/tree/master/examples/tutorial_particle_physics
-[reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
-[reana-webpage]: http://www.reanahub.io/
-[travis-build-status]: https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master
-[yadage-docs]: https://yadage.readthedocs.io/en/latest/
-[yadage-repo]: https://github.com/yadage/yadage
-[yadage-tutorial]: https://yadage.github.io/tutorial/
+```bash
+virtualenv ~/.virtualenvs/madminer
+source ~/.virtualenvs/mlflow/bin/activate
+```
+
+*Launch the MLFlow Tracking UI*
+In a terminal window activate the ui's virtual environment, install the 
+published mlflow and launch
+
+```bash
+source ~/.virtualenvs/mlflow/bin/activate
+pip install mlflow
+mlflow ui
+```
+
+*Checkout The Fork and Install*
+```bash
+source ~/.virtualenvs/madminer/bin/activategit clone https://github.com/scailfin/mlflow.git
+cd mlflow
+git checkout  k8s_mflow_tracking_url
+```
+
+
+Now install into your virtual environment with 
+```bash
+python setup.py install
+```
+
+*Running the Configurate Job*
+In this repo you will build the madminer physics docker image
+
+```bash
+cd docker-images/docker-madminer-physics
+```
+
+You need to make sure there is a copy of `MG5_aMC_v2_6_2` in this directory
+
+```bash
+docker build -t <your dockerhub user>/docker-madminer-physics:mlflow .       
+```
+
+*Create Kubernetes Objects*
+We have three kubernetes objects that the job depends on 
+* input_configmap.yml - This contains a yaml file that controls the configurate
+job.
+* pv - Creates a persistent volume that the different jobs share and allow you 
+to access the outputs
+* pvc - Creates persistent volume claim that will bind each job to the volume
+
+Edit `kube/pv` so the hostpath points to an absolute directory on your desktop
+
+Then deploy the objects to your cluster with 
+```bash
+kubectl create -f kube/pv.yml
+kubectl create -f kube/pvc.yml
+kubectl create -f kube/input_configmap.yml
+``` 
+
+*Update the MLProject*
+The folder `mlflow` contains the actual project we will run. Edit 
+`mlflow/kubernetes_config.json` so the `repository-uri` has your docker hub 
+username.
+
+*Ready to Run your First Job!*
+```bash
+export MLFLOW_TRACKING_URI=http://localhost:5000  
+export K8S_MLFLOW_TRACKING_URI=http://host.docker.internal:5000   
+mlflow run mlflow -P alpha=0.5 --backend kubernetes --backend-config mlflow/kubernetes_config.json
+```
+
+You should see the job build a derived docker image, push to your dockerhub and 
+then run. The steps will show up in the ui.
+
+The `-P alpha=0.5` is just a demonstration of passing parameters into the run
+that get tracked by the ui.
+>>>>>>> Add initial README steps to run configurate in mlflow
