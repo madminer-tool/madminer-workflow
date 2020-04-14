@@ -1,86 +1,25 @@
-###############################
-#
-# Dockerfile for MG5 Pythia Delphes and patches for Madminer deployment
-#
-
-FROM madminertool/docker-madminer:latest
-
-USER root 
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget ca-certificates python gfortran build-essential ghostscript vim libboost-all-dev
+### NOTE:
+### This Docker image takes the "heavy-weight" image
+### from the Physics use case as base image
+### and complete it with the Docker commands
+### from the Machine Learning use case
 
 
-#
-# MadGraph + Pythia + Delphes
-#
-
-WORKDIR /home/software
-
-ENV MG_VERSION="MG5_aMC_v2_6_2" 
-
-COPY ${MG_VERSION}/ ./${MG_VERSION}
-RUN ./${MG_VERSION}/bin/mg5_aMC
-
-#config path
-WORKDIR /home/software/${MG_VERSION}
-ENV ROOTSYS /usr/local 
-ENV PATH $PATH:$ROOTSYS/bin 
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ROOTSYS/lib
-
-RUN echo "install lhapdf6" | /home/software/${MG_VERSION}/bin/mg5_aMC
-RUN echo "install pythia8" | /home/software/${MG_VERSION}/bin/mg5_aMC
-RUN echo "install pythia-pgs" | /home/software/${MG_VERSION}/bin/mg5_aMC
-RUN echo "install Delphes" | /home/software/${MG_VERSION}/bin/mg5_aMC
+#### Base image
+#### Reference: https://github.com/scailfin/workflow-madminer/blob/master/docker-images/docker-madminer-physics/Dockerfile
+FROM madminertool/docker-madminer-physics:latest
 
 
-
-#
-# patches for Madminer
-#
-
-WORKDIR /home/software
-
-#add patches folder
-COPY patch/ ./patch
-
-#running patch.py requires being in the directory
-WORKDIR /home/software/patch
-
-ENV MG_PATH /home/software/${MG_VERSION}
-
-#run patches with MG directory
-RUN python patch.py ${MG_PATH}
+#### Set working directory and copy files
+WORKDIR /madminer
+COPY requirements.txt .
+COPY code ./code
 
 
-#extra python library
-RUN pip install PyYAML 
+# Install Python2 dependencies
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir --requirement requirements.txt
 
-#
-#CODE FOR THE PHYSICS WORKFLOW
-#
-WORKDIR /home
-COPY /code ./code
-
-RUN chmod 755 -R ./code
-
-
-
-###
-### DOCKER ML
-###
-
-RUN apt-get update && apt-get -y install vim
-
-COPY requirements.txt requirements.txt
-
-# pip install 
-RUN apt-get -y install python3-pip && pip install --no-cache -r requirements.txt 
-
-WORKDIR /home
-
-COPY code/ ./code
-
-RUN pip install madminer
-
-WORKDIR /home
+# Install Python3 dependencies
+RUN pip3 install --upgrade pip && \
+    pip3 install --no-cache-dir --requirement requirements.txt
