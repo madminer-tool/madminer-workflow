@@ -60,7 +60,7 @@ Please refer to the [REANA-Cluster documentation][reana-cluster-docs] for more d
 If you have access to a REANA cluster, then you will only need to introduce the credentials as shown below,
 to generate the following combined-workflow:
 
-![image of the workflow](images/yadage_workflow_instance_full.png)
+![image of the workflow](docs/images/workflow-all.png)
 
 To introduce the credentials, go to the `example-full/` directory and run:
 ```bash
