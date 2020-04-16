@@ -1,80 +1,107 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+#!/usr/bin/python
 
-import numpy as np
-#import matplotlib
-#from matplotlib import pyplot as plt
-#%matplotlib inline
-import sys 
-import yaml
-from madminer.core import MadMiner
-from madminer.plotting import plot_2d_morphing_basis
-from madminer.sampling import combine_and_shuffle
-from madminer.sampling import SampleAugmenter
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import sys
+from madminer import MadMiner
+from pathlib import Path
 
 
-input_file = str(sys.argv[1])
-with open(input_file) as f:
-    dict_all = yaml.safe_load(f)
+##########################
+#### Global variables ####
+##########################
 
-njobs =  int(sys.argv[2])
+project_dir = Path(__file__).parent.parent
 
-h5_file = str(sys.argv[3])
+card_dir = str(project_dir.joinpath('code', 'cards'))
+logs_dir = str(project_dir.joinpath('code', 'logs'))
+proc_dir = str(project_dir.joinpath('code', 'mg_processes'))
+madg_dir = str(project_dir.joinpath('software', 'MG5_aMC_v2_6_7'))
 
-mg_dir = '/madminer/software/MG5_aMC_v2_6_2'
 
-miner = MadMiner()#(debug=False)
+##########################
+#### Argument parsing ####
+##########################
 
-miner.load(h5_file)
+num_jobs = int(sys.argv[1])
+config_file = str(sys.argv[2])
 
-##################################################################################
-#signal
 
+##########################
+### Load configuration ###
+##########################
+
+miner = MadMiner()
+miner.load(config_file)
 
 benchmarks = [str(i) for i in miner.benchmarks]
-m = len(benchmarks)
+num_benchmarks = len(benchmarks)
+print(f'Benchmarks {benchmarks}')
 
-print('list of benchmarks', benchmarks)
+
+##########################
+### Define run wrapper ###
+##########################
+
+def madminer_run_wrapper(sample_benchmarks, run_type):
+    """
+    Wraps the MadMiner run_multiple function
+
+    :param sample_benchmarks: list of benchmarks
+    :param run_type: either 'background' or 'signal'
+    """
+
+    if run_type == 'background':
+        is_background = True
+    elif run_type == 'signal':
+        is_background = False
+    else:
+        raise ValueError('Invalid run type')
+
+    miner.run_multiple(
+        is_background=is_background,
+        only_prepare_script=True,
+        sample_benchmarks=sample_benchmarks,
+        mg_directory=madg_dir,
+        mg_process_directory=proc_dir + '/' + run_type,
+        proc_card_file=card_dir + f'/proc_card_{run_type}.dat',
+        param_card_template_file=card_dir + '/param_card_template.dat',
+        run_card_files=[card_dir + f'/run_card_{run_type}.dat'],
+        pythia8_card_file=card_dir + '/pythia8_card.dat',
+        log_directory=logs_dir + '/' + run_type,
+        python2_override=True,
+    )
+
+    # Create files to link benchmark_i to run_i.sh
+    for i in range(num_jobs):
+        index = i % num_benchmarks
+        file_path = proc_dir + f'/{run_type}/madminer/cards/benchmark_{i}.dat'
+
+        with open(file_path, "w+") as f:
+            f.write("{}".format(benchmarks[index]))
+
+        print('generate.py', i, benchmarks[index])
 
 
-miner.run_multiple(
-    only_prepare_script=True,
-    #sample benchmarks from already stablished benchmarks in a democratic way
-    sample_benchmarks=benchmarks[0:njobs%m]+benchmarks*int(njobs/m), #[', '.join(benchmarks) for i in range(int(njobs/m))].extend(benchmarks[0:njobs%m]),
-    mg_directory=mg_dir,
-    mg_process_directory='/madminer/code/mg_processes/signal',
-    proc_card_file='/madminer/code/cards/proc_card_signal.dat',
-    param_card_template_file='/madminer/code/cards/param_card_template.dat',
-    run_card_files=['/madminer/code/cards/run_card_signal.dat'],
-    pythia8_card_file='/madminer/code/cards/pythia8_card.dat',
-    log_directory='/madminer/code/logs/signal')
-    #initial_command='source activate python2'
+###########################
+##### Run with signal #####
+###########################
 
-print(benchmarks[0:njobs%m]+benchmarks*int(njobs/m))
+# Sample benchmarks from already stablished benchmarks in a democratic way
+initial_list = benchmarks[0 : (num_jobs % num_benchmarks)]
+others_list = benchmarks * (num_jobs // num_benchmarks)
+sample_list = initial_list + others_list
 
-#create file to link benchmark_i to run_i.sh
-for i in range(njobs):
-    j = i%m
-    f = open("/madminer/code/mg_processes/signal/madminer/cards/benchmark_"+str(i)+".dat","w+")
-    f.write( "{}".format(benchmarks[j]) )
-    print('generate.py', i, benchmarks[j])
-    f.close()
+madminer_run_wrapper(sample_benchmarks=sample_list, run_type='signal')
 
-#background
-miner.run_multiple(
-    is_background=True,
-    only_prepare_script=True,
-    sample_benchmarks=[', '.join(benchmarks) for i in range(int(njobs/m))].extend(benchmarks[0:njobs%m]), #['sm' for i in range(njobs)],
-    mg_directory=mg_dir,
-    mg_process_directory='/madminer/code/mg_processes/background',
-    proc_card_file='/madminer/code/cards/proc_card_background.dat',
-    param_card_template_file='/madminer/code/cards/param_card_template.dat',
-    run_card_files=['/madminer/code/cards/run_card_background.dat'],
-    pythia8_card_file='/madminer/code/cards/pythia8_card.dat',
-    log_directory='/madminer/code/logs/background')
 
-for i in range(njobs):
-    j = i%m
-    print('generate.py',i, benchmarks[j])
-    f= open("/madminer/code/mg_processes/background/madminer/cards/benchmark_"+str(i)+".dat","w+")
-    f.write( "{}".format(benchmarks[j]) )
-    f.close()
+###########################
+### Run with background ###
+###########################
+
+sample_list = ['sm' for i in range(num_jobs)]
+
+madminer_run_wrapper(sample_benchmarks=sample_list, run_type='background')

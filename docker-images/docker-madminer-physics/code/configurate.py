@@ -1,95 +1,77 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+#!/usr/bin/python
 
-import numpy as np
-#import matplotlib
-#from matplotlib import pyplot as plt
-#%matplotlib inline
-import sys 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import os
+import sys
 import yaml
-import inspect
-from madminer.core import MadMiner
-from madminer.plotting import plot_2d_morphing_basis
-from madminer.sampling import combine_and_shuffle
-from madminer.sampling import SampleAugmenter
-from madminer.sampling import benchmark, benchmarks
-from madminer.sampling import morphing_point, morphing_points, random_morphing_points
+from ast import literal_eval
+from madminer import MadMiner
+from pathlib import Path
 
 
-mg_dir = '/madminer/software/MG5_aMC_v2_6_2' 
+##########################
+#### Global variables ####
+##########################
 
-miner = MadMiner()#(debug=False)
+project_dir = Path(__file__).parent.parent
 
-input_file = str(sys.argv[1])
-print('inputfile:  ',input_file)
-
-########### ADD  parameters and benchmarks from input file
-
-with open(input_file) as f:
-    # use safe_load instead load
-    dict_all = yaml.safe_load(f)
-
-#get default values of miner.add_parameters()
-default_arr = inspect.getargspec(miner.add_parameter)
-default = dict(zip(reversed(default_arr.args), reversed(default_arr.defaults)))
+data_dir = str(project_dir.joinpath('data'))
 
 
-#ADD PARAMETERS
-for parameter in dict_all['parameters']:
-    #format range_input to tuple
-    range_input = parameter['parameter_range']
-    range_tuple = map(float, range_input.replace('(','').replace(')','').split(','))
-   
-    miner.add_parameter(
-    lha_block=parameter['lha_block'], #required
-    lha_id=parameter['lha_id'], #required
-    parameter_name=parameter.get('parameter_name', default['parameter_name']), #optional
-    morphing_max_power=int( parameter.get('morphing_max_power', default['morphing_max_power']) ), #optional
-    param_card_transform=parameter.get('param_card_transform',default['param_card_transform']),  #optional
-    parameter_range=range_tuple #optional
-    )
+##########################
+#### Argument parsing ####
+##########################
 
-n_parameters = len(dict_all['parameters'])
+input_file = sys.argv[1]
+
+with open(input_file, 'r') as f:
+    spec = yaml.safe_load(f)
 
 
-#ADD BENCHMARKS
-for benchmark in dict_all['benchmarks']:
-    
-    dict_of_parameters_this_benchmark = dict()
-    
-    for i in range(1, n_parameters+1):
+###########################
+### Miner configuration ###
+###########################
 
-        try:
-            #add to the dictionary: key is parameter name, value is value
-            dict_of_parameters_this_benchmark[ benchmark['parameter_name_'+str(i)] ] = float(benchmark['value_'+str(i)])
-        
-        except KeyError as e:
-            print('Number of benchmark parameters does not match number of global parameters in input file')
-            raise e
-    
-    #add       
-    miner.add_benchmark(
-    dict_of_parameters_this_benchmark,
-    benchmark['name']
-    )
+miner = MadMiner()
 
-###########
+# Add parameters
+for parameter in spec['parameters']:
+    param_range = parameter.pop('parameter_range')
+    param_range = literal_eval(param_range)
+    param_range = [float(val) for val in param_range]
 
-#SET morphing
-settings = dict_all['set_morphing']
-print(settings['max_overall_power'])
-miner.set_morphing(
-    include_existing_benchmarks=True,
-    max_overall_power=int(settings['max_overall_power'])
-)
+    miner.add_parameter(**parameter, parameter_range=tuple(param_range))
+
+# Add benchmarks
+for benchmark in spec['benchmarks']:
+    param_values = {}
+
+    for i, _ in enumerate(spec['parameters']):
+        name = benchmark[f'parameter_name_{i+1}']
+        value = benchmark[f'value_{i+1}']
+        param_values[name] = value
+
+    miner.add_benchmark(param_values, benchmark['name'])
 
 
-#fig = plot_2d_morphing_basis(
-#    miner.morpher,
-#    xlabel=r'$c_{W} v^2 / \Lambda^2$',
-#    ylabel=r'$c_{\tilde{W}} v^2 / \Lambda^2$',
-#    xrange=(-10.,10.),
-#    yrange=(-10.,10.)
-#)
+##########################
+#### Morphing setting ####
+##########################
 
-miner.save('/madminer/data/madminer_example.h5')
+miner.set_morphing(**spec['set_morphing'])
 
+
+##########################
+### Save configuration ###
+##########################
+
+os.makedirs(data_dir, exist_ok=True)
+
+config_file_name = 'madminer_config.h5'
+config_file_path = data_dir + '/' + config_file_name
+
+miner.save(config_file_path)
