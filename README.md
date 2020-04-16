@@ -43,8 +43,6 @@ docker run -it madminertool/<image-name> bash
 <container-id>#/home $ ls
 ```
 
-If you want to check the Dockerfile for the last two images go to `worklow-madminer/docker`.
-
 _The point of this repository is to make the life easier for the users so they won't need
 to figure out themselves the arguments of the scripts on `/home/code/` nor how to input new observables.
 The whole pipeline will be automatically generated when they follow the steps in the sections below.
@@ -62,7 +60,7 @@ Please refer to the [REANA-Cluster documentation][reana-cluster-docs] for more d
 If you have access to a REANA cluster, then you will only need to introduce the credentials as shown below,
 to generate the following combined-workflow:
 
-![image of the workflow](images/yadage_workflow_instance_full.png)
+![image of the workflow](docs/images/workflow-all.png)
 
 To introduce the credentials, go to the `example-full/` directory and run:
 ```bash
