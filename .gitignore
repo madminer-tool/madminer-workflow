@@ -1,4 +1,15 @@
+# Ignore workdir directory
 example-full/workdir/
-docker-images/docker-madminer-physics/MG5_aMC_v2_6_2/
-docker-images/docker-madminer-physics/MG5_aMC_v2_6_2/mg_processes/
-README.md
+
+# Ignore any analysis step output folders
+**/data
+**/logs
+**/mg_processes
+**/MG5_debug
+**/py.py
+
+# Ignore local software installation (i.e. MadGraph 5)
+**/software
+
+# Ignore any macOS files
+**/.DS_Store
