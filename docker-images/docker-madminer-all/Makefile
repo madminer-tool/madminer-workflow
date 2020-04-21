@@ -1,13 +1,22 @@
 NAME=docker-madminer-all
+ML_FOLDER=docker-madminer-ml
+PH_FOLDER=docker-madminer-physics
 REGISTRY=madminertool
 VERSION=$(shell cat ./VERSION)
 
 
-all: build push
+all: build copy push
+
+
+.PHONY: copy
+copy:
+	@cp ../$(ML_FOLDER)/requirements.txt .
+	@cp -R ../$(ML_FOLDER)/code/ code/
+	@cp -R ../$(PH_FOLDER)/code/ code/
 
 
 .PHONY: build
-build:
+build: copy
 	@docker build . --tag $(REGISTRY)/$(NAME):$(VERSION) --tag $(REGISTRY)/$(NAME):latest
 
 
