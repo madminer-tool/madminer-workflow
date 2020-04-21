@@ -1,28 +1,29 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+#!/usr/bin/python
 
-#import logging
-import numpy as np
-#import matplotlib
-#from matplotlib import pyplot as plt
-#%matplotlib inline
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
-import yaml
-import sys
-import time
-import logging
-import multiprocessing
 import h5py
-from functools import partial
+import logging
+import sys
+import yaml
+from pathlib import Path
 
-from madminer.core import MadMiner
 from madminer.sampling import combine_and_shuffle
 from madminer.sampling import SampleAugmenter
-from madminer.sampling import benchmark, benchmarks, random_morphing_points, morphing_point
 
-from madminer.analysis import DataAnalyzer
-from madminer.utils.interfaces.madminer_hdf5 import madminer_event_loader
-from madminer.utils.interfaces.madminer_hdf5 import save_preformatted_events_to_madminer_file
-from madminer.utils.various import create_missing_folders, shuffle
+# These methods are applied if specified in the input files
+from madminer.sampling import benchmark
+from madminer.sampling import benchmarks
+from madminer.sampling import morphing_point
+from madminer.sampling import random_morphing_points
+
+
+##########################
+##### Set up logging #####
+##########################
 
 logging.basicConfig(
     format='%(asctime)-5.5s %(name)-20.20s %(levelname)-7.7s %(message)s',
@@ -35,183 +36,183 @@ for key in logging.Logger.manager.loggerDict:
         logging.getLogger(key).setLevel(logging.WARNING)
 
 
-n_trainsamples = int(sys.argv[1])
+############################
+##### Global variables #####
+############################
 
-h5_file = sys.argv[2]
+project_dir = Path(__file__).parent.parent
+data_dir = str(project_dir.joinpath('data'))
 
-inputs_file = sys.argv[3]
+sampling_methods = {
+    'benchmark': benchmark,
+    'benchmarks': benchmarks,
+    'morphing_points': morphing_point,
+    'random_morphing_points': random_morphing_points,
+}
+
+
+############################
+##### Argument parsing #####
+############################
+
+num_train_samples = int(sys.argv[1])
+data_file = str(sys.argv[2])
+inputs_file = str(sys.argv[3])
+
 with open(inputs_file) as f:
     inputs = yaml.safe_load(f)
 
 
+#############################
+### Configuration parsing ###
+#############################
+
 nuisance = inputs['include_nuisance_parameters']
-
 methods = inputs['methods']
-print(methods)
-methods = map(lambda x: str(x), methods)
+shuffle = inputs['shuffle']
+samples = int(inputs['n_samples']['train'])
+split = float(inputs['test_split'])
 
-test_split=float(inputs['test_split']) #training-test split
-
-# get number of paramenters
-hf = h5py.File(h5_file, 'r')
-parameters = len(hf['parameters']['names'])
+with h5py.File(data_file, 'r') as f:
+    parameters = f['parameters']['names']
 
 
-#to shuffle or not to shuffle
-if (inputs['shuffle']): 
-    h5shuffle_file = '/madminer/data/madminer_example_shuffled.h5'
-    
-    combine_and_shuffle(
-        [h5_file],
-        h5shuffle_file 
-    )
+#############################
+#### Instantiate Sampler ####
+#############################
 
-    sampler = SampleAugmenter(h5shuffle_file, include_nuisance_parameters=nuisance)  #'data/madminer_example_shuffled.h5'
-
+if shuffle:
+    data_file_shuffled = data_dir + '/' + 'combined_delphes_shuffled.h5'
+    combine_and_shuffle(input_filenames=[data_file], output_filename=data_file_shuffled)
+    sampler = SampleAugmenter(data_file_shuffled, include_nuisance_parameters=nuisance)
 else:
-    sampler = SampleAugmenter(h5_file, include_nuisance_parameters=nuisance)
+    sampler = SampleAugmenter(data_file, include_nuisance_parameters=nuisance)
 
 
+##############################
+# Define args override func. #
+##############################
 
+def generate_theta_args(theta_spec, params):
+    """
+    Generates the theta arguments that the method will take later on
+    :param theta_spec: theta specification on the inputs file
+    :param params: list of parameter names the analysis is taking
+    :return: list
+    """
+
+    prior = []
+
+    for p, _ in enumerate(params):
+        param_prior = theta_spec['prior'][f'parameter_{p}']
+        prior.append(
+            (
+                param_prior['prior_shape'],
+                float(param_prior['prior_param_0']),
+                float(param_prior['prior_param_1']),
+            )
+        )
+
+    return [theta_spec['n_thetas'], prior]
+
+
+#############################
+## Create training samples ##
+#############################
+
+# Different methods have different arguments
+train_ratio_methods = {'alice', 'alices', 'cascal', 'carl', 'rolr', 'rascal'}
+train_local_methods = {'sally', 'sallino'}
+train_global_methods = {'scandal'}
+
+# Iterate through the methods
 for method in methods:
-    print('sampling from method ', method)
 
-    for i in range(n_trainsamples):
-
-        # creates training samples
-
-        # different methods have different arguments
-        # TRAIN RATIO
-        
-        if method in ['alice','alices','cascal','carl','rolr', 'rascal']:
-            theta0_sampling = inputs[str(method)]['theta_0']['sampling_method'] #sampling method for theta0
-            theta1_sampling = inputs[str(method)]['theta_1']['sampling_method'] #sampling method for theta1
-            theta_0 = inputs[str(method)]['theta_0'] #parameters for theta0 sampling
-            theta_1 = inputs[str(method)]['theta_1'] #parameters for theta0 sampling
-
-             ##random_morphing_points has two arguments not one
-            if (theta0_sampling == 'random_morphing_points' and theta1_sampling != 'random_morphing_points' ): 
-                
-                prior = []
-
-                for p in range(parameters):
-                    this_tuple = theta_0['prior']['parameter_'+str(p)]
-                    prior.append( (str(this_tuple['prior_shape']), float(this_tuple['prior_param_0']), float(this_tuple['prior_param_1'])) )
+    training_params = inputs[method]
+    print(f'Sampling from method: {method}')
 
 
-                _ = sampler.sample_train_ratio(
-                    theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior),
-                    theta1=eval(theta1_sampling)(theta_1['argument']),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'      
-                )
+    for i in range(num_train_samples):
 
-            elif (theta1_sampling == 'random_morphing_points' and theta0_sampling != 'random_morphing_points'):  
-                tuple_0 = theta_1['prior']['parameter_0'] #tuple for parameter 0
-                tuple_1 = theta_1['prior']['parameter_1'] #tuple for parameter 1
-                prior = [ (str(tuple_0['prior_shape']), float(tuple_0['prior_param_0']), float(tuple_0['prior_param_1'])), \
-                           (str(tuple_1['prior_shape']), float(tuple_1['prior_param_0']), float(tuple_1['prior_param_1']))  ]
+        if method in train_ratio_methods:
+            theta_0 = training_params['theta_0']
+            theta_1 = training_params['theta_1']
+            theta_0_sampling = theta_0['sampling_method']
+            theta_1_sampling = theta_1['sampling_method']
 
-                x, theta0, theta1, y, r_xz, t_xz = sampler.sample_train_ratio(
-                    theta0=eval(theta0_sampling)(theta_0['argument']),
-                    theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'      
-                )
+            # Default arguments in case no theta is 'random_morphing_points'
+            theta_0_args = ['w']
+            theta_1_args = ['sm']
 
-            elif (theta0_sampling == 'random_morphing_points' and theta1_sampling == 'random_morphing_points'): 
-                tuple0_0 = theta_0['prior']['parameter_0'] #tuple for parameter 0
-                tuple0_1 = theta_0['prior']['parameter_1'] #tuple for parameter 1
-                prior0 = [ (str(tuple0_0['prior_shape']), float(tuple0_0['prior_param_0']), float(tuple0_0['prior_param_1'])), \
-                           (str(tuple0_1['prior_shape']), float(tuple0_1['prior_param_0']), float(tuple0_1['prior_param_1']))  ]
-                
-                tuple1_0 = theta_1[method]['prior']['parameter_0'] #tuple for parameter 0
-                tuple1_1 = theta_1[method]['prior']['parameter_1'] #tuple for parameter 1
-                prior1 = [ (str(tuple1_0['prior_shape']), float(tuple1_0['prior_param_0']), float(tuple1_0['prior_param_1'])), \
-                           (str(tuple1_1['prior_shape']), float(tuple1_1['prior_param_0']), float(tuple1_1['prior_param_1']))  ]
+            # Overriding default 'theta' arguments
+            if theta_0_sampling == 'random_morphing_points':
+                theta_0_args = generate_theta_args(theta_0, parameters)
+                theta_1_args = [theta_1['argument']]
 
-                x, theta0, theta1, y, r_xz, t_xz = sampler.sample_train_ratio(
-                    theta0=eval(theta0_sampling)(theta_0['n_thetas'], prior0),
-                    theta1=eval(theta1_sampling)(theta_1['n_thetas'], prior1),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'      
-                )
+            # Overriding default 'theta' arguments
+            if theta_1_sampling == 'random_morphing_points':
+                theta_0_args = [theta_0['argument']]
+                theta_1_args = generate_theta_args(theta_1, parameters)
 
-            else:
-                x, theta0, theta1, y, r_xz, t_xz = sampler.sample_train_ratio(
-                    theta0=benchmark('w'),
-                    theta1=benchmark('sm'),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'
-                )
-                 #x, theta0, theta1, y, r_xz, t_xz = sampler.sample_train_ratio(
-    #             #    theta0=eval(theta0_sampling)(theta_0['argument']),
-    #             #    theta1=eval(theta1_sampling)(theta_1['argument']),
-    #             #    n_samples=int(inputs['n_samples']['train']),
-    #             #    test_split=test_split,
-    #             #    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-    #             #    filename=method+'_train'
-    #             #)
+            # Getting the specified sampling method (defaults to 'benchmark')
+            theta_0_method = sampling_methods.get(theta_0_sampling, benchmark)
+            theta_1_method = sampling_methods.get(theta_1_sampling, benchmark)
+
+            sampler.sample_train_ratio(
+                theta0=theta_0_method(*theta_0_args),
+                theta1=theta_1_method(*theta_1_args),
+                n_samples=samples,
+                folder=data_dir + f'/Samples_{method}_{i}',
+                filename=method + '_train',
+                test_split=split,
+            )
 
 
-    #     #TRAIN LOCAL
-        if method in ['sally','sallino']:
-            theta_input = inputs[str(method)]['theta']
-            theta_sampling = theta_input['sampling_method']
-            #parameters for theta  sampling
+        elif method in train_local_methods:
+            theta = training_params['theta']
+            theta_sampling = theta['sampling_method']
 
-            if (theta_sampling == 'random_morphing_points'): 
-                
-                prior = []
-                for p in range(parameters):
-                    this_tuple = theta_input['prior']['parameter_'+str(p)]
-                    prior.append( (str(this_tuple['prior_shape']), float(this_tuple['prior_param_0']), float(this_tuple['prior_param_1'])) )
+            # Default arguments in case theta is 'random_morphing_points'
+            theta_args = [theta['argument']]
 
+            # Overriding default 'theta' arguments
+            if theta_sampling == 'random_morphing_points':
+                theta_args = generate_theta_args(theta, parameters)
 
-                x, theta0, theta1, y, r_xz, t_xz = sample_train_local(
-                    theta=eval(theta_sampling)(theta_input['n_thetas'], prior),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'      
-                )
+            # Getting the specified sampling method (defaults to 'benchmark')
+            theta_method = sampling_methods.get(theta_sampling, benchmark)
 
-            if (theta_sampling == 'benchmark'): 
-                _ = sampler.sample_train_local(
-                    theta=eval(theta_sampling)(theta_input['argument']),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'
-                )
-
-    #     #TRAIN GLOBAL
-        if method in ['scandal']:
-            theta_sampling = inputs['theta']['sampling_method']
-            theta = inputs[str(method)]['theta'] #parameters for theta sampling
-
-            if ( theta_sampling == 'random_morphing_points' ): 
-                tuple_0 = theta_sampling['prior']['parameter_0'] #tuple for parameter 0
-                tuple_1 = theta_sampling['prior']['parameter_1'] #tuple for parameter 1
-                prior = [ (str(tuple_0['prior_shape']), float(tuple_0['prior_param_0']), float(tuple_0['prior_param_1'])), \
-                           (str(tuple_1['prior_shape']), float(tuple_1['prior_param_0']), float(tuple_1['prior_param_1']))  ] 
-                
-                x, theta0, theta1, y, r_xz, t_xz = train_samples_density(
-                    theta=eval(theta_sampling)(theta['n_thetas'], prior),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'      
-                )
-
-            else:
-                x, theta0, theta1, y, r_xz, t_xz = sampler.train_samples_density(
-                    theta=eval(theta_sampling)(theta['argument']),
-                    n_samples=int(inputs['n_samples']['train']),
-                    folder='/madminer/data/Samples_'+str(method)+'_'+str(i),
-                    filename=method+'_train'
-                )
-    
+            sampler.sample_train_local(
+                theta=theta_method(*theta_args),
+                n_samples=samples,
+                folder=data_dir + f'/Samples_{method}_{i}',
+                filename=method + '_train',
+                test_split=split,
+            )
 
 
+        elif method in train_global_methods:
+            theta = training_params['theta']
+            theta_sampling = theta['sampling_method']
+
+            # Default arguments in case theta is 'random_morphing_points'
+            theta_args = [theta['argument']]
+
+            # Overriding default 'theta' arguments
+            if theta_sampling == 'random_morphing_points':
+                theta_args = generate_theta_args(theta, parameters)
+
+            # Getting the specified sampling method (defaults to 'benchmark')
+            theta_method = sampling_methods.get(theta_sampling, benchmark)
+
+            sampler.sample_train_density(
+                theta=theta_method(*theta_args),
+                n_samples=samples,
+                folder=data_dir + f'/Samples_{method}_{i}',
+                filename=method + '_train',
+                test_split=split,
+            )
+
+
+        else:
+            raise ValueError('Invalid sampling method')
