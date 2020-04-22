@@ -1,5 +1,5 @@
 # Ignore workdir directory
-example-full/workdir/
+reana/workdir/
 
 # Ignore copied files
 docker-images/docker-madminer-all/code
