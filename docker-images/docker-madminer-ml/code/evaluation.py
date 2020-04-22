@@ -79,7 +79,7 @@ with open(inputs_file) as f:
 asymptotic = dict(inputs['asymptotic_limits'])
 fisher_info = dict(inputs['fisher_information'])
 gen_method = str(os.path.split(os.path.abspath(eval_folder))[1])
-luminosity = float(inputs['uselumi'])
+luminosity = float(inputs['luminosity'])
 test_split = float(inputs['test_split'])
 num_samples = int(inputs['n_samples']['train'])
 
