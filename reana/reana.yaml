@@ -8,7 +8,7 @@ inputs:
     inputfile: inputs/input.yml
 workflow:
   type: yadage
-  file: workflow.yml
+  file: workflows/yadage/workflow.yml
 outputs:
   files:
     - results/output.txt
