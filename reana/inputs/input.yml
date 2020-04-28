@@ -41,7 +41,7 @@ benchmarks:
 set_morphing:
   max_overall_power: 2
   include_existing_benchmarks: True
-  n_trials: 1000
+  n_trials: 100
 
 
 #### STEP: DELPHES
