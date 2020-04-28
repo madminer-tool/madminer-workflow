@@ -19,11 +19,6 @@ ENV PROJECT_FOLDER "/madminer"
 ENV SOFTWARE_FOLDER "/madminer/software"
 
 
-#### Copy files
-WORKDIR ${PROJECT_FOLDER}
-COPY code ./code
-
-
 #### Install MadGraph 5
 WORKDIR ${SOFTWARE_FOLDER}
 
@@ -40,6 +35,14 @@ RUN echo "install lhapdf6" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install pythia8" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install pythia-pgs" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install Delphes" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
+
+
+#### Set working directory
+WORKDIR ${PROJECT_FOLDER}
+
+#### Copy files
+COPY code ./code
+COPY scripts ./scripts
 
 
 #### Install Python missing dependencies
