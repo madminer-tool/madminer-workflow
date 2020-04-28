@@ -1,21 +1,27 @@
+########################################
+######## CONTAINER ENVIRONMENTS ########
+########################################
+
 common_env_physics: &common_env_physics
     environment_type: 'docker-encapsulated'
     image: madminertool/docker-madminer-physics
     imagetag: 'latest'
-    
+
 common_env_ml: &common_env_ml
     environment_type: 'docker-encapsulated'
     image: madminertool/docker-madminer-ml
     imagetag: 'latest'
-    
+
+
+########################################
+######## PHYSICS WORKFLOW STEPS ########
+########################################
 
 configurate:
   environment: *common_env_physics
   process:
-    process_type: interpolated-script-cmd
-    script: |
-      python /madminer/code/configurate.py {inputfile}
-      cp -R /madminer/data/*.h5 {workdir}
+    process_type: string-interpolated-cmd
+    script: scripts/1_configurate.sh -p /madminer -i {input_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: config_file
@@ -24,69 +30,47 @@ configurate:
 generate:
   environment: *common_env_physics
   process:
-    process_type: interpolated-script-cmd
-    script: |
-      mkdir -p /madminer/code/logs
-      python /madminer/code/generate.py {njobs} {configfile}
-      mkdir {madminer_dir_signal}/zips
-      for i in `seq 0 $(({njobs}-1))`; do tar -czvf /madminer/folder_$i.tar.gz {madminer_dir_signal}/scripts/run_$i.sh {madminer_dir_signal}/cards/*$i.dat ; done
-      cp -R /madminer/folder_*.tar.gz {workdir}
+    process_type: string-interpolated-cmd
+    script: scripts/2_generate.sh -p /madminer -s {signal_dir} -j {num_jobs} -c {config_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: script_files
     globexpression: 'folder_*.tar.gz'
 
-
 mg_pythia:
   environment: *common_env_physics
   process:
-    process_type: interpolated-script-cmd 
-    script: |
-      mkdir /madminer/extract
-      tar -xvf {eventfolder} -C /madminer/extract
-      cp /madminer/extract/madminer/code/mg_processes/signal/madminer/scripts/run*.sh {MG_process_directory}/signal/madminer/scripts
-      cp /madminer/extract/madminer/code/mg_processes/signal/madminer/cards/*.dat  {MG_process_directory}/signal/madminer/cards
-      mkdir {log_directory}
-      sh {MG_process_directory}/signal/madminer/scripts/run*.sh {MG_directory} {MG_process_directory}/signal {log_directory}
-      tar -czvf /madminer/code/mg_processes/signal/Events/Events.tar.gz /madminer/code/mg_processes/signal/Events/*/*  /madminer/code/mg_processes/signal/madminer/cards/benchmark_*.dat
-      cp /madminer/code/mg_processes/signal/Events/Events.tar.gz {mgworkdir} 
+    process_type: string-interpolated-cmd
+    script: scripts/3_pythia.sh -p /madminer -m {madgraph_dir} -s {signal_dir} -l {logs_dir} -z {events_folder}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: postrun_file
     globexpression: 'Events.tar.gz'
-  
 
 delphes:
   environment: *common_env_physics
   process:
-    process_type: interpolated-script-cmd 
-    script: |
-      mkdir /madminer/extract
-      tar -xvf {eventfile} -C /madminer/extract
-      tar -xvf {delphes_configfile} -C /madminer/extract
-      touch /madminer/log_delphes.log
-      mkdir /madminer/data
-      mv /madminer/extract/madminer/code/mg_processes/signal/madminer/cards/benchmark_*.dat /madminer/extract/madminer/code/mg_processes/signal/madminer/cards/benchmark.dat
-      python /madminer/code/delphes.py {delphes_configfile} /madminer/extract/madminer/code/mg_processes/signal/Events/* {inputfile} /madminer/extract/madminer/code/mg_processes/signal/madminer/cards/benchmark.dat
-      cp  -R /madminer/data/* {dworkdir}
+    process_type: string-interpolated-cmd
+    script: scripts/4_delphes.sh -p /madminer -c {config_file} -i {input_file} -e {event_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: dpostrun_file
-    globexpression: 'madminer_example_with_data_*.h5' 
-
+    globexpression: 'madminer_delphes_data_*.h5'
 
 combine:
   environment: *common_env_physics
   process:
-    process_type: interpolated-script-cmd
-    script: |
-      echo '{inputfiles}'
-      python /madminer/code/combine.py '{inputfiles}'
-      cp -R /madminer/combined_delphes.h5 {cworkdir}
+    process_type: string-interpolated-cmd
+    script: scripts/5_combine.sh -p /madminer -i {input_files}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: data_file
     globexpression: 'combined_delphes.h5'
+
+
+#######################################
+########## ML WORKFLOW STEPS ##########
+#######################################
 
 sampling:
   environment: *common_env_ml
@@ -102,7 +86,6 @@ sampling:
     publisher_type: 'fromglob-pub'
     outputkey: sampling_file
     globexpression: 'Samples_*'
-  
 
 training:
   environment: *common_env_ml
@@ -118,8 +101,7 @@ training:
     publisher_type: 'fromglob-pub'
     outputkey: trained_file
     globexpression: 'Model.tar.gz'
-  
- 
+
 evaluating:
   environment: *common_env_ml
   process:
@@ -138,8 +120,6 @@ evaluating:
     publisher_type: interpolated-pub
     publish:
       results_file: '{evalworkdir}/Results.tar.gz'
-  
-
 
 plotting:
   environment: *common_env_ml
@@ -156,4 +136,3 @@ plotting:
     publisher_type: interpolated-pub
     publish:
       outputfile: '{outputfile}'
-  
