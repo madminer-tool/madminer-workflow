@@ -3,7 +3,7 @@ example-full/workdir/
 
 # Ignore copied files
 docker-images/docker-madminer-all/code
-docker-images/docker-madminer-all/requirements.txt
+docker-images/docker-madminer-all/requirements-*.txt
 
 # Ignore any analysis step output folders
 **/data

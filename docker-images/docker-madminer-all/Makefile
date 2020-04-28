@@ -10,9 +10,10 @@ all: build copy push
 
 .PHONY: copy
 copy:
-	@cp ../$(ML_FOLDER)/requirements.txt .
 	@cp -R ../$(ML_FOLDER)/code/ code/
 	@cp -R ../$(PH_FOLDER)/code/ code/
+	@cp ../$(ML_FOLDER)/requirements.txt requirements-ml.txt
+	@cp ../$(PH_FOLDER)/requirements.txt requirements-ph.txt
 
 
 .PHONY: build
