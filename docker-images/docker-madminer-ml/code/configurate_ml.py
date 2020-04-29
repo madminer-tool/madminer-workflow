@@ -9,9 +9,8 @@ import h5py
 import logging
 import sys
 import yaml
-from pathlib import Path
 
-from madminer.sampling import combine_and_shuffle
+from pathlib import Path
 from madminer.sampling import SampleAugmenter
 
 # These methods are applied if specified in the input files
@@ -69,24 +68,19 @@ with open(inputs_file) as f:
 
 nuisance = inputs['include_nuisance_parameters']
 methods = inputs['methods']
-shuffle = inputs['shuffle']
 samples = int(inputs['n_samples']['train'])
 split = float(inputs['test_split'])
 
-with h5py.File(data_file, 'r') as f:
-    parameters = f['parameters']['names']
+# Do NOT use a context manager here, the file would be closed
+f = h5py.File(data_file, 'r')
+parameters = f['parameters']['names']
 
 
 #############################
 #### Instantiate Sampler ####
 #############################
 
-if shuffle:
-    data_file_shuffled = data_dir + '/' + 'combined_delphes_shuffled.h5'
-    combine_and_shuffle(input_filenames=[data_file], output_filename=data_file_shuffled)
-    sampler = SampleAugmenter(data_file_shuffled, include_nuisance_parameters=nuisance)
-else:
-    sampler = SampleAugmenter(data_file, include_nuisance_parameters=nuisance)
+sampler = SampleAugmenter(data_file, include_nuisance_parameters=nuisance)
 
 
 ##############################

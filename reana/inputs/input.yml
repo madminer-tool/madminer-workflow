@@ -73,7 +73,6 @@ cuts:
 
 include_nuisance_parameters: False
 methods: ['sally', 'alices', 'alice']
-shuffle: False
 
 # Also used in the 'evaluation' step
 n_samples:
