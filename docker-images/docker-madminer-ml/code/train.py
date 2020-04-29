@@ -43,7 +43,7 @@ method = str(sub_folder.split("_", 3)[1])
 
 alpha = float(inputs['alpha'])
 batch_size = int(inputs['batch_size'])
-num_epochs = int(inputs['n_epochs'])
+num_epochs = int(inputs['num_epochs'])
 valid_split = float(inputs['validation_split'])
 
 
