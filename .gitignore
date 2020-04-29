@@ -1,5 +1,5 @@
 # Ignore workdir directory
-example-full/workdir/
+reana/workdir/
 
 # Ignore copied files
 docker-images/docker-madminer-all/code
@@ -9,6 +9,9 @@ docker-images/docker-madminer-all/requirements.txt
 **/data
 **/logs
 **/mg_processes
+
+# Ignore any analysis intermediate files
+**/*.tar.gz
 **/MG5_debug
 **/py.py
 
