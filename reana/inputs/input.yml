@@ -1,0 +1,188 @@
+############################
+#### PHYSICS OPERATIONS ####
+############################
+
+
+#### STEP: CONFIGURATE
+
+parameters:
+  - parameter_name: 'CWL2'
+    lha_block: 'dim6'
+    lha_id: 2
+    morphing_max_power: 2
+    param_card_transform: '16.52*theta'
+    parameter_range: (-10.0,10.0)
+
+  - parameter_name: 'CPWL2'
+    lha_block: 'dim6'
+    lha_id: 5
+    morphing_max_power: 2
+    param_card_transform: '16.52*theta'
+    parameter_range: (-10.0,10.0)
+
+# The number of benchmark params must match the number of paramaters above
+benchmarks:
+  - benchmark: 1
+    name: 'sm'
+    parameter_name_1: 'CWL2'
+    value_1: 0.0
+    parameter_name_2: 'CPWL2'
+    value_2: 0.0
+
+  - benchmark: 2
+    name: 'w'
+    parameter_name_1: 'CWL2'
+    value_1: 10.0
+    parameter_name_2: 'CPWL2'
+    value_2: 0.0
+
+# Morphing arguments must match the ones specified in the 'set_morphing' function:
+# https://madminer.readthedocs.io/en/v0.7.1/madminer.core.html#madminer.core.madminer.MadMiner.set_morphing
+set_morphing:
+  max_overall_power: 2
+  include_existing_benchmarks: True
+  n_trials: 100
+
+
+#### STEP: DELPHES
+
+observables:
+  - name: 'pt_j1'
+    definition: 'j[0].pt'
+    required: False
+    default: 0.0
+
+  - name: 'delta_phi_jj'
+    definition: '(j[0].phi() - j[1].phi()) * (-1. + 2.*float(j[0].eta > j[1].eta))'
+    required: True
+    default: null
+
+cuts:
+  - cut: 1
+    expression: 'pt_j1 > 30.'
+
+
+
+
+###########################
+###### ML OPERATIONS ######
+###########################
+
+
+#### STEP: CONFIGURATE
+
+include_nuisance_parameters: False
+methods: ['sally', 'alices', 'alice']
+shuffle: False
+
+# Also used in the 'evaluation' step
+n_samples:
+  train: 1000
+  test: 100
+
+# also used in the 'evaluation' step
+test_split: 0.5
+
+# Defining each method own parameters
+sally:
+  theta:
+    sampling_method: 'benchmark'
+    argument: 'sm'
+alices:
+  theta_0:
+    sampling_method: 'random_morphing_points'
+    n_thetas: 20
+    prior:
+      parameter_0:
+        prior_shape: 'gaussian'
+        prior_param_0: 0.0
+        prior_param_1: 1.0
+      parameter_1:
+        prior_shape: 'gaussian'
+        prior_param_0: 0.0
+        prior_param_1: 1.0
+      parameter_2:
+        prior_shape: 'gaussian'
+        prior_param_0: 0.0
+        prior_param_1: 1.0
+  theta_1:
+    sampling_method: 'benchmark'
+    argument: 'sm'
+alice:
+  theta_0:
+    sampling_method: 'random_morphing_points'
+    n_thetas: 20
+    prior:
+      parameter_0:
+        prior_shape: 'gaussian'
+        prior_param_0: 0.0
+        prior_param_1: 1.0
+      parameter_1:
+        prior_shape: 'gaussian'
+        prior_param_0: 0.0
+        prior_param_1: 1.0
+      parameter_2:
+        prior_shape: 'gaussian'
+        prior_param_0: 0.0
+        prior_param_1: 1.0
+  theta_1:
+    sampling_method: 'benchmark'
+    argument: 'sm'
+
+
+#### STEP: TRAINING
+
+alpha: 10.0
+batch_size: 100
+num_epochs: 2
+validation_split: 0.3
+
+
+#### STEP: EVALUATION
+
+luminosity: 10000.0
+
+# Region of theory we want to proof
+asymptotic_limits:
+  bool: True
+  region:
+    theta0_min_max: [-20.0,20.0]
+    theta1_min_max: [-20.0,20.0]
+  resolutions: [25,25]
+  theta_true: [0.0,0.0]
+  hist_vars: pt_j1
+  include_xsec: [True, False]  # [True] or [False] or [True, False]
+  n_samples_per_theta: 1000
+
+fisher_information:
+  bool: True
+  theta_true: [0.0,0.0]
+  observable: pt_aa
+  bins: [30.0,100.0,200.0,400.0]
+  histrange: (30.0,400.0)
+
+# Also used in the 'plotting' step
+evaluation:
+  sally:
+    theta:
+      sampling_method: 'benchmark'
+      argument: 'sm'
+  alices:
+    theta:
+      sampling_method: 'morphing_point'
+      argument: [10.0,10.0]
+  alice:
+    theta:
+      sampling_method: 'morphing_point'
+      argument: [10.,010.0]
+
+
+#### STEP: PLOTTING
+
+plotting:
+  all_methods: True
+  all_methods_pvalue: 'alices'  # Method must be declare above
+  all_methods_separate: True
+  correlations: True
+  correlations_methods: ['alices','alice']
+  rates: True
