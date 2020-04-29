@@ -45,6 +45,6 @@ COPY code ./code
 COPY scripts ./scripts
 
 
-#### Install Python missing dependencies
+# Install Python2 dependencies
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir PyYAML
+    pip install --no-cache-dir --requirement requirements.txt

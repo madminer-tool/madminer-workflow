@@ -5,14 +5,21 @@ REGISTRY=madminertool
 VERSION=$(shell cat ./VERSION)
 
 
-all: build copy push
+all: build clean copy push
+
+
+.PHONY: clean
+clean:
+	@rm -rf code
+	@find . -name "requirements-*.txt" -delete
 
 
 .PHONY: copy
 copy:
-	@cp ../$(ML_FOLDER)/requirements.txt .
 	@cp -R ../$(ML_FOLDER)/code/ code/
 	@cp -R ../$(PH_FOLDER)/code/ code/
+	@cp ../$(ML_FOLDER)/requirements.txt requirements-ml.txt
+	@cp ../$(PH_FOLDER)/requirements.txt requirements-ph.txt
 
 
 .PHONY: build
