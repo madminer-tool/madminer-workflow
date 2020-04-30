@@ -30,6 +30,7 @@ RUN curl -sSL "https://launchpad.net/mg5amcnlo/2.0/2.6.x/+download/${MG_VERSION}
 ENV ROOTSYS /usr/local
 ENV PATH $PATH:$ROOTSYS/bin
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ROOTSYS/lib
+ENV DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:$ROOTSYS/lib
 
 RUN echo "install lhapdf6" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install pythia8" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
@@ -43,6 +44,7 @@ WORKDIR ${PROJECT_FOLDER}
 #### Copy files
 COPY code ./code
 COPY scripts ./scripts
+COPY requirements.txt .
 
 
 # Install Python2 dependencies
