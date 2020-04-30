@@ -38,6 +38,7 @@ project_dir = Path(__file__).parent.parent
 
 model_dir = str(project_dir.joinpath('models'))
 plots_dir = str(project_dir.joinpath('plots'))
+rates_dir = str(project_dir.joinpath('rates'))
 results_dir = str(project_dir.joinpath('results'))
 tests_dir = str(project_dir.joinpath('test'))
 
@@ -187,17 +188,17 @@ def do_plot(
         plt.legend()
 
     plt.tight_layout()
-    plt.savefig('/madminer/plots/all_methods_separate.png')
+    plt.savefig(plots_dir + '/all_methods_separate.png')
 
 
 #############################
 ## Load previous rate data ##
 #############################
 
-loaded_grid_data = np.load('/madminer/rates/grid.npy')
-loaded_rate_data = np.load('/madminer/rates/rate.npy')
-loaded_histo_data = np.load('/madminer/rates/histo.npy')
-loaded_histo_kin_data = np.load('/madminer/rates/histo_kin.npy')
+loaded_grid_data = np.load(rates_dir + '/grid.npy', allow_pickle=True)
+loaded_rate_data = np.load(rates_dir + '/rate.npy', allow_pickle=True)
+loaded_histo_data = np.load(rates_dir + '/histo.npy', allow_pickle=True)
+loaded_histo_kin_data = np.load(rates_dir + '/histo_kin.npy', allow_pickle=True)
 
 variables_to_plot = {
     'theta_grid': loaded_grid_data,
@@ -220,11 +221,11 @@ hg_folder_methods = {'sally', 'sallino'}
 for method in methods:
 
     if method in ml_folder_methods:
-        a = np.load(results_dir + f'/{method}/ml/{method}.npy')
-        b = np.load(results_dir + f'/{method}/ml/{method}_kin.npy')
+        a = np.load(results_dir + f'/{method}/ml/{method}.npy', allow_pickle=True)
+        b = np.load(results_dir + f'/{method}/ml/{method}_kin.npy', allow_pickle=True)
     elif method in hg_folder_methods:
-        a = np.load(results_dir + f'/{method}/histo/{method}.npy')
-        b = np.load(results_dir + f'/{method}/histo/{method}_kin.npy')
+        a = np.load(results_dir + f'/{method}/histo/{method}.npy', allow_pickle=True)
+        b = np.load(results_dir + f'/{method}/histo/{method}_kin.npy', allow_pickle=True)
     else:
         raise ValueError('Invalid method')
 
@@ -377,7 +378,7 @@ if plotting['all_methods']:
     c_bar.set_label(f'Expected p-value ({plotting_method.upper()}-Kinematics)')
 
     plt.tight_layout()
-    plt.savefig(plots_dir + '/' + 'all_methods.png')
+    plt.savefig(plots_dir + '/all_methods.png')
 
 
 #############################
@@ -416,9 +417,9 @@ if plotting['correlations']:
 
     for method in inputs['plotting']['correlations_methods']:
 
-        if len(inputs['evaluation'][method]) == 1:
+        if len(inputs[method]) == 1:
             theta_file = 'theta_test.npy'
-        elif len(inputs['evaluation'][method]) == 2:
+        elif len(inputs[method]) == 2:
             theta_file = 'theta0_test.npy'
         else:
             raise ValueError('Invalid number of evaluation methods')
