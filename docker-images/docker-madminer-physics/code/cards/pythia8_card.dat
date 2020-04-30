@@ -26,7 +26,10 @@ Main:numberOfEvents      = -1
 ! -------------------------------------------------------------------
 !
 HEPMCoutput:file         = auto
-HEPMCoutput:useWeightIDs = on
+!
+! This option causes Pythia8 to start populating logs with an error message
+! until the disk is full and crashes. DO NOT UNCOMMENT
+! HEPMCoutput:useWeightIDs = on
 !
 ! --------------------------------------------------------------------
 ! Parameters relevant only when performing MLM merging, which can be

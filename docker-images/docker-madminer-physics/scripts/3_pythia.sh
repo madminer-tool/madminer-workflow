@@ -49,7 +49,7 @@ sh "${SIGNAL_ABS_PATH}/madminer/scripts/run"*".sh" "${MADGRAPH_ABS_PATH}" "${SIG
 
 tar -czvf "${SIGNAL_ABS_PATH}/Events/Events.tar.gz" \
     -C "${SIGNAL_ABS_PATH}" \
-    "Events/"*"/"* \
-    "madminer/cards/benchmark_"*".dat"
+    "Events" \
+    "madminer/cards"
 
 # cp /madminer/code/mg_processes/signal/Events/Events.tar.gz {mgworkdir}
