@@ -45,7 +45,7 @@ mv "${EXTRACT_PATH}/madminer/cards/benchmark_"*".dat" "${EXTRACT_PATH}/madminer/
 mkdir -p "${DATA_PATH}"
 python3 "${PROJECT_PATH}/code/delphes.py" \
     "${CONFIG_FILE}" \
-    "${EXTRACT_PATH}/Events" \
+    "${EXTRACT_PATH}/Events/run_01" \
     "${INPUT_FILE}" \
     "${EXTRACT_PATH}/madminer/cards/benchmark.dat"
 
