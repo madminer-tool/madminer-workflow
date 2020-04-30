@@ -1,5 +1,10 @@
 stages:
 
+
+  #########################################
+  ######## PHYSICS WORKFLOW STAGES ########
+  #########################################
+
   - name: configurate
     dependencies: [init]
     scheduler:
@@ -55,25 +60,27 @@ stages:
       step: {$ref: 'steps.yml#/combine'}
 
 
+  ########################################
+  ########## ML WORKFLOW STAGES ##########
+  ########################################
+
   - name: sampling
     dependencies: [combine]
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        sampleworkdir: '{workdir}'
-        n_trainsamples: {stages: init, output: ntrainsamples}
+        num_train_samples: {stages: init, output: ntrainsamples}
         input_file: {stages: init, output: inputfile, unwrap: true}
         data_file: {stages: combine, output: data_file, unwrap: true}
       step: {$ref: steps.yml#/sampling}
-      
+
   - name: training
     dependencies: [sampling]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        trainworkdir: '{workdir}'
         input_file: {stages: init, output: inputfile, unwrap: true}
-        trainfolder: {stages: sampling, output: sampling_file, unwrap: true}
+        train_folder: {stages: sampling, output: sampling_file, unwrap: true}
       scatter:
         method: zip
         parameters: [trainfolder]
@@ -84,11 +91,10 @@ stages:
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        trained_file: {stages: training, output: trained_file, unwrap: true}
         input_file: {stages: init, output: inputfile, unwrap: true}
+        model_file: {stages: training, output: trained_file, unwrap: true}
         data_file: {stages: combine, output: data_file, unwrap: true}
-        resultsfile: '{workdir}/Results.tar.gz'
-        evalworkdir: '{workdir}'
+        results_file: 'Results.tar.gz'
       scatter:
         method: zip
         parameters: [trained_file]
@@ -99,8 +105,7 @@ stages:
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        results_file: {stages: evaluating, output: results_file, unwrap: true}
         input_file: {stages: init, output: inputfile, unwrap: true}
-        plotworkdir: '{workdir}'
-        outputfile: '{workdir}/outputfile.txt'
+        results_file: {stages: evaluating, output: results_file, unwrap: true}
+        output_file: 'outputfile.txt'
       step: {$ref: 'steps.yml#/plotting'}
