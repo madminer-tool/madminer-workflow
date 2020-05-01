@@ -102,6 +102,6 @@ madminer_run_wrapper(sample_benchmarks=sample_list, run_type='signal')
 ### Run with background ###
 ###########################
 
-sample_list = ['sm' for i in range(num_jobs)]
-
-madminer_run_wrapper(sample_benchmarks=sample_list, run_type='background')
+# Currently not used
+# sample_list = ['sm' for i in range(num_jobs)]
+# madminer_run_wrapper(sample_benchmarks=sample_list, run_type='background')

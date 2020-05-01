@@ -40,8 +40,17 @@ SIGNAL_ABS_PATH="${PROJECT_PATH}/${SIGNAL_FOLDER}"
 LOGS_ABS_PATH="${PROJECT_PATH}/${LOGS_FOLDER}"
 
 
+# Cleanup previous files (useful when run locally)
+rm -rf "${SIGNAL_ABS_PATH}/Events"
+rm -rf "${SIGNAL_ABS_PATH}/madminer"
+rm -rf "${SIGNAL_ABS_PATH}/rw_me"
+
+mkdir -p "${SIGNAL_ABS_PATH}/Events"
+mkdir -p "${SIGNAL_ABS_PATH}/madminer"
+mkdir -p "${SIGNAL_ABS_PATH}/rw_me"
+
+
 # Perform actions
-rm -rf "${SIGNAL_ABS_PATH}/madminer/"*
 tar -xvf "${ZIP_FILE}" -C "${SIGNAL_ABS_PATH}/madminer"
 
 mkdir -p "${LOGS_ABS_PATH}"
