@@ -27,6 +27,7 @@ ENV MG_FOLDER "MG5_aMC_v2_6_7"
 ENV MG_BINARY "MG5_aMC_v2_6_7/bin/mg5_aMC"
 RUN curl -sSL "https://launchpad.net/mg5amcnlo/2.0/2.6.x/+download/${MG_VERSION}.tar.gz" | tar -xzv
 
+# ROOT environment variables
 ENV ROOTSYS /usr/local
 ENV PATH $PATH:$ROOTSYS/bin
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ROOTSYS/lib
@@ -36,6 +37,9 @@ RUN echo "install lhapdf6" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install pythia8" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install pythia-pgs" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install Delphes" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
+
+# Delphes environment variables
+ENV ROOT_INCLUDE_PATH $ROOT_INCLUDE_PATH:${SOFTWARE_FOLDER}/${MG_FOLDER}/Delphes/external
 
 
 #### Set working directory
