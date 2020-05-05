@@ -54,7 +54,7 @@ reader = DelphesReader(config_file)
 reader.add_sample(
     lhe_filename=event_path + '/unweighted_events.lhe.gz',
     hepmc_filename=event_path + '/tag_1_pythia8_events.hepmc.gz',
-    sampled_from_benchmark=benchmark,  # 'sm'
+    sampled_from_benchmark=benchmark,
     weights='lhe',
 )
 
