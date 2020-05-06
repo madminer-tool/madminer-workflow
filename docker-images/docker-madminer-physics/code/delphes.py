@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import re
 import sys
 import yaml
 from madminer import DelphesReader
@@ -47,13 +48,28 @@ with open(benchmark_file, 'r') as f:
 reader = DelphesReader(config_file)
 
 
+##########################
+#### Find events file ####
+##########################
+
+events_file = None
+events_regex = re.compile(r'tag_[0-9]+_pythia8_events\.hepmc\.gz')
+
+# This is required when running locally
+for _, _, files in os.walk(event_path):
+    for file in files:
+        if events_regex.match(file):
+            events_file = file
+            break
+
+
 #########################
 ###### Run Delphes ######
 #########################
 
 reader.add_sample(
-    lhe_filename=event_path + '/unweighted_events.lhe.gz',
-    hepmc_filename=event_path + '/tag_1_pythia8_events.hepmc.gz',
+    lhe_filename=event_path + '/' + 'unweighted_events.lhe.gz',
+    hepmc_filename=event_path + '/' + events_file,
     sampled_from_benchmark=benchmark,
     weights='lhe',
 )
