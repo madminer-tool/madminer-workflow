@@ -37,8 +37,12 @@ EXTRACT_PATH="${PROJECT_PATH}/extract"
 DATA_PATH="${PROJECT_PATH}/data"
 
 
-# Perform actions
+# Cleanup previous files (useful when run locally)
+rm -rf "${EXTRACT_PATH}"
 mkdir -p "${EXTRACT_PATH}"
+
+
+# Perform actions
 tar -xvf "${EVENTS_FILE}" -C "${EXTRACT_PATH}"
 mv "${EXTRACT_PATH}/madminer/cards/benchmark_"*".dat" "${EXTRACT_PATH}/madminer/cards/benchmark.dat"
 
