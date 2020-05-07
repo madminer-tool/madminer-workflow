@@ -15,8 +15,8 @@ from pathlib import Path
 
 from madminer.fisherinformation import FisherInformation
 from madminer.limits import AsymptoticLimits
-from madminer.ml import LikelihoodEstimator
 from madminer.ml import ParameterizedRatioEstimator
+from madminer.ml import ScoreEstimator
 from madminer.sampling import SampleAugmenter
 
 # These methods are applied if specified in the input files
@@ -285,6 +285,23 @@ def save_limits(mode, method, models_path, include_xs):
         np.save(file=results_path + f'/{method}_kin.npy', arr=[p_values, best_fit_index])
 
 
+##############################
+## Define save result func. ##
+##############################
+
+def save_result(file_name, result, description):
+    """
+    Save the specified result in the 'results/<model>' folder
+    :param file_name: name to assign the file
+    :param result: ndarray or iterable to save
+    :param description: test to be printed upon saving
+    """
+
+    output_file = results_dir + f'/{gen_method}/{file_name}.npy'
+    np.save(file=output_file, arr=result)
+    print(f'Saved {description} to file: {output_file}')
+
+
 ###############################
 ## Evaluate asymptotic limit ##
 ###############################
@@ -391,64 +408,54 @@ if fisher_info['bool'] and gen_method == 'sally':
 generate_test_data_ratio(gen_method, parameters)
 num_events = calc_num_events(data_file, luminosity)
 
-# Get Log Likelihood Ratio metrics
-out_llr_raw = []
-out_llr_rescaled = []
-
 theta_grid = np.load(rates_dir + '/grid.npy')
+test_file = tests_dir + f'/{gen_method}/x_test.npy'
 
 
 if gen_method in ratio_estimator_methods:
     forge = ParameterizedRatioEstimator()
-    eval_func = forge.evaluate_log_likelihood_ratio
-    eval_flag = True
+    forge.load(eval_folder + '/' + gen_method)
+
+    out_llr_raw = []
+    out_llr_rescaled = []
+
+    for theta_elem in theta_grid:
+        llr, score = forge.evaluate_log_likelihood_ratio(
+            x=test_file,
+            theta=np.array([theta_elem]),
+            test_all_combinations=True,
+            evaluate_score=True,
+        )
+
+        llr_raw = sum(llr[0]) / num_sample_test
+        llr_rescaled = num_events * llr_raw
+
+        out_llr_raw.append(llr_raw)
+        out_llr_rescaled.append(llr_rescaled)
+
+    # Save Log Likelihood Ratio files
+    limits = AsymptoticLimits(data_file)
+    llr_sub, _ = limits._subtract_mle(out_llr_rescaled)
+    p_values = limits.asymptotic_p_value(llr_sub)
+
+    save_result('llr_raw', out_llr_raw, 'raw mean -2 log R')
+    save_result('llr_rescaled', out_llr_rescaled, 'rescaled -2 log R')
+    save_result('llr_subtracted', llr_sub, 'subtracted -2 log R')
+    save_result('p_values', p_values, 'p-values')
+
 
 elif gen_method in score_estimator_methods:
-    forge = LikelihoodEstimator()
-    eval_func = forge.evaluate_log_likelihood
-    eval_flag = False
+    forge = ScoreEstimator()
+    forge.load(eval_folder + '/' + gen_method)
+
+    out_scores = []
+
+    for theta_elem in theta_grid:
+        score = forge.evaluate_score(x=test_file, theta=np.array([theta_elem]))
+        out_scores.append(score)
+
+    save_result('scores', out_scores, 'scores')
+
 
 else:
     raise ValueError('Invalid generation method')
-
-
-forge.load(eval_folder + '/' + gen_method)
-
-for theta_elem in theta_grid:
-    llr, score = eval_func(
-        x=tests_dir + f'/{gen_method}/x_test.npy',
-        theta=np.array([theta_elem]),
-        test_all_combinations=True,
-        evaluate_score=eval_flag,
-    )
-
-    llr_raw = sum(llr[0]) / num_sample_test
-    llr_rescaled = num_events * llr_raw
-
-    out_llr_raw.append(llr_raw)
-    out_llr_rescaled.append(llr_rescaled)
-
-
-################################
-## Save Log Like. Ratio files ##
-################################
-
-limits = AsymptoticLimits(data_file)
-llr_sub, _ = limits._subtract_mle(out_llr_rescaled)
-p_values = limits.asymptotic_p_value(llr_sub)
-
-llr_raw_file = results_dir + f'/{gen_method}/llr_raw.npy'
-np.save(file=llr_raw_file, arr=out_llr_raw)
-print(f'Saved Raw mean -2 log R to file: {llr_raw_file}')
-
-llr_rescaled_file = results_dir + f'/{gen_method}/llr_rescaled.npy'
-np.save(file=llr_rescaled_file, arr=out_llr_rescaled)
-print(f'Saved rescaled -2 log R to file: {llr_rescaled_file}')
-
-llr_subtracted_file = results_dir + f'/{gen_method}/llr_subtracted.npy'
-np.save(file=llr_subtracted_file, arr=llr_sub)
-print(f'Saved subtracted -2 log R to file: {llr_subtracted_file}')
-
-pvals_file = results_dir + f'/{gen_method}/p_values.npy'
-np.save(file=pvals_file, arr=p_values)
-print(f'Saved p-values to file: {pvals_file}')
