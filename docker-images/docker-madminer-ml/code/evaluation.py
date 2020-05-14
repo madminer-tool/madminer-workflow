@@ -15,8 +15,8 @@ from pathlib import Path
 
 from madminer.fisherinformation import FisherInformation
 from madminer.limits import AsymptoticLimits
-from madminer.ml import LikelihoodEstimator
 from madminer.ml import ParameterizedRatioEstimator
+from madminer.ml import ScoreEstimator
 from madminer.sampling import SampleAugmenter
 
 # These methods are applied if specified in the input files
@@ -55,7 +55,7 @@ tests_dir = str(project_dir.joinpath('test'))
 sampling_methods = {
     'benchmark': benchmark,
     'benchmarks': benchmarks,
-    'morphing_points': morphing_point,
+    'morphing_point': morphing_point,
     'random_morphing_points': random_morphing_points,
 }
 
@@ -66,7 +66,7 @@ sampling_methods = {
 
 inputs_file = sys.argv[1]
 eval_folder = sys.argv[2]
-config_file = sys.argv[3]
+data_file = sys.argv[3]
 
 with open(inputs_file) as f:
     inputs = yaml.safe_load(f)
@@ -81,10 +81,11 @@ fisher_info = dict(inputs['fisher_information'])
 gen_method = str(os.path.split(os.path.abspath(eval_folder))[1])
 luminosity = float(inputs['luminosity'])
 test_split = float(inputs['test_split'])
-num_samples = int(inputs['n_samples']['train'])
+num_samples = int(inputs['n_samples']['test'])
 
-with h5py.File(config_file, 'r') as f:
-    parameters = f['parameters']['names']
+# Do NOT use a context manager here, the file would be closed
+f = h5py.File(data_file, 'r')
+parameters = f['parameters']['names']
 
 
 ###############################
@@ -119,7 +120,7 @@ def calc_num_events(config_file, lum):
         partition='train',
         test_split=test_split
     )
-    logging.info(f"SampleAugmenter xsecs: ", xs_xsecs[0])
+    logging.info(f"SampleAugmenter xsecs: {xs_xsecs[0]}")
 
     # Second: calculate expected number of events
     _, xs, _ = sample_augmenter.cross_sections(theta=morphing_point(theta_true))
@@ -164,15 +165,15 @@ def generate_test_data_ratio(method, params):
     :param params: list of parameter names the analysis is taking
     """
 
-    sampler = SampleAugmenter(config_file, include_nuisance_parameters=False)
-    thetas = inputs['evaluation'][method]
+    sampler = SampleAugmenter(data_file, include_nuisance_parameters=False)
+    thetas = inputs[method]
 
     if len(thetas) == 1:
         theta = thetas['theta']
         theta_sampling = theta['sampling_method']
 
         # Default arguments
-        theta_args = theta['argument']
+        theta_args = [theta['argument']]
 
         # Overriding default 'theta' arguments
         if theta_sampling == 'random_morphing_points':
@@ -195,15 +196,17 @@ def generate_test_data_ratio(method, params):
         theta_1_sampling = theta_1['sampling_method']
 
         # Default arguments
-        theta_0_args = [theta_0['argument']]
-        theta_1_args = [theta_1['argument']]
+        theta_0_args = []
+        theta_1_args = []
 
         # Overriding default 'theta' arguments
         if theta_0_sampling == 'random_morphing_points':
             theta_0_args = generate_theta_args(theta_0, parameters)
+            theta_1_args = [theta_1['argument']]
 
         # Overriding default 'theta' arguments
         if theta_1_sampling == 'random_morphing_points':
+            theta_0_args = [theta_0['argument']]
             theta_1_args = generate_theta_args(theta_1, parameters)
 
         # Getting the specified sampling method
@@ -215,7 +218,7 @@ def generate_test_data_ratio(method, params):
             theta1=theta_1_method(*theta_1_args),
             n_samples=num_samples,
             folder=tests_dir + f'/{method}/',
-            filename='test'
+            filename='test',
         )
 
 
@@ -226,7 +229,7 @@ def generate_test_data_score(method, params):
     :param params: list of parameter names the analysis is taking
     """
 
-    sampler = SampleAugmenter(config_file, include_nuisance_parameters=False)
+    sampler = SampleAugmenter(data_file, include_nuisance_parameters=False)
     thetas = inputs['evaluation'][method]
 
     theta = thetas['theta']
@@ -263,7 +266,7 @@ def save_limits(mode, method, models_path, include_xs):
     :param include_xs: flag indicating whether or not include the cross section
     """
 
-    _, p_values, best_fit_index = limits.expected_limits(
+    _, p_values, best_fit_index, _, _, _ = limits.expected_limits(
         mode=mode,
         theta_true=theta_true,
         grid_ranges=theta_ranges,
@@ -280,6 +283,23 @@ def save_limits(mode, method, models_path, include_xs):
         np.save(file=results_path + f'/{method}.npy', arr=[p_values, best_fit_index])
     else:
         np.save(file=results_path + f'/{method}_kin.npy', arr=[p_values, best_fit_index])
+
+
+##############################
+## Define save result func. ##
+##############################
+
+def save_result(file_name, result, description):
+    """
+    Save the specified result in the 'results/<model>' folder
+    :param file_name: name to assign the file
+    :param result: ndarray or iterable to save
+    :param description: test to be printed upon saving
+    """
+
+    output_file = results_dir + f'/{gen_method}/{file_name}.npy'
+    np.save(file=output_file, arr=result)
+    print(f'Saved {description} to file: {output_file}')
 
 
 ###############################
@@ -305,8 +325,8 @@ if asymptotic['bool']:
 
 
     # Computes rates and grid
-    limits = AsymptoticLimits(config_file)
-    theta_grid, p_values, best_fit_index = limits.expected_limits(
+    limits = AsymptoticLimits(data_file)
+    theta_grid, p_values, best_fit_index, _, _, _ = limits.expected_limits(
         mode="rate",
         theta_true=theta_true,
         grid_ranges=theta_ranges,
@@ -320,7 +340,7 @@ if asymptotic['bool']:
 
 
     # Compute cross sections and effective samples
-    augmenter = SampleAugmenter(config_file, include_nuisance_parameters=False)
+    augmenter = SampleAugmenter(data_file, include_nuisance_parameters=False)
     cross_sec_grid = []
     num_effect_grid = []
     num_sample_test = 10000
@@ -340,7 +360,7 @@ if asymptotic['bool']:
 
     # Compute and save histogram
     for flag in include_xsec:
-        _ , p_values, best_fit_index = limits.expected_limits(
+        _, p_values, best_fit_index, _, _, _ = limits.expected_limits(
             mode="histo",
             theta_true=theta_true,
             grid_ranges=theta_ranges,
@@ -370,15 +390,11 @@ if asymptotic['bool']:
 ###############################
 
 if fisher_info['bool'] and gen_method == 'sally':
-    fisher = FisherInformation(config_file, include_nuisance_parameters=False)
-    theta_true = [
-        float(fisher_info['theta_true'][0]),
-        float(fisher_info['theta_true'][1]),
-        float(fisher_info['theta_true'][2]),
-    ]
+    fisher = FisherInformation(data_file, include_nuisance_parameters=False)
+    fisher_theta = fisher_info['theta_true']
 
     fisher.calculate_fisher_information_full_detector(
-        theta=[0., 0., 0.],
+        theta=fisher_theta,
         model_file=model_dir + '/sally/sally',
         luminosity=30000.
     )
@@ -390,70 +406,56 @@ if fisher_info['bool'] and gen_method == 'sally':
 
 # Generate test data and num_events
 generate_test_data_ratio(gen_method, parameters)
-num_events = calc_num_events(config_file, luminosity)
-
-# Get Log Likelihood Ratio metrics
-llr_raw = []
-llr_rescaled = []
-thetas = []
-scores = []
+num_events = calc_num_events(data_file, luminosity)
 
 theta_grid = np.load(rates_dir + '/grid.npy')
+test_file = tests_dir + f'/{gen_method}/x_test.npy'
 
 
 if gen_method in ratio_estimator_methods:
     forge = ParameterizedRatioEstimator()
-    eval_func = forge.evaluate_log_likelihood_ratio
-    eval_flag = True
+    forge.load(eval_folder + '/' + gen_method)
+
+    out_llr_raw = []
+    out_llr_rescaled = []
+
+    for theta_elem in theta_grid:
+        llr, score = forge.evaluate_log_likelihood_ratio(
+            x=test_file,
+            theta=np.array([theta_elem]),
+            test_all_combinations=True,
+            evaluate_score=True,
+        )
+
+        llr_raw = sum(llr[0]) / num_sample_test
+        llr_rescaled = num_events * llr_raw
+
+        out_llr_raw.append(llr_raw)
+        out_llr_rescaled.append(llr_rescaled)
+
+    # Save Log Likelihood Ratio files
+    limits = AsymptoticLimits(data_file)
+    llr_sub, _ = limits._subtract_mle(out_llr_rescaled)
+    p_values = limits.asymptotic_p_value(llr_sub)
+
+    save_result('llr_raw', out_llr_raw, 'raw mean -2 log R')
+    save_result('llr_rescaled', out_llr_rescaled, 'rescaled -2 log R')
+    save_result('llr_subtracted', llr_sub, 'subtracted -2 log R')
+    save_result('p_values', p_values, 'p-values')
+
 
 elif gen_method in score_estimator_methods:
-    forge = LikelihoodEstimator()
-    eval_func = forge.evaluate_log_likelihood
-    eval_flag = False
+    forge = ScoreEstimator()
+    forge.load(eval_folder + '/' + gen_method)
+
+    out_scores = []
+
+    for theta_elem in theta_grid:
+        score = forge.evaluate_score(x=test_file, theta=np.array([theta_elem]))
+        out_scores.append(score)
+
+    save_result('scores', out_scores, 'scores')
+
 
 else:
     raise ValueError('Invalid generation method')
-
-
-forge.load(eval_folder + '/' + gen_method)
-
-for theta_elem in theta_grid:
-    llr, score = eval_func(
-        x=tests_dir + f'/{gen_method}/x_test.npy',
-        theta=np.array([theta_elem]),
-        test_all_combinations=True,
-        evaluate_score=eval_flag,
-    )
-
-    llr_raw = sum(llr[0]) / num_sample_test
-    llr_rescaled = num_events * llr_raw
-
-    llr_raw.append(llr_raw)
-    llr_rescaled.append(llr_rescaled)
-    thetas.append(theta_elem)
-    scores.append(score)
-
-
-################################
-## Save Log Like. Ratio files ##
-################################
-
-limits = AsymptoticLimits(config_file)
-llr_sub, _ = limits._subtract_mle(llr_rescaled)
-p_values = limits.asymptotic_p_value(llr_sub)
-
-llr_raw_file = results_dir + f'/{gen_method}/llr_raw.npy'
-np.save(file=llr_raw_file, arr=llr_raw)
-print(f'Saved Raw mean -2 log R to file: {llr_raw_file}')
-
-llr_rescaled_file = results_dir + f'/{gen_method}/llr_rescaled.npy'
-np.save(file=llr_rescaled_file, arr=llr_rescaled)
-print(f'Saved rescaled -2 log R to file: {llr_rescaled_file}')
-
-llr_subtracted_file = results_dir + f'/{gen_method}/llr_subtracted.npy'
-np.save(file=llr_subtracted_file, arr=llr_sub)
-print(f'Saved subtracted -2 log R to file: {llr_subtracted_file}')
-
-pvals_file = results_dir + f'/{gen_method}/p_values.npy'
-np.save(file=pvals_file, arr=p_values)
-print(f'Saved p-values to file: {pvals_file}')

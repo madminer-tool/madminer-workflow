@@ -10,6 +10,11 @@ docker-images/docker-madminer-all/requirements-*.txt
 **/extract
 **/logs
 **/mg_processes
+**/models
+**/plots
+**/rates
+**/results
+**/test
 
 # Ignore any analysis intermediate files
 **/*.tar.gz

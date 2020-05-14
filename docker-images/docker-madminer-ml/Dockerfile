@@ -3,10 +3,13 @@
 FROM madminertool/docker-madminer:latest
 
 
-#### Set working directory and copy files
+#### Set working directory
 WORKDIR /madminer
-COPY requirements.txt .
+
+#### Copy files
 COPY code ./code
+COPY scripts ./scripts
+COPY requirements.txt .
 
 
 # Install Python2 dependencies

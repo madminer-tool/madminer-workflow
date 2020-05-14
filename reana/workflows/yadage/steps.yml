@@ -75,13 +75,8 @@ combine:
 sampling:
   environment: *common_env_ml
   process:
-    process_type: interpolated-script-cmd
-    script: |
-      mkdir /madminer/data
-      mkdir /madminer/data/samples
-      python /madminer/code/configurate_ml.py {n_trainsamples} {data_file} {input_file}
-      cd /madminer/data
-      cp -R /madminer/data/Samples_* {sampleworkdir}
+    process_type: string-interpolated-cmd
+    script: scripts/1_sampling.sh -p /madminer -n {num_train_samples} -i {input_file} -d {data_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: sampling_file
@@ -90,13 +85,8 @@ sampling:
 training:
   environment: *common_env_ml
   process:
-    process_type: interpolated-script-cmd 
-    script: |
-      mkdir /madminer/models
-      cp -R {trainfolder} /madminer
-      python /madminer/code/train.py /madminer/Samples_*/ {input_file}
-      tar -czvf /madminer/Model.tar.gz /madminer/models
-      cp -R /madminer/Model.tar.gz  {trainworkdir}
+    process_type: string-interpolated-cmd
+    script: scripts/2_training.sh -p /madminer -i {input_file} -t {train_folder}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: trained_file
@@ -105,34 +95,19 @@ training:
 evaluating:
   environment: *common_env_ml
   process:
-    process_type: interpolated-script-cmd
-    script: |
-      mkdir /madminer/models
-      mkdir /madminer/test
-      mkdir /madminer/results
-      mkdir /madminer/rates/
-      tar -xvf {trained_file} -C /madminer/models --strip-components 2
-      python /madminer/code/evaluation.py {input_file} /madminer/models/* {data_file}
-      tar -czvf /madminer/Results.tar.gz /madminer/results /madminer/rates /madminer/test /madminer/models
-      cp -R /madminer/Results.tar.gz  {evalworkdir}
-      ls -lR
+    process_type: string-interpolated-cmd
+    script: scripts/3_evaluation.sh -p /madminer -i {input_file} -m {model_file} -d {data_file}
   publisher:
     publisher_type: interpolated-pub
     publish:
-      results_file: '{evalworkdir}/Results.tar.gz'
+      results_file: 'Results_*.tar.gz'
 
 plotting:
   environment: *common_env_ml
   process:
-    process_type: interpolated-script-cmd
-    script: |
-      mkdir /madminer/plots
-      echo hello
-      for file in {results_file}; do tar -xvf "$file" -C .  --strip-components 1 ; done
-      python /madminer/code/plotting.py {input_file} 
-      ls -lR
-      cp -R /madminer/plots {plotworkdir}
+    process_type: string-interpolated-cmd
+    script: scripts/4_plotting.sh -p /madminer -i {input_file} -r {results_file}
   publisher:
     publisher_type: interpolated-pub
     publish:
-      outputfile: '{outputfile}'
+      outputfile: '{output_file}'

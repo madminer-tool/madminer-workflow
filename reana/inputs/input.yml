@@ -73,7 +73,6 @@ cuts:
 
 include_nuisance_parameters: False
 methods: ['sally', 'alices', 'alice']
-shuffle: False
 
 # Also used in the 'evaluation' step
 n_samples:
@@ -101,10 +100,6 @@ alices:
         prior_shape: 'gaussian'
         prior_param_0: 0.0
         prior_param_1: 1.0
-      parameter_2:
-        prior_shape: 'gaussian'
-        prior_param_0: 0.0
-        prior_param_1: 1.0
   theta_1:
     sampling_method: 'benchmark'
     argument: 'sm'
@@ -118,10 +113,6 @@ alice:
         prior_param_0: 0.0
         prior_param_1: 1.0
       parameter_1:
-        prior_shape: 'gaussian'
-        prior_param_0: 0.0
-        prior_param_1: 1.0
-      parameter_2:
         prior_shape: 'gaussian'
         prior_param_0: 0.0
         prior_param_1: 1.0
@@ -160,21 +151,6 @@ fisher_information:
   observable: pt_aa
   bins: [30.0,100.0,200.0,400.0]
   histrange: (30.0,400.0)
-
-# Also used in the 'plotting' step
-evaluation:
-  sally:
-    theta:
-      sampling_method: 'benchmark'
-      argument: 'sm'
-  alices:
-    theta:
-      sampling_method: 'morphing_point'
-      argument: [10.0,10.0]
-  alice:
-    theta:
-      sampling_method: 'morphing_point'
-      argument: [10.,010.0]
 
 
 #### STEP: PLOTTING
