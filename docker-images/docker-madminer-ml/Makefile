@@ -3,7 +3,18 @@ REGISTRY=madminertool
 VERSION=$(shell cat ./VERSION)
 
 
-all: build push
+all: clean build push
+
+
+.PHONY: clean
+clean:
+	@rm -rf data
+	@rm -rf models
+	@rm -rf plots
+	@rm -rf rates
+	@rm -rf results
+	@rm -rf test
+	@find . -name "*.tar.gz" -delete
 
 
 .PHONY: build
