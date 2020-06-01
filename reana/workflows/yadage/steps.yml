@@ -21,7 +21,7 @@ configurate:
   environment: *common_env_physics
   process:
     process_type: string-interpolated-cmd
-    script: scripts/1_configurate.sh -p /madminer -i {input_file}
+    cmd: scripts/1_configurate.sh -p /madminer -i {input_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: config_file
@@ -31,7 +31,7 @@ generate:
   environment: *common_env_physics
   process:
     process_type: string-interpolated-cmd
-    script: scripts/2_generate.sh -p /madminer -s {signal_dir} -j {num_jobs} -c {config_file}
+    cmd: scripts/2_generate.sh -p /madminer -s {signal_dir} -j {num_jobs} -c {config_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: script_files
@@ -41,7 +41,7 @@ mg_pythia:
   environment: *common_env_physics
   process:
     process_type: string-interpolated-cmd
-    script: scripts/3_pythia.sh -p /madminer -m {madgraph_dir} -s {signal_dir} -l {logs_dir} -z {events_folder}
+    cmd: scripts/3_pythia.sh -p /madminer -m {madgraph_dir} -s {signal_dir} -l {logs_dir} -z {events_folder}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: postrun_file
@@ -51,7 +51,7 @@ delphes:
   environment: *common_env_physics
   process:
     process_type: string-interpolated-cmd
-    script: scripts/4_delphes.sh -p /madminer -c {config_file} -i {input_file} -e {event_file}
+    cmd: scripts/4_delphes.sh -p /madminer -c {config_file} -i {input_file} -e {event_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: dpostrun_file
@@ -61,7 +61,7 @@ combine:
   environment: *common_env_physics
   process:
     process_type: string-interpolated-cmd
-    script: scripts/5_combine.sh -p /madminer -i {input_files}
+    cmd: scripts/5_combine.sh -p /madminer -i {input_files}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: data_file
@@ -76,7 +76,7 @@ sampling:
   environment: *common_env_ml
   process:
     process_type: string-interpolated-cmd
-    script: scripts/1_sampling.sh -p /madminer -n {num_train_samples} -i {input_file} -d {data_file}
+    cmd: scripts/1_sampling.sh -p /madminer -n {num_train_samples} -i {input_file} -d {data_file}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: sampling_file
@@ -86,7 +86,7 @@ training:
   environment: *common_env_ml
   process:
     process_type: string-interpolated-cmd
-    script: scripts/2_training.sh -p /madminer -i {input_file} -t {train_folder}
+    cmd: scripts/2_training.sh -p /madminer -i {input_file} -t {train_folder}
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: trained_file
@@ -96,7 +96,7 @@ evaluating:
   environment: *common_env_ml
   process:
     process_type: string-interpolated-cmd
-    script: scripts/3_evaluation.sh -p /madminer -i {input_file} -m {model_file} -d {data_file}
+    cmd: scripts/3_evaluation.sh -p /madminer -i {input_file} -m {model_file} -d {data_file}
   publisher:
     publisher_type: interpolated-pub
     publish:
@@ -106,7 +106,7 @@ plotting:
   environment: *common_env_ml
   process:
     process_type: string-interpolated-cmd
-    script: scripts/4_plotting.sh -p /madminer -i {input_file} -r {results_file}
+    cmd: scripts/4_plotting.sh -p /madminer -i {input_file} -r {results_file}
   publisher:
     publisher_type: interpolated-pub
     publish:
