@@ -10,43 +10,43 @@ stages:
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        input_file: {stages: init, output: inputfile, unwrap: true}
-      step: {$ref: 'steps.yml#/configurate'}
+        input_file: {step: init, output: inputfile}
+      step: {$ref: 'workflows/yadage/steps.yml#/configurate'}
 
   - name: generate
     dependencies: [configurate]
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        input_file: {stages: init, output: inputfile, unwrap: true}
-        config_file: {stages: configurate, output: config_file, unwrap: true}
-        num_jobs: {stages: init, output: njobs}
+        input_file: {step: init, output: inputfile}
+        config_file: {step: configurate, output: config_file}
+        num_jobs: {step: init, output: njobs}
         signal_dir: 'code/mg_processes/signal'
-      step: {$ref: 'steps.yml#/generate'}
+      step: {$ref: 'workflows/yadage/steps.yml#/generate'}
 
   - name: mgpythia
     dependencies: [generate]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        events_folder: {stages: generate, output: script_files, unwrap: true}
+        events_folder: {step: generate, output: script_files}
         madgraph_dir: 'software/MG5_aMC_v2_6_7'
         signal_dir: 'code/mg_processes/signal'
         logs_dir: 'code/logs'
       scatter:
         method: zip
         parameters: [eventfolder]
-      step: {$ref: 'steps.yml#/mg_pythia'}
+      step: {$ref: 'workflows/yadage/steps.yml#/mg_pythia'}
 
   - name: delphes
     dependencies: [mgpythia]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        config_file: {stages: configurate, output: config_file, unwrap: true}
-        input_file: {stages: init, output: inputfile, unwrap: true}
-        event_file: {stages: mgpythia, output: postrun_file, unwrap: true}
-      step: {$ref: 'steps.yml#/delphes'}
+        config_file: {step: configurate, output: config_file}
+        input_file: {step: init, output: inputfile}
+        event_file: {step: mgpythia, output: postrun_file}
+      step: {$ref: 'workflows/yadage/steps.yml#/delphes'}
       scatter:
         method: zip
         parameters: [eventfile]
@@ -56,8 +56,8 @@ stages:
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        input_files: {stages: delphes, output: dpostrun_file}
-      step: {$ref: 'steps.yml#/combine'}
+        input_files: {step: delphes, output: dpostrun_file}
+      step: {$ref: 'workflows/yadage/steps.yml#/combine'}
 
 
   ########################################
@@ -69,43 +69,43 @@ stages:
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        num_train_samples: {stages: init, output: ntrainsamples}
-        input_file: {stages: init, output: inputfile, unwrap: true}
-        data_file: {stages: combine, output: data_file, unwrap: true}
-      step: {$ref: steps.yml#/sampling}
+        num_train_samples: {step: init, output: ntrainsamples}
+        input_file: {step: init, output: inputfile}
+        data_file: {step: combine, output: data_file}
+      step: {$ref: 'workflows/yadage/steps.yml#/sampling'}
 
   - name: training
     dependencies: [sampling]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        input_file: {stages: init, output: inputfile, unwrap: true}
-        train_folder: {stages: sampling, output: sampling_file, unwrap: true}
+        input_file: {step: init, output: inputfile}
+        train_folder: {step: sampling, output: sampling_file}
       scatter:
         method: zip
         parameters: [trainfolder]
-      step: {$ref: 'steps.yml#/training'}
+      step: {$ref: 'workflows/yadage/steps.yml#/training'}
 
   - name: evaluating
     dependencies: [training]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        input_file: {stages: init, output: inputfile, unwrap: true}
-        model_file: {stages: training, output: trained_file, unwrap: true}
-        data_file: {stages: combine, output: data_file, unwrap: true}
+        input_file: {step: init, output: inputfile}
+        model_file: {step: training, output: trained_file}
+        data_file: {step: combine, output: data_file}
         results_file: 'Results.tar.gz'
       scatter:
         method: zip
         parameters: [trained_file]
-      step: {$ref: 'steps.yml#/evaluating'}
+      step: {$ref: 'workflows/yadage/steps.yml#/evaluating'}
 
   - name: plotting
     dependencies: [evaluating]
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        input_file: {stages: init, output: inputfile, unwrap: true}
-        results_file: {stages: evaluating, output: results_file, unwrap: true}
+        input_file: {step: init, output: inputfile}
+        results_file: {step: evaluating, output: results_file}
         output_file: 'outputfile.txt'
-      step: {$ref: 'steps.yml#/plotting'}
+      step: {$ref: 'workflows/yadage/steps.yml#/plotting'}

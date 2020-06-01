@@ -52,5 +52,5 @@ COPY requirements.txt .
 
 
 # Install Python2 dependencies
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir --requirement requirements.txt
+RUN python2 -m pip install --upgrade pip && \
+    python2 -m pip install --no-cache-dir --requirement requirements.txt
