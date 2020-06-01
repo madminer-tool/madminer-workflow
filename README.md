@@ -55,37 +55,40 @@ Dependency installation depends on how you want to run the workflow: using a REA
 
 
 ### Deploy with REANA
-To deploy Madminer locally using [REANA][reana-webpage], use _Minikube_ as emulator for a cluster.
-Please refer to the [REANA-Cluster documentation][reana-cluster-docs] for more details.
-If you have access to a REANA cluster, then you will only need to introduce the credentials as shown below,
-to generate the following combined-workflow:
+To deploy Madminer locally using [REANA][reana-webpage], use _VirtualBox_ as emulator and _Minikube_ 
+as container orchestrator in order to simulate a local cluster. Please refer to the **version 0.7.0**
+[new REANA deployment documentation][reana-deploy-docs] for more details.
+
+If you have access to a remote REANA cluster, introduce only the credentials as shown below, to generate 
+the following combined-workflow:
 
 ![image of the workflow](docs/images/workflow-all.png)
 
-To introduce the credentials, go to the `example-full/` directory and run:
+To introduce the credentials, and start the workflow:
 ```bash
-$ virtualenv ~/.virtualenvs/myreana
-$ source ~/.virtualenvs/myreana/bin/activate
-(myreana) $ pip install reana-client==0.5.0
-# enter credentials for REANA-cluster
-(myreana) $ export REANA_ACCESS_TOKEN = [..]
-(myreana) $ export REANA_SERVER_URL = [..]
-# or for minikube deployment
-(myreana) $ eval $(reana-cluster env --include-admin-token)
-# check connectivity to `reana-cluster`
-(myreana) $ reana-client ping
-# create the analysis
-(myreana) $ reana-client create -n my-analysis
-(myreana) $ export REANA_WORKON=my-analysis.1
-(myreana) $ reana-client upload ./inputs/input.yml
-(myreana) $ reana-client start
-(myreana) $ reana-client status
+$ source ~/.virtualenvs/reana/bin/activate
+# A) Enter credentials for a remote-cluster
+(reana) $ export REANA_ACCESS_TOKEN = [..]
+(reana) $ export REANA_SERVER_URL = [..]
+# B) Enter credentials for a minikube local-cluster
+(reana) $ eval $(reana-dev setup-environment)
+# Check connectivity to the cluster
+(reana) $ reana-client ping
+# Create the analysis from within the 'reana' folder
+(reana) $ cd reana
+(reana) $ reana-client create -n madminer-workflow
+(reana) $ export REANA_WORKON=madminer-workflow
+(reana) $ reana-client upload ./inputs/input.yml
+(reana) $ reana-client upload ./workflows/yadage/workflow.yml
+(reana) $ reana-client upload ./workflows/yadage/steps.yml
+(reana) $ reana-client start
+(reana) $ reana-client status
 ```
 
 It might take some time to finish depending on the job and the cluster. Once it does, list and download the files:
 ```bash
-(myreana) $ reana-client ls
-(myreana) $ reana-client download <path/to/file/on/reana/workon>
+(reana) $ reana-client ls
+(reana) $ reana-client download <path/to/file/on/reana/workon>
 ```
 
 The command `reana-client ls` will display the folders containing the results from each step.
@@ -219,7 +222,7 @@ Without taking into account the inputs and the map-reduce, the general workflow 
 [madminer-docs]: https://madminer.readthedocs.io/en/latest/index.html
 [madminer-repo]: https://github.com/diana-hep/madminer
 [madminer-tutorial]: https://github.com/diana-hep/madminer/tree/master/examples/tutorial_particle_physics
-[reana-cluster-docs]: https://reana-cluster.readthedocs.io/en/latest/gettingstarted.html
+[reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
 [reana-webpage]: http://www.reanahub.io/
 [travis-build-status]: https://travis-ci.com/irinaespejo/workflow-madminer.svg?branch=master
 [yadage-docs]: https://yadage.readthedocs.io/en/latest/
