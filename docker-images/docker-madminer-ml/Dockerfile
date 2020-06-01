@@ -13,9 +13,9 @@ COPY requirements.txt .
 
 
 # Install Python2 dependencies
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir --requirement requirements.txt
+RUN python2 -m pip install --upgrade pip && \
+    python2 -m pip install --no-cache-dir --requirement requirements.txt
 
 # Install Python3 dependencies
-RUN pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir --requirement requirements.txt
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install --no-cache-dir --requirement requirements.txt

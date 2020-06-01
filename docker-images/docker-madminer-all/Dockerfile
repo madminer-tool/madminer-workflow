@@ -68,10 +68,10 @@ COPY requirements-ml.txt requirements-ph.txt ./
 
 
 # Install Python2 dependencies
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir --requirement requirements-ml.txt && \
-    pip install --no-cache-dir --requirement requirements-ph.txt
+RUN python2 -m pip install --upgrade pip && \
+    python2 -m pip install --no-cache-dir --requirement requirements-ml.txt && \
+    python2 -m pip install --no-cache-dir --requirement requirements-ph.txt
 
 # Install Python3 dependencies
-RUN pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir --requirement requirements-ml.txt
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install --no-cache-dir --requirement requirements-ml.txt
