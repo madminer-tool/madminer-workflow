@@ -25,6 +25,7 @@ FROM madminertool/docker-madminer:latest
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
+    rsync \
     ca-certificates \
     gfortran \
     build-essential \
