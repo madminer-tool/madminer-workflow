@@ -5,7 +5,6 @@
 ### and all the necessary sub-dependencies to run Physics-dependent steps:
 ### - lhapdf6
 ### - pythia8
-### - pythia-pgs
 ### - Delphes
 ###
 ### Please consider, that even if this Dockerfile definition is extremely similar as the one
@@ -54,7 +53,6 @@ ENV DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:$ROOTSYS/lib
 
 RUN echo "install lhapdf6" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install pythia8" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
-RUN echo "install pythia-pgs" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install Delphes" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 
 # Delphes environment variables
