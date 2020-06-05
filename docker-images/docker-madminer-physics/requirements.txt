@@ -1,2 +1,2 @@
-numpy==1.16.6
+madminer==0.7.2
 pyyaml==5.3.1
