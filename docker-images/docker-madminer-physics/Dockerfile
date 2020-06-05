@@ -7,6 +7,7 @@ FROM madminertool/docker-madminer:latest
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
+    rsync \
     ca-certificates \
     gfortran \
     build-essential \
@@ -35,7 +36,6 @@ ENV DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:$ROOTSYS/lib
 
 RUN echo "install lhapdf6" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install pythia8" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
-RUN echo "install pythia-pgs" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 RUN echo "install Delphes" | python2 ${SOFTWARE_FOLDER}/${MG_BINARY}
 
 # Delphes environment variables
