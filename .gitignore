@@ -1,28 +1,7 @@
-# Ignore workdir directory
-reana/workdir/
-
-# Ignore copied files
-docker-images/docker-madminer-all/code
-docker-images/docker-madminer-all/requirements-*.txt
-
-# Ignore any analysis step output folders
-**/data
-**/extract
-**/logs
-**/mg_processes
-**/models
-**/plots
-**/rates
-**/results
-**/test
-
-# Ignore any analysis intermediate files
-**/*.tar.gz
-**/MG5_debug
-**/py.py
-
-# Ignore local software installation (i.e. MadGraph 5)
-**/software
-
-# Ignore any macOS files
-**/.DS_Store
+example-full/workdir/
+docker-images/docker-madminer-physics/MG5_aMC_v2_6_2/
+docker-images/docker-madminer-physics/MG5_aMC_v2_6_2/mg_processes/
+README.md
+.idea
+data
+mlruns
