@@ -94,7 +94,6 @@ stages:
         input_file: {step: init, output: inputfile}
         model_file: {step: training, output: trained_file}
         data_file: {step: combine, output: data_file}
-        results_file: 'Results.tar.gz'
       scatter:
         method: zip
         parameters: [trained_file]
@@ -106,6 +105,10 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         input_file: {step: init, output: inputfile}
-        results_file: {step: evaluating, output: results_file}
-        output_file: 'outputfile.txt'
+        # The following line is wrong.
+        # How to get output ZIPs from a 'interpolated-pub' publisher_type step?
+        #
+        # result_files: {step: evaluating, output: ??????}
+        #
+        output_file: 'output.txt'
       step: {$ref: 'workflows/yadage/steps.yml#/plotting'}

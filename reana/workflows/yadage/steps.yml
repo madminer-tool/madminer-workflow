@@ -106,7 +106,7 @@ plotting:
   environment: *common_env_ml
   process:
     process_type: string-interpolated-cmd
-    cmd: scripts/4_plotting.sh -p /madminer -i {input_file} -r {results_file}
+    cmd: scripts/4_plotting.sh -p /madminer -i {input_file} -r {result_files}
   publisher:
     publisher_type: interpolated-pub
     publish:
