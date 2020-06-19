@@ -25,7 +25,7 @@ configurate:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: config_file
-    globexpression: '*.h5' 
+    globexpression: '*.h5'
 
 generate:
   environment: *common_env_physics

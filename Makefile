@@ -8,7 +8,7 @@ all: clean run
 
 .PHONY: clean
 clean:
-	@echo "Cleaning previous execution..."
+	@echo "Cleaning previous run..."
 	@rm -rf $(YADAGE_TEST_FOLDER)
 
 
