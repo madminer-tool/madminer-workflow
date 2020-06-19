@@ -40,13 +40,6 @@ for key in logging.Logger.manager.loggerDict:
 ##### Global variables #####
 ############################
 
-project_dir = Path(__file__).parent.parent
-
-model_dir = str(project_dir.joinpath('models'))
-rates_dir = str(project_dir.joinpath('rates'))
-results_dir = str(project_dir.joinpath('results'))
-tests_dir = str(project_dir.joinpath('test'))
-
 sampling_methods = {
     'benchmark': benchmark,
     'benchmarks': benchmarks,
@@ -62,6 +55,12 @@ sampling_methods = {
 inputs_file = sys.argv[1]
 eval_folder = sys.argv[2]
 data_file = sys.argv[3]
+output_dir = Path(sys.argv[4])
+
+model_dir = str(output_dir.joinpath('models'))
+rates_dir = str(output_dir.joinpath('rates'))
+results_dir = str(output_dir.joinpath('results'))
+tests_dir = str(output_dir.joinpath('test'))
 
 with open(inputs_file) as f:
     inputs = yaml.safe_load(f)

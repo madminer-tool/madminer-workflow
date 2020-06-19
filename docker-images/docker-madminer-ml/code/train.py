@@ -10,19 +10,14 @@ from madminer.ml import ScoreEstimator
 
 
 ############################
-##### Global variables #####
-############################
-
-project_dir = Path(__file__).parent.parent
-models_dir = str(project_dir.joinpath('models'))
-
-
-############################
 ##### Argument parsing #####
 ############################
 
 samples_path = str(sys.argv[1])
 input_file = str(sys.argv[2])
+output_dir = Path(sys.argv[3])
+
+models_dir = str(output_dir.joinpath('models'))
 
 with open(input_file) as f:
     inputs = yaml.safe_load(f)
