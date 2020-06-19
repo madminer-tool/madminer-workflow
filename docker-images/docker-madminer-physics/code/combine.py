@@ -6,20 +6,13 @@ from pathlib import Path
 
 
 ##########################
-#### Global variables ####
-##########################
-
-project_dir = Path(__file__).parent.parent
-
-data_dir = project_dir.joinpath('data')
-file_path = data_dir.joinpath("combined_delphes.h5")
-
-
-##########################
 #### Argument parsing ####
 ##########################
 
 h5_list = sys.argv[1]
+output_dir = Path(sys.argv[2])
+
+file_path = output_dir.joinpath('data', 'combined_delphes.h5')
 
 
 ###########################
