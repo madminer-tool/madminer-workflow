@@ -11,6 +11,7 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         input_file: {step: init, output: inputfile}
+        output_dir: '{workdir}/physics'
       step: {$ref: 'steps.yml#/configurate'}
 
   - name: generate
@@ -21,31 +22,34 @@ stages:
         input_file: {step: init, output: inputfile}
         config_file: {step: configurate, output: config_file}
         num_jobs: {step: init, output: njobs}
-        signal_dir: 'code/mg_processes/signal'
+        signal_dir: 'mg_processes/signal'
+        output_dir: '{workdir}/physics'
       step: {$ref: 'steps.yml#/generate'}
 
-  - name: mgpythia
+  - name: pythia
     dependencies: [generate]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        events_folder: {step: generate, output: script_files}
+        events_dir: {step: generate, output: script_files}
+        logs_dir: 'logs'
         madgraph_dir: 'software/MG5_aMC_v2_6_7'
-        signal_dir: 'code/mg_processes/signal'
-        logs_dir: 'code/logs'
+        signal_dir: 'mg_processes/signal'
+        output_dir: '{workdir}/physics'
       scatter:
         method: zip
         parameters: [eventfolder]
-      step: {$ref: 'steps.yml#/mg_pythia'}
+      step: {$ref: 'steps.yml#/pythia'}
 
   - name: delphes
-    dependencies: [mgpythia]
+    dependencies: [pythia]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
         config_file: {step: configurate, output: config_file}
         input_file: {step: init, output: inputfile}
-        event_file: {step: mgpythia, output: postrun_file}
+        event_file: {step: pythia, output: postrun_file}
+        output_dir: '{workdir}/physics'
       step: {$ref: 'steps.yml#/delphes'}
       scatter:
         method: zip
@@ -57,6 +61,7 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         input_files: {step: delphes, output: dpostrun_file}
+        output_dir: '{workdir}/physics'
       step: {$ref: 'steps.yml#/combine'}
 
 
@@ -72,6 +77,7 @@ stages:
         num_train_samples: {step: init, output: ntrainsamples}
         input_file: {step: init, output: inputfile}
         data_file: {step: combine, output: data_file}
+        output_dir: '{workdir}/ml'
       step: {$ref: 'steps.yml#/sampling'}
 
   - name: training
@@ -81,6 +87,7 @@ stages:
       parameters:
         input_file: {step: init, output: inputfile}
         train_folder: {step: sampling, output: sampling_file}
+        output_dir: '{workdir}/ml'
       scatter:
         method: zip
         parameters: [trainfolder]
@@ -94,6 +101,7 @@ stages:
         input_file: {step: init, output: inputfile}
         model_file: {step: training, output: trained_file}
         data_file: {step: combine, output: data_file}
+        output_dir: '{workdir}/ml'
       scatter:
         method: zip
         parameters: [trained_file]
@@ -105,6 +113,7 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         input_file: {step: init, output: inputfile}
+        output_dir: '{workdir}/ml'
         # The following line is wrong.
         # How to get output ZIPs from a 'interpolated-pub' publisher_type step?
         #
