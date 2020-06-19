@@ -25,7 +25,7 @@ configurate:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: config_file
-    globexpression: '*.h5'
+    globexpression: 'physics/data/madminer_config.h5'
 
 generate:
   environment: *common_env_physics
@@ -35,7 +35,7 @@ generate:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: script_files
-    globexpression: 'folder_*.tar.gz'
+    globexpression: 'physics/folder_*.tar.gz'
 
 pythia:
   environment: *common_env_physics
@@ -45,7 +45,7 @@ pythia:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: postrun_file
-    globexpression: 'Events.tar.gz'
+    globexpression: 'physics/events/Events.tar.gz'
 
 delphes:
   environment: *common_env_physics
@@ -55,7 +55,7 @@ delphes:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: dpostrun_file
-    globexpression: 'madminer_delphes_data_*.h5'
+    globexpression: 'physics/data/madminer_delphes_data_*.h5'
 
 combine:
   environment: *common_env_physics
@@ -65,7 +65,7 @@ combine:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: data_file
-    globexpression: 'combined_delphes.h5'
+    globexpression: 'physics/data/combined_delphes.h5'
 
 
 #######################################
@@ -80,7 +80,7 @@ sampling:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: sampling_file
-    globexpression: 'Samples_*'
+    globexpression: 'ml/data/Samples_*'
 
 training:
   environment: *common_env_ml
@@ -90,7 +90,7 @@ training:
   publisher:
     publisher_type: 'fromglob-pub'
     outputkey: trained_file
-    globexpression: 'Model.tar.gz'
+    globexpression: 'ml/Model.tar.gz'
 
 evaluating:
   environment: *common_env_ml
@@ -100,7 +100,7 @@ evaluating:
   publisher:
     publisher_type: interpolated-pub
     publish:
-      results_file: 'Results_*.tar.gz'
+      results_file: 'ml/Results_*.tar.gz'
 
 plotting:
   environment: *common_env_ml

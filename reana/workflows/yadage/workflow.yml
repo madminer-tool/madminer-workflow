@@ -38,7 +38,7 @@ stages:
         output_dir: '{workdir}/physics'
       scatter:
         method: zip
-        parameters: [eventfolder]
+        parameters: [events_dir]
       step: {$ref: 'steps.yml#/pythia'}
 
   - name: delphes
