@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import logging
 import matplotlib
 import math
@@ -34,14 +29,6 @@ for key in logging.Logger.manager.loggerDict:
 ##### Global variables #####
 ############################
 
-project_dir = Path(__file__).parent.parent
-
-model_dir = str(project_dir.joinpath('models'))
-plots_dir = str(project_dir.joinpath('plots'))
-rates_dir = str(project_dir.joinpath('rates'))
-results_dir = str(project_dir.joinpath('results'))
-tests_dir = str(project_dir.joinpath('test'))
-
 method_colors = {
     'alice': 'C1',
     'alices': 'red',
@@ -55,6 +42,13 @@ method_colors = {
 ############################
 
 inputs_file = sys.argv[1]
+output_dir = Path(sys.argv[2])
+
+model_dir = str(output_dir.joinpath('models'))
+plots_dir = str(output_dir.joinpath('plots'))
+rates_dir = str(output_dir.joinpath('rates'))
+results_dir = str(output_dir.joinpath('results'))
+tests_dir = str(output_dir.joinpath('test'))
 
 with open(inputs_file) as f:
     inputs = yaml.safe_load(f)

@@ -73,4 +73,5 @@ RUN python2 -m pip install --upgrade pip && \
 
 # Install Python3 dependencies
 RUN python3 -m pip install --upgrade pip && \
-    python3 -m pip install --no-cache-dir --requirement requirements-ml.txt
+    python3 -m pip install --no-cache-dir --requirement requirements-ml.txt && \
+    python3 -m pip install --no-cache-dir --requirement requirements-ph.txt

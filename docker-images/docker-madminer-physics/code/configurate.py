@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import os
 import sys
 import yaml
@@ -14,19 +9,13 @@ from pathlib import Path
 
 
 ##########################
-#### Global variables ####
-##########################
-
-project_dir = Path(__file__).parent.parent
-
-data_dir = str(project_dir.joinpath('data'))
-
-
-##########################
 #### Argument parsing ####
 ##########################
 
-input_file = sys.argv[1]
+input_file = Path(sys.argv[1])
+output_dir = Path(sys.argv[2])
+
+data_dir = str(output_dir.joinpath('data'))
 
 with open(input_file, 'r') as f:
     spec = yaml.safe_load(f)

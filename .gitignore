@@ -1,8 +1,7 @@
-# Ignore workdir directory
-reana/workdir/
+# Ignore local execution directory
+.yadage
 
 # Ignore copied files
-docker-images/docker-madminer-all/code
 docker-images/docker-madminer-all/requirements-*.txt
 
 # Ignore any analysis step output folders
