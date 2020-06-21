@@ -11,7 +11,8 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         input_file: {step: init, output: inputfile}
-      step: {$ref: 'workflows/yadage/steps.yml#/configurate'}
+        output_dir: '{workdir}/physics'
+      step: {$ref: 'steps.yml#/configurate'}
 
   - name: generate
     dependencies: [configurate]
@@ -21,32 +22,35 @@ stages:
         input_file: {step: init, output: inputfile}
         config_file: {step: configurate, output: config_file}
         num_jobs: {step: init, output: njobs}
-        signal_dir: 'code/mg_processes/signal'
-      step: {$ref: 'workflows/yadage/steps.yml#/generate'}
+        signal_dir: 'mg_processes/signal'
+        output_dir: '{workdir}/physics'
+      step: {$ref: 'steps.yml#/generate'}
 
-  - name: mgpythia
+  - name: pythia
     dependencies: [generate]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
-        events_folder: {step: generate, output: script_files}
+        events_dir: {step: generate, output: script_files}
+        logs_dir: 'logs'
         madgraph_dir: 'software/MG5_aMC_v2_6_7'
-        signal_dir: 'code/mg_processes/signal'
-        logs_dir: 'code/logs'
+        signal_dir: 'mg_processes/signal'
+        output_dir: '{workdir}/physics'
       scatter:
         method: zip
-        parameters: [eventfolder]
-      step: {$ref: 'workflows/yadage/steps.yml#/mg_pythia'}
+        parameters: [events_dir]
+      step: {$ref: 'steps.yml#/pythia'}
 
   - name: delphes
-    dependencies: [mgpythia]
+    dependencies: [pythia]
     scheduler:
       scheduler_type: multistep-stage
       parameters:
         config_file: {step: configurate, output: config_file}
         input_file: {step: init, output: inputfile}
-        event_file: {step: mgpythia, output: postrun_file}
-      step: {$ref: 'workflows/yadage/steps.yml#/delphes'}
+        event_file: {step: pythia, output: postrun_file}
+        output_dir: '{workdir}/physics'
+      step: {$ref: 'steps.yml#/delphes'}
       scatter:
         method: zip
         parameters: [eventfile]
@@ -57,7 +61,8 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         input_files: {step: delphes, output: dpostrun_file}
-      step: {$ref: 'workflows/yadage/steps.yml#/combine'}
+        output_dir: '{workdir}/physics'
+      step: {$ref: 'steps.yml#/combine'}
 
 
   ########################################
@@ -72,7 +77,8 @@ stages:
         num_train_samples: {step: init, output: ntrainsamples}
         input_file: {step: init, output: inputfile}
         data_file: {step: combine, output: data_file}
-      step: {$ref: 'workflows/yadage/steps.yml#/sampling'}
+        output_dir: '{workdir}/ml'
+      step: {$ref: 'steps.yml#/sampling'}
 
   - name: training
     dependencies: [sampling]
@@ -81,10 +87,11 @@ stages:
       parameters:
         input_file: {step: init, output: inputfile}
         train_folder: {step: sampling, output: sampling_file}
+        output_dir: '{workdir}/ml'
       scatter:
         method: zip
         parameters: [trainfolder]
-      step: {$ref: 'workflows/yadage/steps.yml#/training'}
+      step: {$ref: 'steps.yml#/training'}
 
   - name: evaluating
     dependencies: [training]
@@ -94,11 +101,11 @@ stages:
         input_file: {step: init, output: inputfile}
         model_file: {step: training, output: trained_file}
         data_file: {step: combine, output: data_file}
-        results_file: 'Results.tar.gz'
+        output_dir: '{workdir}/ml'
       scatter:
         method: zip
         parameters: [trained_file]
-      step: {$ref: 'workflows/yadage/steps.yml#/evaluating'}
+      step: {$ref: 'steps.yml#/evaluating'}
 
   - name: plotting
     dependencies: [evaluating]
@@ -106,6 +113,11 @@ stages:
       scheduler_type: singlestep-stage
       parameters:
         input_file: {step: init, output: inputfile}
-        results_file: {step: evaluating, output: results_file}
-        output_file: 'outputfile.txt'
-      step: {$ref: 'workflows/yadage/steps.yml#/plotting'}
+        output_dir: '{workdir}/ml'
+        # The following line is wrong.
+        # How to get output ZIPs from a 'interpolated-pub' publisher_type step?
+        #
+        # result_files: {step: evaluating, output: ??????}
+        #
+        output_file: 'output.txt'
+      step: {$ref: 'steps.yml#/plotting'}

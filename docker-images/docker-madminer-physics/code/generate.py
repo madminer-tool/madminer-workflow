@@ -1,25 +1,8 @@
 #!/usr/bin/python
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import sys
 from madminer import MadMiner
 from pathlib import Path
-
-
-##########################
-#### Global variables ####
-##########################
-
-project_dir = Path(__file__).parent.parent
-
-card_dir = str(project_dir.joinpath('code', 'cards'))
-logs_dir = str(project_dir.joinpath('code', 'logs'))
-proc_dir = str(project_dir.joinpath('code', 'mg_processes'))
-madg_dir = str(project_dir.joinpath('software', 'MG5_aMC_v2_6_7'))
 
 
 ##########################
@@ -28,6 +11,15 @@ madg_dir = str(project_dir.joinpath('software', 'MG5_aMC_v2_6_7'))
 
 num_jobs = int(sys.argv[1])
 config_file = str(sys.argv[2])
+output_dir = Path(sys.argv[3])
+
+project_dir = Path(__file__).parent.parent
+
+card_dir = str(project_dir.joinpath('code', 'cards'))
+madg_dir = str(project_dir.joinpath('software', 'MG5_aMC_v2_6_7'))
+
+logs_dir = str(output_dir.joinpath('logs'))
+proc_dir = str(output_dir.joinpath('mg_processes'))
 
 
 ##########################

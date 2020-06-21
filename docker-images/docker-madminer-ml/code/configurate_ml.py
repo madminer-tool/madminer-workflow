@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import h5py
 import logging
 import sys
@@ -39,9 +34,6 @@ for key in logging.Logger.manager.loggerDict:
 ##### Global variables #####
 ############################
 
-project_dir = Path(__file__).parent.parent
-data_dir = str(project_dir.joinpath('data'))
-
 sampling_methods = {
     'benchmark': benchmark,
     'benchmarks': benchmarks,
@@ -57,6 +49,9 @@ sampling_methods = {
 num_train_samples = int(sys.argv[1])
 data_file = str(sys.argv[2])
 inputs_file = str(sys.argv[3])
+output_dir = Path(sys.argv[4])
+
+data_dir = str(output_dir.joinpath('data'))
 
 with open(inputs_file) as f:
     inputs = yaml.safe_load(f)

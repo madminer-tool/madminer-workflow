@@ -1,28 +1,11 @@
 #!/usr/bin/python
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import os
 import re
 import sys
 import yaml
 from madminer import DelphesReader
 from pathlib import Path
-
-
-##########################
-#### Global variables ####
-##########################
-
-project_dir = Path(__file__).parent.parent
-
-data_dir = str(project_dir.joinpath('data'))
-card_dir = str(project_dir.joinpath('code', 'cards'))
-logs_dir = str(project_dir.joinpath('code', 'logs'))
-madg_dir = str(project_dir.joinpath('software', 'MG5_aMC_v2_6_7'))
 
 
 ########################
@@ -33,6 +16,15 @@ config_file = sys.argv[1]
 event_path = sys.argv[2]
 input_file = sys.argv[3]
 benchmark_file = sys.argv[4]
+output_dir = Path(sys.argv[5])
+
+project_dir = Path(__file__).parent.parent
+
+card_dir = str(project_dir.joinpath('code', 'cards'))
+madg_dir = str(project_dir.joinpath('software', 'MG5_aMC_v2_6_7'))
+
+data_dir = str(output_dir.joinpath('data'))
+logs_dir = str(output_dir.joinpath('logs'))
 
 with open(input_file, 'r') as f:
     spec = yaml.safe_load(f)
