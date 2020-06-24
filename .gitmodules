@@ -1,6 +1,6 @@
 [submodule "madminer-jupyter-env"]
-	path = docker-images/docker-madminer-all
-	url = https://github.com/irinaespejo/madminer-jupyter-env.git
+	path = madminer-jupyter-env
+	url = https://github.com/scailfin/madminer-jupyter-env
 
 [submodule "madminer-workflow-ml"]
 	path = docker-images/docker-madminer-ml
