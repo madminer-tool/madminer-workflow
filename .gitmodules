@@ -1,5 +1,5 @@
 [submodule "madminer-jupyter-env"]
-	path = madminer-jupyter-env
+	path = docker-images/madminer-jupyter-env
 	url = https://github.com/scailfin/madminer-jupyter-env
 
 [submodule "madminer-workflow-ml"]
@@ -9,3 +9,6 @@
 [submodule "madminer-workflow-ph"]
 	path = docker-images/docker-madminer-physics
 	url = https://github.com/irinaespejo/madminer-workflow-ph.git
+[submodule "docker-images/madminer-jupyter-env/madminer-jupyter-env"]
+	path = docker-images/madminer-jupyter-env/madminer-jupyter-env
+	url = https://github.com/scailfin/madminer-jupyter-env
