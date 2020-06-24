@@ -1,27 +1,2 @@
-# Ignore local execution directory
-.yadage
-
-# Ignore copied files
-docker-images/docker-madminer-all/requirements-*.txt
-
-# Ignore any analysis step output folders
-**/data
-**/extract
-**/logs
-**/mg_processes
-**/models
-**/plots
-**/rates
-**/results
-**/test
-
-# Ignore any analysis intermediate files
-**/*.tar.gz
-**/MG5_debug
-**/py.py
-
-# Ignore local software installation (i.e. MadGraph 5)
-**/software
-
 # Ignore any macOS files
 **/.DS_Store
