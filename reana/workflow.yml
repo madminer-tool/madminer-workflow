@@ -1,0 +1,19 @@
+stages:
+
+  - name: workflow-ph
+    dependencies: [init]
+    scheduler:
+      scheduler_type: singlestep-stage
+      parameters:
+        input_file: {step: init, output: input_file}
+        num_jobs: {step: init, output: num_jobs}
+      workflow: {$ref: '../modules/madminer-workflow-ph/workflow/yadage/workflow.yml'}
+
+  - name: workflow-ml
+    dependencies: [workflow-ph]
+    scheduler:
+      scheduler_type: singlestep-stage
+      parameters:
+        input_file: {step: init, output: input_file}
+        train_samples: {step: init, output: train_samples}
+      workflow: {$ref: '../modules/madminer-workflow-ml/workflow/yadage/workflow.yml'}
