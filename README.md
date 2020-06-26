@@ -21,6 +21,20 @@ The combined workflow has this shape:
 ![image of the workflow](docs/images/workflow-all.png)
 
 
+## Installation
+To install all what is necessary to operate with this project, clone this project as follow:
+
+```shell script
+git clone --recurse-submodules https://github.com/scailfin/madminer-workflow
+```
+
+For cases where the project has already been cloned:
+
+```shell script
+git submodule update --init --recursive
+```
+
+
 ## Execution
 This repository is not designed to perform local execution of the combined workflow.
 Please, go to the sub-workflow repositories to execute individual steps, 
