@@ -1,6 +1,6 @@
 [submodule "madminer-workflow-ph"]
-	path = docker-images/madminer-workflow-ph
+	path = sub_workflow_ph/
 	url = https://github.com/scailfin/madminer-workflow-ph.git
 [submodule "madminer-workflow-ml"]
-	path = docker-images/madminer-workflow-ml
+	path = sub_workflow_ml/
 	url = https://github.com/scailfin/madminer-workflow-ml.git
