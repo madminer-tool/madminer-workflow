@@ -36,6 +36,23 @@ git submodule update --init --recursive
 
 
 ## Execution
+The full workflow can be launched using [Yadage][yadage-repo]. Yadage is a YAML specification 
+language over a set of utilities that are used to coordinate workflows. Please consider that 
+it can be hard to define Yadage workflows as the [Yadage documentation][yadage-docs] is incomplete.
+For learning about Yadage hidden features contact [Lukas Heinrich][lukas-profile], Yadage creator.
+
+Yadage execution depends on having both Docker environment images (_physics_ and _ML_) already published.
+If they are not, please follow the instructions on the [Madminer physics workflow][madminer-workflow-ph]
+and [Madminer ML workflow][madminer-workflow-ml] repositories.
+
+Once the Docker images are published:
+```shell script
+pip3 install yadage
+make yadage-run
+```
+
+
+## Execution
 This repository is not designed to perform local execution of the combined workflow.
 Please, go to the sub-workflow repositories to execute individual steps, 
 or [Yadage][yadage-repo] coordinated runs.

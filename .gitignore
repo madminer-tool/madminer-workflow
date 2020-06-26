@@ -1,2 +1,5 @@
+# Ignore local execution directories
+.yadage
+
 # Ignore any macOS files
 **/.DS_Store
