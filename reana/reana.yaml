@@ -1,14 +1,10 @@
-version: 0.5.0
+version: 0.7.0
 inputs:
   files:
     - inputs/input.yml
-  parameters:
-    njobs: 6
-    ntrainingsample: 1
-    inputfile: inputs/input.yml
 workflow:
   type: yadage
-  file: workflows/yadage/workflow.yml
+  file: workflow.yml
 outputs:
   files:
     - results/output.txt
