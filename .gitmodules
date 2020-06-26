@@ -1,6 +1,3 @@
-[submodule "madminer-jupyter-env"]
-	path = docker-images/madminer-jupyter-env
-	url = https://github.com/scailfin/madminer-jupyter-env
 [submodule "madminer-workflow-ph"]
 	path = docker-images/madminer-workflow-ph
 	url = https://github.com/scailfin/madminer-workflow-ph.git
