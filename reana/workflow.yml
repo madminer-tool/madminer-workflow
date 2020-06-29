@@ -7,7 +7,7 @@ stages:
       parameters:
         input_file: {step: init, output: input_file_ph}
         num_jobs: {step: init, output: num_jobs}
-      workflow: {$ref: '../modules/madminer-workflow-ph/workflow/yadage/workflow.yml'}
+      workflow: {$ref: 'ph/yadage/workflow.yml'}
 
   - name: workflow-ml
     dependencies: [workflow-ph]
@@ -16,4 +16,4 @@ stages:
       parameters:
         input_file: {step: init, output: input_file_ml}
         train_samples: {step: init, output: train_samples}
-      workflow: {$ref: '../modules/madminer-workflow-ml/workflow/yadage/workflow.yml'}
+      workflow: {$ref: 'ml/yadage/workflow.yml'}

@@ -21,8 +21,8 @@ The combined workflow has this shape:
 ![image of the workflow](docs/images/workflow-all.png)
 
 
-## Installation
-To install all what is necessary to operate with this project, clone this project as follow:
+## Development
+To install all the source code that is necessary to operate with this project:
 
 ```shell script
 git clone --recurse-submodules https://github.com/scailfin/madminer-workflow
@@ -32,6 +32,14 @@ For cases where the project has already been cloned:
 
 ```shell script
 git submodule update --init --recursive
+```
+
+The repositories defined as sub-modules should will follow their own development pace.
+For cases where the sub-module repositories has been updated on GitHub, and want to propagate
+those changes to your local copy of the repositories:
+
+```shell script
+git submodule update --remote
 ```
 
 
@@ -50,12 +58,6 @@ Once the Docker images are published:
 pip3 install yadage
 make yadage-run
 ```
-
-
-## Execution
-This repository is not designed to perform local execution of the combined workflow.
-Please, go to the sub-workflow repositories to execute individual steps, 
-or [Yadage][yadage-repo] coordinated runs.
 
 
 ## Deployment

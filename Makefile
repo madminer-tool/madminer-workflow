@@ -1,9 +1,26 @@
 YADAGE_TEST_FOLDER="$(PWD)/.yadage"
-INPUT_LOCAL_FOLDER="$(PWD)/modules"
 WORKFLOW_LOCAL_FOLDER="$(PWD)/reana"
 
+PH_REPOSITORY="madminer-workflow-ph"
+ML_REPOSITORY="madminer-workflow-ml"
 
-all: yadage-clean yadage-run
+YADAGE_LINKED_STEP="combine"
+
+
+all: adapt copy yadage-clean yadage-run
+
+
+.PHONY: copy
+copy:
+	@echo "Copying sub-workflows..."
+	@cp -r "modules/$(PH_REPOSITORY)/workflow/." "$(WORKFLOW_LOCAL_FOLDER)/ph"
+	@cp -r "modules/$(ML_REPOSITORY)/workflow/." "$(WORKFLOW_LOCAL_FOLDER)/ml"
+
+
+.PHONY: adapt
+adapt: copy
+	@echo "Adapting ML workflow to joined run..."
+	@sed -i "" "s/{data_step}/$(YADAGE_LINKED_STEP)/g" "$(WORKFLOW_LOCAL_FOLDER)/ml/yadage/workflow.yml"
 
 
 .PHONY: yadage-clean
@@ -13,12 +30,13 @@ yadage-clean:
 
 
 .PHONY: yadage-run
-yadage-run: yadage-clean
+yadage-run: adapt
 	@echo "Launching Yadage..."
 	@yadage-run $(YADAGE_TEST_FOLDER) "workflow.yml" \
-		-p input_file_ph="$(WORKFLOW_LOCAL_FOLDER)/ph/input.yml" \
-		-p input_file_ml="$(WORKFLOW_LOCAL_FOLDER)/ml/input.yml" \
+		-p input_file_ph="ph/input.yml" \
+		-p input_file_ml="ml/input.yml" \
 		-p num_jobs="6" \
 		-p train_samples="1"  \
-		-d initdir=$(INPUT_LOCAL_FOLDER) \
-		--toplevel $(WORKFLOW_LOCAL_FOLDER)
+		-d initdir=$(WORKFLOW_LOCAL_FOLDER) \
+		--toplevel $(WORKFLOW_LOCAL_FOLDER) \
+		--accept-metadir
