@@ -7,7 +7,7 @@ ML_REPOSITORY="madminer-workflow-ml"
 YADAGE_LINKED_STEP="combine"
 
 
-all: adapt copy yadage-clean yadage-run
+all: copy yadage-adapt yadage-clean yadage-run
 
 
 .PHONY: copy
@@ -17,8 +17,8 @@ copy:
 	@cp -r "modules/$(ML_REPOSITORY)/workflow/." "$(WORKFLOW_LOCAL_FOLDER)/ml"
 
 
-.PHONY: adapt
-adapt: copy
+.PHONY: yadage-adapt
+yadage-adapt: copy
 	@echo "Adapting ML workflow to joined run..."
 	@sed -i "" "s/{data_step}/$(YADAGE_LINKED_STEP)/g" "$(WORKFLOW_LOCAL_FOLDER)/ml/yadage/workflow.yml"
 
@@ -30,7 +30,7 @@ yadage-clean:
 
 
 .PHONY: yadage-run
-yadage-run: adapt
+yadage-run: yadage-clean
 	@echo "Launching Yadage..."
 	@yadage-run $(YADAGE_TEST_FOLDER) "workflow.yml" \
 		-p input_file_ph="ph/input.yml" \
@@ -38,5 +38,4 @@ yadage-run: adapt
 		-p num_jobs="6" \
 		-p train_samples="1"  \
 		-d initdir=$(WORKFLOW_LOCAL_FOLDER) \
-		--toplevel $(WORKFLOW_LOCAL_FOLDER) \
-		--accept-metadir
+		--toplevel $(WORKFLOW_LOCAL_FOLDER)
