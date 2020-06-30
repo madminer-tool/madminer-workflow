@@ -21,10 +21,43 @@ The combined workflow has this shape:
 ![image of the workflow](docs/images/workflow-all.png)
 
 
+## Development
+To install all the source code that is necessary to operate with this project:
+
+```shell script
+git clone --recurse-submodules https://github.com/scailfin/madminer-workflow
+```
+
+For cases where the project has already been cloned:
+
+```shell script
+git submodule update --init --recursive
+```
+
+The repositories defined as sub-modules should will follow their own development pace.
+For cases where the sub-module repositories has been updated on GitHub, and want to propagate
+those changes to your local copy of the repositories:
+
+```shell script
+git submodule update --remote
+```
+
+
 ## Execution
-This repository is not designed to perform local execution of the combined workflow.
-Please, go to the sub-workflow repositories to execute individual steps, 
-or [Yadage][yadage-repo] coordinated runs.
+The full workflow can be launched using [Yadage][yadage-repo]. Yadage is a YAML specification 
+language over a set of utilities that are used to coordinate workflows. Please consider that 
+it can be hard to define Yadage workflows as the [Yadage documentation][yadage-docs] is incomplete.
+For learning about Yadage hidden features contact [Lukas Heinrich][lukas-profile], Yadage creator.
+
+Yadage execution depends on having both Docker environment images (_physics_ and _ML_) already published.
+If they are not, please follow the instructions on the [Madminer physics workflow][madminer-workflow-ph]
+and [Madminer ML workflow][madminer-workflow-ml] repositories.
+
+Once the Docker images are published:
+```shell script
+pip3 install yadage
+make yadage-run
+```
 
 
 ## Deployment

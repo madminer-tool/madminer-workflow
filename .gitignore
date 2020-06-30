@@ -1,2 +1,9 @@
+# Ignore local execution directories
+.yadage
+
+# Ignore copied files from modules
+reana/ml
+reana/ph
+
 # Ignore any macOS files
 **/.DS_Store
