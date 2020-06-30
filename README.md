@@ -56,7 +56,6 @@ and [Madminer ML workflow][madminer-workflow-ml] repositories.
 Once the Docker images are published:
 ```shell script
 pip3 install yadage
-make yadage-adapt
 make yadage-run
 ```
 
