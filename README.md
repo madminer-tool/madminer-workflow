@@ -76,13 +76,15 @@ $ source ~/.virtualenvs/reana/bin/activate
 (reana) $ eval $(reana-dev setup-environment)
 # Check connectivity to the cluster
 (reana) $ reana-client ping
+# Copy the sub-workflow folders into the 'reana' folder
+(reana) $ make copy
 # Create the analysis from within the 'reana' folder
 (reana) $ cd reana
 (reana) $ reana-client create -n madminer-workflow
 (reana) $ export REANA_WORKON=madminer-workflow
-(reana) $ reana-client upload ./inputs/input.yml
-(reana) $ reana-client upload ./workflows/yadage/workflow.yml
-(reana) $ reana-client upload ./workflows/yadage/steps.yml
+(reana) $ reana-client upload ./ph
+(reana) $ reana-client upload ./ml
+(reana) $ reana-client upload ./workflow.yml
 (reana) $ reana-client start
 (reana) $ reana-client status
 ```
