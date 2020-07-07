@@ -61,10 +61,9 @@ make yadage-run
 
 
 ## Deployment
-To deploy the workflow locally using [REANA][reana-website], install _VirtualBox_ 
-as emulator and _Minikube_ as container orchestrator (to simulate a local cluster).
-Please refer to the **version 0.7.0** [REANA deployment documentation][reana-deploy-docs]
-for details.
+To deploy the workflow locally using [REANA][reana-website], install _VirtualBox_ as emulator
+and _Minikube_ as container orchestrator (to simulate a local cluster). Please refer to 
+the **version 0.7.0** [REANA deployment documentation][reana-deploy-docs] for details.
 
 To start the workflow:
 ```shell script
@@ -97,8 +96,10 @@ Once it does, list and download the files:
 ```
 
 
+[lukas-profile]: https://github.com/lukasheinrich
 [madminer-workflow-ml]: https://github.com/scailfin/madminer-workflow-ml
 [madminer-workflow-ph]: https://github.com/scailfin/madminer-workflow-ph
+[reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
 [reana-website]: http://reanahub.io/
 [yadage-repo]: https://github.com/yadage/yadage
-[reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
+[yadage-docs]: https://yadage.readthedocs.io/en/latest/
