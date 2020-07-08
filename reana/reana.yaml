@@ -13,4 +13,4 @@ workflow:
   file: workflow.yml
 outputs:
   files:
-    - results/output.txt
+    - plots/all_methods.png
