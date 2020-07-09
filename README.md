@@ -44,8 +44,8 @@ git submodule update --remote
 
 
 ## Execution
-The full workflow can be launched using [Yadage][yadage-repo]. Yadage is a YAML specification 
-language over a set of utilities that are used to coordinate workflows. Please consider that 
+The full workflow can be launched using [Yadage][yadage-repo]. Yadage is a YAML specification
+language over a set of utilities that are used to coordinate workflows. Please consider that
 it can be hard to define Yadage workflows as the [Yadage documentation][yadage-docs] is incomplete.
 For learning about Yadage hidden features contact [Lukas Heinrich][lukas-profile], Yadage creator.
 
@@ -61,31 +61,31 @@ make yadage-run
 
 
 ## Deployment
-To deploy the workflow locally using [REANA][reana-website], install _VirtualBox_ as emulator
-and _Minikube_ as container orchestrator (to simulate a local cluster). Please refer to 
-the **version 0.7.0** [REANA deployment documentation][reana-deploy-docs] for details.
+
+### Local deployment
+To deploy the workflow locally using [REANA][reana-website], first install _VirtualBox_
+as emulator and _Minikube_ as container orchestrator (to simulate a local cluster).
+Please refer to **version 0.7.0** of the [REANA deployment documentation][reana-deploy-docs]
+for details.
 
 To start the workflow:
 ```shell script
 $ source ~/.virtualenvs/reana/bin/activate
-# A) Enter credentials for a remote-cluster
+(reana) $ eval $(reana-dev setup-environment)
+(reana) $ export REANA_WORKON=madminer-workflow
+(reana) $ make reana-deploy
+```
+
+### Remote deployment
+In case you have access to a remote REANA cluster and want to deploy there,
+you would need to setup the environment variables yourself:
+
+```shell script
+$ source ~/.virtualenvs/reana/bin/activate
 (reana) $ export REANA_ACCESS_TOKEN = [..]
 (reana) $ export REANA_SERVER_URL = [..]
-# B) Enter credentials for a minikube local-cluster
-(reana) $ eval $(reana-dev setup-environment)
-# Check connectivity to the cluster
-(reana) $ reana-client ping
-# Copy the sub-workflow folders into the 'reana' folder
-(reana) $ make copy
-# Create the analysis from within the 'reana' folder
-(reana) $ cd reana
-(reana) $ reana-client create -n madminer-workflow
 (reana) $ export REANA_WORKON=madminer-workflow
-(reana) $ reana-client upload ./ph
-(reana) $ reana-client upload ./ml
-(reana) $ reana-client upload ./workflow.yml
-(reana) $ reana-client start
-(reana) $ reana-client status
+(reana) $ make reana-deploy
 ```
 
 It might take some time to finish depending on the job and the cluster.
