@@ -1,10 +1,16 @@
 version: 0.7.0
 inputs:
-  files:
-    - inputs/input.yml
+  directories:
+    - ph
+    - ml
+  parameters:
+    input_file_ph: ph/input.yml
+    input_file_ml: ml/input.yml
+    num_jobs: 6
+    train_samples: 1
 workflow:
   type: yadage
   file: workflow.yml
 outputs:
   files:
-    - results/output.txt
+    - plots/all_methods.png

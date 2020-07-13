@@ -1,6 +1,6 @@
 stages:
 
-  - name: workflow-ph
+  - name: workflow_ph
     dependencies: [init]
     scheduler:
       scheduler_type: singlestep-stage
@@ -9,12 +9,12 @@ stages:
         num_jobs: {step: init, output: num_jobs}
       workflow: {$ref: 'ph/yadage/workflow.yml'}
 
-  - name: workflow-ml
-    dependencies: [workflow-ph]
+  - name: workflow_ml
+    dependencies: [workflow_ph]
     scheduler:
       scheduler_type: singlestep-stage
       parameters:
-        data_file: {step: 'workflow-ph[*].combine', output: data_file}
+        data_file: {step: 'workflow_ph[*].combine', output: data_file}
         input_file: {step: init, output: input_file_ml}
         train_samples: {step: init, output: train_samples}
       workflow: {$ref: 'ml/yadage/workflow.yml'}
