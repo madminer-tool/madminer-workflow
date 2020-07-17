@@ -59,6 +59,15 @@ pip3 install yadage
 make yadage-run
 ```
 
+If MLFlow experiment runs [tracking capabilities][mlflow-tracking] want to be used:
+```shell script
+pip3 install mlflow yadage
+export MLFLOW_TRACKING_URI=<mlflow-tracking-server>
+mlflow experiments create --experiment-name "madminer-ml-train"
+mlflow experiments create --experiment-name "madminer-ml-eval"
+make yadage-run
+```
+
 
 ## Deployment
 
@@ -99,6 +108,7 @@ Once it does, list and download the files:
 [lukas-profile]: https://github.com/lukasheinrich
 [madminer-workflow-ml]: https://github.com/scailfin/madminer-workflow-ml
 [madminer-workflow-ph]: https://github.com/scailfin/madminer-workflow-ph
+[mlflow-tracking]: https://www.mlflow.org/docs/latest/tracking.html
 [reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
 [reana-website]: http://reanahub.io/
 [yadage-repo]: https://github.com/yadage/yadage

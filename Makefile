@@ -1,5 +1,7 @@
 YADAGE_WORKDIR="$(PWD)/.yadage"
 
+MLFLOW_TRACKING_URI ?= "/tmp/mlflow"
+
 WORKFLOW_FOLDER="$(PWD)/reana"
 WORKFLOW_NAME="madminer-workflow"
 
@@ -42,5 +44,6 @@ yadage-run: yadage-clean
 		-p input_file_ml="ml/input.yml" \
 		-p num_jobs="6" \
 		-p train_samples="1"  \
+		-p mlflow_server=$(MLFLOW_TRACKING_URI) \
 		-d initdir=$(WORKFLOW_FOLDER) \
 		--toplevel $(WORKFLOW_FOLDER)
