@@ -59,10 +59,11 @@ pip3 install yadage
 make yadage-run
 ```
 
-If MLFlow experiment runs [tracking capabilities][mlflow-tracking] want to be used:
+If MLFlow experiment run [tracking capabilities][mlflow-tracking] want to be used:
 ```shell script
 pip3 install mlflow yadage
 export MLFLOW_TRACKING_URI=<mlflow-tracking-server>
+mlflow experiments create --experiment-name "madminer-ml-sample"
 mlflow experiments create --experiment-name "madminer-ml-train"
 mlflow experiments create --experiment-name "madminer-ml-eval"
 make yadage-run
