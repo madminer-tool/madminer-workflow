@@ -8,7 +8,6 @@ inputs:
     input_file_ml: ml/input.yml
     mlflow_server: /tmp/mlflow
     num_jobs: 6
-    train_samples: 1
 workflow:
   type: yadage
   file: workflow.yml
