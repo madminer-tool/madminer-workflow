@@ -4,10 +4,13 @@ inputs:
     - ph
     - ml
   parameters:
-    input_file_ph: ph/input.yml
-    input_file_ml: ml/input.yml
-    mlflow_server: /tmp/mlflow
-    num_jobs: 6
+    input_file_ph: "ph/input.yml"
+    input_file_ml: "ml/input.yml"
+    mlflow_args_s: "''"
+    mlflow_args_t: "''"
+    mlflow_args_e: "''"
+    mlflow_server: "/tmp/mlflow"
+    num_jobs: "6"
 workflow:
   type: yadage
   file: workflow.yml

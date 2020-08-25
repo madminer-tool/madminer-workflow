@@ -43,6 +43,9 @@ yadage-run: yadage-clean
 		-p input_file_ph="ph/input.yml" \
 		-p input_file_ml="ml/input.yml" \
 		-p num_jobs="6" \
+		-p mlflow_args_s="\"''\"" \
+		-p mlflow_args_t="\"''\"" \
+		-p mlflow_args_e="\"''\"" \
 		-p mlflow_server=$(MLFLOW_TRACKING_URI) \
 		-d initdir=$(WORKFLOW_FOLDER) \
 		--toplevel $(WORKFLOW_FOLDER)
