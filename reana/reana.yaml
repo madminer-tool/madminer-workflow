@@ -9,7 +9,8 @@ inputs:
     mlflow_args_s: "''"
     mlflow_args_t: "''"
     mlflow_args_e: "''"
-    mlflow_server: "/tmp/mlflow"
+    mlflow_server: ""
+    mlflow_username: ""
     num_jobs: "6"
 workflow:
   type: yadage

@@ -1,5 +1,6 @@
 YADAGE_WORKDIR="$(PWD)/.yadage"
 
+MLFLOW_USERNAME ?= $(shell whoami)
 MLFLOW_TRACKING_URI ?= "/tmp/mlflow"
 
 WORKFLOW_FOLDER="$(PWD)/reana"
@@ -27,7 +28,9 @@ reana-deploy: copy
 		reana-client upload -w $(WORKFLOW_NAME) ph && \
 		reana-client upload -w $(WORKFLOW_NAME) ml && \
 		reana-client upload -w $(WORKFLOW_NAME) workflow.yml && \
-		reana-client start -w $(WORKFLOW_NAME)
+		reana-client start -w $(WORKFLOW_NAME) \
+			-p mlflow_server=$(MLFLOW_TRACKING_URI) \
+			-p mlflow_username=$(MLFLOW_USERNAME)
 
 
 .PHONY: yadage-clean
@@ -47,5 +50,6 @@ yadage-run: yadage-clean
 		-p mlflow_args_t="\"''\"" \
 		-p mlflow_args_e="\"''\"" \
 		-p mlflow_server=$(MLFLOW_TRACKING_URI) \
+		-p mlflow_username=$(MLFLOW_USERNAME) \
 		-d initdir=$(WORKFLOW_FOLDER) \
 		--toplevel $(WORKFLOW_FOLDER)

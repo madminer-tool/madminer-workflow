@@ -20,4 +20,5 @@ stages:
         mlflow_args_t: {step: init, output: mlflow_args_t}
         mlflow_args_e: {step: init, output: mlflow_args_e}
         mlflow_server: {step: init, output: mlflow_server}
+        mlflow_username: {step: init, output: mlflow_username}
       workflow: {$ref: 'ml/yadage/workflow.yml'}
