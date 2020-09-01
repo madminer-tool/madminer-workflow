@@ -35,11 +35,37 @@ git submodule update --init --recursive
 ```
 
 The repositories defined as sub-modules should will follow their own development pace.
-For cases where the sub-module repositories has been updated on GitHub, and want to propagate
-those changes to your local copy of the repositories:
+For cases where the sub-module repositories has been updated on GitHub, and want
+to propagate those changes to your local copy of the repositories:
 
 ```shell script
 git submodule update --remote
+```
+
+
+## MLFlow ♻️
+The [MLFlow][mlflow-website] framework has been integrated with some steps of the workflow
+in order to keep track of runs initial set of parameters, set of results, and generated artifacts.
+
+**Disclaimer: The existence of an up-and-running MLFlow tracking server is mandatory.**
+
+In order to locally deploy your own:
+```shell script
+# Deploy local tracking server
+mlflow server \                                                 
+    --host "127.0.0.1" \
+    --port 5000 \
+    --workers 2 \
+    --backend-store-uri "file:///tmp/mlflow/runs/metadata" \
+    --default-artifact-root "file:///tmp/mlflow/runs/artifacts" &
+
+# Specify server URL to interact with it
+export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+
+# Create experiments to avoid race conditions on parallelized steps.
+mlflow experiments create --experiment-name "madminer-ml-sample"
+mlflow experiments create --experiment-name "madminer-ml-train"
+mlflow experiments create --experiment-name "madminer-ml-eval"
 ```
 
 
@@ -55,34 +81,24 @@ and [Madminer ML workflow][madminer-workflow-ml] repositories.
 
 Once the Docker images are published:
 ```shell script
-pip3 install yadage
-make yadage-run
-```
-
-If MLFlow experiment run [tracking capabilities][mlflow-tracking] want to be used:
-```shell script
-pip3 install mlflow yadage
-export MLFLOW_TRACKING_URI=<mlflow-tracking-server>
-mlflow experiments create --experiment-name "madminer-ml-sample"
-mlflow experiments create --experiment-name "madminer-ml-train"
-mlflow experiments create --experiment-name "madminer-ml-eval"
+export MLFLOW_TRACKING_URI=http://host.docker.internal:5000
 make yadage-run
 ```
 
 
 ## Deployment
 
-### Local deployment
-To deploy the workflow locally using [REANA][reana-website], first install _VirtualBox_
-as emulator and _Minikube_ as container orchestrator (to simulate a local cluster).
-Please refer to **version 0.7.0** of the [REANA deployment documentation][reana-deploy-docs]
-for details.
+### Local debugging
+To debug the workflow locally using [REANA][reana-website] first install _Docker_
+and the `kind` CLI tool (_Kubernetes in Docker_) to deploy a local cluster.
+Please **do not** refer to the official documentation as it is outdated and misleading.
 
 To start the workflow:
 ```shell script
 $ source ~/.virtualenvs/reana/bin/activate
-(reana) $ eval $(reana-dev setup-environment)
+(reana) $ eval $(reana-dev client-setup-environment)
 (reana) $ export REANA_WORKON=madminer-workflow
+(reana) $ export MLFLOW_TRACKING_URI=http://host.docker.internal:5000
 (reana) $ make reana-deploy
 ```
 
@@ -95,6 +111,7 @@ $ source ~/.virtualenvs/reana/bin/activate
 (reana) $ export REANA_ACCESS_TOKEN = [..]
 (reana) $ export REANA_SERVER_URL = [..]
 (reana) $ export REANA_WORKON=madminer-workflow
+(reana) $ export MLFLOW_TRACKING_URI=<tracking_server_url>
 (reana) $ make reana-deploy
 ```
 
@@ -109,8 +126,7 @@ Once it does, list and download the files:
 [lukas-profile]: https://github.com/lukasheinrich
 [madminer-workflow-ml]: https://github.com/scailfin/madminer-workflow-ml
 [madminer-workflow-ph]: https://github.com/scailfin/madminer-workflow-ph
-[mlflow-tracking]: https://www.mlflow.org/docs/latest/tracking.html
-[reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
+[mlflow-website]: https://www.mlflow.org/
 [reana-website]: http://reanahub.io/
 [yadage-repo]: https://github.com/yadage/yadage
 [yadage-docs]: https://yadage.readthedocs.io/en/latest/
