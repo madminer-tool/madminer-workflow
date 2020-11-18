@@ -91,7 +91,7 @@ make yadage-run
 ### Local debugging
 To debug the workflow locally using [REANA][reana-website] first install _Docker_
 and the `kind` CLI tool (_Kubernetes in Docker_) to deploy a local cluster.
-Please **do not** refer to the official documentation as it is outdated and misleading.
+Please follow the [local deployment documentation][reana-deploy-docs] to set up REANA.
 
 To start the workflow:
 ```shell script
@@ -127,6 +127,7 @@ Once it does, list and download the files:
 [madminer-workflow-ml]: https://github.com/scailfin/madminer-workflow-ml
 [madminer-workflow-ph]: https://github.com/scailfin/madminer-workflow-ph
 [mlflow-website]: https://www.mlflow.org/
+[reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
 [reana-website]: http://reanahub.io/
 [yadage-repo]: https://github.com/yadage/yadage
 [yadage-docs]: https://yadage.readthedocs.io/en/latest/
