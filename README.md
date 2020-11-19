@@ -53,14 +53,14 @@ In order to locally deploy your own:
 ```shell script
 # Deploy local tracking server
 mlflow server \                                                 
-    --host "127.0.0.1" \
+    --host "0.0.0.0" \
     --port 5000 \
     --workers 2 \
     --backend-store-uri "file:///tmp/mlflow/runs/metadata" \
-    --default-artifact-root "file:///tmp/mlflow/runs/artifacts" &
+    --default-artifact-root "file:///tmp/mlflow/runs/artifacts"
 
 # Specify server URL to interact with it
-export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+export MLFLOW_TRACKING_URI="http://0.0.0.0:5000"
 
 # Create experiments to avoid race conditions on parallelized steps.
 mlflow experiments create --experiment-name "madminer-ml-sample"
@@ -81,7 +81,8 @@ and [Madminer ML workflow][madminer-workflow-ml] repositories.
 
 Once the Docker images are published:
 ```shell script
-export MLFLOW_TRACKING_URI=http://host.docker.internal:5000
+export MLFLOW_TRACKING_URI="http://host.docker.internal:5000"
+export PACKTIVITY_DOCKER_CMD_MOD="--add-host host.docker.internal:host-gateway"  # Linux only
 make yadage-run
 ```
 
