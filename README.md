@@ -34,7 +34,7 @@ For cases where the project has already been cloned:
 git submodule update --init --recursive
 ```
 
-The repositories defined as sub-modules should will follow their own development pace.
+The repositories defined as sub-modules will follow their own development pace.
 For cases where the sub-module repositories has been updated on GitHub, and want
 to propagate those changes to your local copy of the repositories:
 
@@ -105,7 +105,7 @@ $ source ~/.virtualenvs/reana/bin/activate
 
 ### Remote deployment
 In case you have access to a remote REANA cluster and want to deploy there,
-you would need to setup the environment variables yourself:
+you would need to set up the environment variables yourself:
 
 ```shell script
 $ source ~/.virtualenvs/reana/bin/activate
