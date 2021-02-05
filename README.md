@@ -75,11 +75,11 @@ language over a set of utilities that are used to coordinate workflows. Please c
 it can be hard to define Yadage workflows as the [Yadage documentation][yadage-docs] is incomplete.
 For learning about Yadage hidden features contact [Lukas Heinrich][lukas-profile], Yadage creator.
 
-Yadage execution depends on having both Docker environment images (_physics_ and _ML_) already published.
+Yadage execution depends on having both Docker environment images (_physics_ and _ML_) already pushed.
 If they are not, please follow the instructions on the [Madminer physics workflow][madminer-workflow-ph]
 and [Madminer ML workflow][madminer-workflow-ml] repositories.
 
-Once the Docker images are published:
+Once the Docker images are available on DockerHub, run locally:
 ```shell script
 export MLFLOW_TRACKING_URI="http://host.docker.internal:5000"
 export PACKTIVITY_DOCKER_CMD_MOD="--add-host host.docker.internal:host-gateway"  # Linux only
