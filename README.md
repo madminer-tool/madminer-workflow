@@ -128,7 +128,7 @@ Once it does, list and download the files:
 [madminer-workflow-ml]: https://github.com/scailfin/madminer-workflow-ml
 [madminer-workflow-ph]: https://github.com/scailfin/madminer-workflow-ph
 [mlflow-website]: https://www.mlflow.org/
-[reana-deploy-docs]: http://docs.reana.io/development/deploying-locally/
+[reana-deploy-docs]: http://docs.reana.io/administration/deployment/deploying-locally/
 [reana-website]: http://reanahub.io/
 [yadage-repo]: https://github.com/yadage/yadage
 [yadage-docs]: https://yadage.readthedocs.io/en/latest/
