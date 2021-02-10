@@ -100,7 +100,7 @@ $ source ~/.virtualenvs/reana/bin/activate
 (reana) $ eval $(reana-dev client-setup-environment)
 (reana) $ export REANA_WORKON=madminer-workflow
 (reana) $ export MLFLOW_TRACKING_URI=http://host.docker.internal:5000
-(reana) $ make reana-deploy
+(reana) $ make reana-run
 ```
 
 ### Remote deployment
@@ -113,7 +113,7 @@ $ source ~/.virtualenvs/reana/bin/activate
 (reana) $ export REANA_SERVER_URL=[..]
 (reana) $ export REANA_WORKON=madminer-workflow
 (reana) $ export MLFLOW_TRACKING_URI=<tracking_server_url>
-(reana) $ make reana-deploy
+(reana) $ make reana-run
 ```
 
 It might take some time to finish depending on the job and the cluster.
