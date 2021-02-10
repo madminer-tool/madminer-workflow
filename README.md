@@ -109,8 +109,8 @@ you would need to set up the environment variables yourself:
 
 ```shell script
 $ source ~/.virtualenvs/reana/bin/activate
-(reana) $ export REANA_ACCESS_TOKEN = [..]
-(reana) $ export REANA_SERVER_URL = [..]
+(reana) $ export REANA_ACCESS_TOKEN=[..]
+(reana) $ export REANA_SERVER_URL=[..]
 (reana) $ export REANA_WORKON=madminer-workflow
 (reana) $ export MLFLOW_TRACKING_URI=<tracking_server_url>
 (reana) $ make reana-deploy
