@@ -10,7 +10,7 @@ PH_REPOSITORY="madminer-workflow-ph"
 ML_REPOSITORY="madminer-workflow-ml"
 
 
-all: copy reana-deploy yadage-clean yadage-run
+all: copy reana-run yadage-clean yadage-run
 
 
 .PHONY: copy
@@ -20,8 +20,8 @@ copy:
 	@cp -r "modules/$(ML_REPOSITORY)/workflow/." "$(WORKFLOW_FOLDER)/ml"
 
 
-.PHONY: reana-deploy
-reana-deploy: copy
+.PHONY: reana-run
+reana-run: copy
 	@echo "Deploying on REANA..."
 	@cd $(WORKFLOW_FOLDER) && \
 		reana-client create -n $(WORKFLOW_NAME) && \
