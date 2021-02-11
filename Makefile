@@ -1,7 +1,7 @@
 YADAGE_WORKDIR="$(PWD)/.yadage"
 
 MLFLOW_USERNAME ?= $(shell whoami)
-MLFLOW_TRACKING_URI ?= "/tmp/mlflow"
+MLFLOW_TRACKING_URI ?= "file:///_mlflow"
 
 WORKFLOW_FOLDER="$(PWD)/reana"
 WORKFLOW_NAME="madminer-workflow"
