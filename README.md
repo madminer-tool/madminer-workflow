@@ -47,8 +47,6 @@ git submodule update --remote
 The [MLFlow][mlflow-website] framework has been integrated with some steps of the workflow
 in order to keep track of runs initial set of parameters, set of results, and generated artifacts.
 
-**Disclaimer: The existence of an up-and-running MLFlow tracking server is mandatory.**
-
 In order to locally deploy your own:
 ```shell script
 # Deploy local tracking server
