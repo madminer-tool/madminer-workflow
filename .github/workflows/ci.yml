@@ -1,0 +1,30 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+
+  check:
+    needs: []
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Set up GitHub Actions"
+      uses: actions/checkout@v2
+    - name: "Set up Python 3.6"
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    - name: "Install Python dependencies"
+      run: |
+        pip install --no-cache-dir --upgrade pip setuptools wheel
+        pip install --no-cache-dir --requirement requirements.txt
+        pip list
+    - name: "Check REANA specification"
+      run: |
+        make reana-check
