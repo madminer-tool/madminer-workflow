@@ -1,0 +1,2 @@
+reana-client==0.7.3
+yadage==0.20.1
