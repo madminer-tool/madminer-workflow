@@ -4,6 +4,7 @@ MLFLOW_USERNAME ?= $(shell whoami)
 MLFLOW_TRACKING_URI ?= "file:///_mlflow"
 
 WORKFLOW_DIR = "$(PWD)/reana"
+WORKFLOW_FILE = "workflow.yml"
 WORKFLOW_NAME = "madminer-workflow"
 
 PH_REPOSITORY = "madminer-workflow-ph"
@@ -30,7 +31,7 @@ reana-run: copy
 		reana-client create -n $(WORKFLOW_NAME) && \
 		reana-client upload -w $(WORKFLOW_NAME) ph && \
 		reana-client upload -w $(WORKFLOW_NAME) ml && \
-		reana-client upload -w $(WORKFLOW_NAME) workflow.yml && \
+		reana-client upload -w $(WORKFLOW_NAME) $(WORKFLOW_FILE) && \
 		reana-client start -w $(WORKFLOW_NAME) \
 			-p mlflow_server=$(MLFLOW_TRACKING_URI) \
 			-p mlflow_username=$(MLFLOW_USERNAME)
@@ -45,7 +46,7 @@ yadage-clean: copy
 .PHONY: yadage-run
 yadage-run: yadage-clean
 	@echo "Launching Yadage..."
-	@yadage-run $(YADAGE_WORKDIR) "workflow.yml" \
+	@yadage-run $(YADAGE_WORKDIR) $(WORKFLOW_FILE) \
 		-p input_file_ph="ph/input.yml" \
 		-p input_file_ml="ml/input.yml" \
 		-p num_generation_jobs="6" \
