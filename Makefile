@@ -1,29 +1,32 @@
-YADAGE_WORKDIR="$(PWD)/.yadage"
+YADAGE_WORKDIR = "$(PWD)/.yadage"
 
 MLFLOW_USERNAME ?= $(shell whoami)
 MLFLOW_TRACKING_URI ?= "file:///_mlflow"
 
-WORKFLOW_FOLDER="$(PWD)/reana"
-WORKFLOW_NAME="madminer-workflow"
+WORKFLOW_DIR = "$(PWD)/reana"
+WORKFLOW_NAME = "madminer-workflow"
 
-PH_REPOSITORY="madminer-workflow-ph"
-ML_REPOSITORY="madminer-workflow-ml"
-
-
-all: copy reana-run yadage-clean yadage-run
+PH_REPOSITORY = "madminer-workflow-ph"
+ML_REPOSITORY = "madminer-workflow-ml"
 
 
 .PHONY: copy
 copy:
 	@echo "Copying sub-workflows..."
-	@cp -r "modules/$(PH_REPOSITORY)/workflow/." "$(WORKFLOW_FOLDER)/ph"
-	@cp -r "modules/$(ML_REPOSITORY)/workflow/." "$(WORKFLOW_FOLDER)/ml"
+	@cp -r "modules/$(PH_REPOSITORY)/workflow/." "$(WORKFLOW_DIR)/ph"
+	@cp -r "modules/$(ML_REPOSITORY)/workflow/." "$(WORKFLOW_DIR)/ml"
+
+
+.PHONY: reana-check
+reana-check:
+	@echo "Checking REANA spec..."
+	@cd $(WORKFLOW_DIR) && reana-client validate --environments
 
 
 .PHONY: reana-run
 reana-run: copy
 	@echo "Deploying on REANA..."
-	@cd $(WORKFLOW_FOLDER) && \
+	@cd $(WORKFLOW_DIR) && \
 		reana-client create -n $(WORKFLOW_NAME) && \
 		reana-client upload -w $(WORKFLOW_NAME) ph && \
 		reana-client upload -w $(WORKFLOW_NAME) ml && \
@@ -51,5 +54,5 @@ yadage-run: yadage-clean
 		-p mlflow_args_e="\"''\"" \
 		-p mlflow_server=$(MLFLOW_TRACKING_URI) \
 		-p mlflow_username=$(MLFLOW_USERNAME) \
-		-d initdir=$(WORKFLOW_FOLDER) \
-		--toplevel $(WORKFLOW_FOLDER)
+		-d initdir=$(WORKFLOW_DIR) \
+		--toplevel $(WORKFLOW_DIR)
