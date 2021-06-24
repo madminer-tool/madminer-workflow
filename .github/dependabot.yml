@@ -1,0 +1,20 @@
+version: 2
+
+updates:
+
+  - package-ecosystem: gitsubmodule
+    directory: "/"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    ignore:
+      # Ignore auto-updates on SemVer major and minor releases
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    allow:
+      - dependency-type: development
+      - dependency-type: production
