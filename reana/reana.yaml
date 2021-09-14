@@ -11,7 +11,7 @@ inputs:
     mlflow_args_e: "''"
     mlflow_server: ""
     mlflow_username: ""
-    num_generation_jobs: "6"
+    num_procs_per_job: "1"
 workflow:
   type: yadage
   file: workflow.yml

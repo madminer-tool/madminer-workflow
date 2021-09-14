@@ -49,7 +49,7 @@ yadage-run: yadage-clean
 	@yadage-run $(YADAGE_WORKDIR) $(WORKFLOW_FILE) \
 		-p input_file_ph="ph/input.yml" \
 		-p input_file_ml="ml/input.yml" \
-		-p num_generation_jobs="6" \
+		-p num_procs_per_job="1" \
 		-p mlflow_args_s="\"''\"" \
 		-p mlflow_args_t="\"''\"" \
 		-p mlflow_args_e="\"''\"" \
