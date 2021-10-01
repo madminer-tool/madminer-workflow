@@ -25,6 +25,9 @@ jobs:
     - name: "Install Python dependencies"
       run: |
         pip install --no-cache-dir --upgrade pip setuptools wheel
+
+        # Temporal fix
+        pip install --no-cache-dir 'setuptools<58.0.0'
         pip install --no-cache-dir --requirement requirements.txt
         pip list
     - name: "Check REANA specification"
