@@ -25,7 +25,7 @@ The combined workflow has this shape:
 To install all the source code that is necessary to operate with this project:
 
 ```shell script
-git clone --recurse-submodules https://github.com/scailfin/madminer-workflow
+git clone --recurse-submodules https://github.com/madminer-tool/madminer-workflow
 ```
 
 For cases where the project has already been cloned:
@@ -123,8 +123,8 @@ Once it does, list and download the files:
 
 
 [lukas-profile]: https://github.com/lukasheinrich
-[madminer-workflow-ml]: https://github.com/scailfin/madminer-workflow-ml
-[madminer-workflow-ph]: https://github.com/scailfin/madminer-workflow-ph
+[madminer-workflow-ml]: https://github.com/madminer-tool/madminer-workflow-ml
+[madminer-workflow-ph]: https://github.com/madminer-tool/madminer-workflow-ph
 [mlflow-website]: https://www.mlflow.org/
 [reana-deploy-docs]: http://docs.reana.io/administration/deployment/deploying-locally/
 [reana-website]: http://reanahub.io/
