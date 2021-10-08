@@ -1,8 +1,8 @@
 [submodule "modules/madminer-workflow-ph"]
 	path = modules/madminer-workflow-ph
-	url = https://github.com/scailfin/madminer-workflow-ph
+	url = https://github.com/madminer-tool/madminer-workflow-ph
 	branch = master
 [submodule "modules/madminer-workflow-ml"]
 	path = modules/madminer-workflow-ml
-	url = https://github.com/scailfin/madminer-workflow-ml
+	url = https://github.com/madminer-tool/madminer-workflow-ml
 	branch = master
