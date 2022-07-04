@@ -1,5 +1,5 @@
 # Temporal fix
-setuptools<58.0.0  # https://github.com/reanahub/reana-client/issues/558
+setuptools<64.0.0  # https://github.com/reanahub/reana-client/issues/558
 
 reana-client==0.7.5
 yadage==0.20.1
