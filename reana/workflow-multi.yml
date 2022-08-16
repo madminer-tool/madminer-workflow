@@ -1,0 +1,42 @@
+stages:
+
+  - name: multi_workflow_ph
+    dependencies: [init]
+    scheduler:
+      scheduler_type: multistep-stage
+      parameters:
+        input_file: {step: init, output: input_file_ph}
+        num_procs_per_job: {step: init, output: num_procs_per_job}
+        num_multi: {step: init, output: num_multi}
+      workflow: {$ref: 'ph/yadage/workflow.yml'}
+      scatter:
+        method: zip
+        parameters: [num_multi]
+      
+      
+  - name: multi_combine
+    dependencies: [multi_workflow_ph]
+    scheduler:
+      scheduler_type: singlestep-stage
+      parameters:
+        input_files: {stages: 'multi_workflow_ph[*].combine', output: data_file, flatten: true}
+        output_dir: '{workdir}'
+      step: {$ref: 'multi-ph/yadage/steps.yml#/multi_combine'}
+
+   
+  - name: workflow_ml
+    dependencies: [multi_combine]
+    scheduler:
+      scheduler_type: singlestep-stage
+      parameters: 
+        data_file: {step: multi_combine, output: combined_data_file}
+        input_file: {step: init, output: input_file_ml}
+        mlflow_args_s: {step: init, output: mlflow_args_s}
+        mlflow_args_t: {step: init, output: mlflow_args_t}
+        mlflow_args_e: {step: init, output: mlflow_args_e}
+        mlflow_server: {step: init, output: mlflow_server}
+        mlflow_username: {step: init, output: mlflow_username}
+      workflow: {$ref: 'ml/yadage/workflow.yml'}
+
+
+#  

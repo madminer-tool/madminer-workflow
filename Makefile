@@ -7,6 +7,8 @@ WORKFLOW_DIR = "$(PWD)/reana"
 WORKFLOW_FILE = "workflow.yml"
 WORKFLOW_NAME = "madminer-workflow"
 
+MULTI_WORKFLOW_FILE = "workflow-multi.yml"
+
 PH_REPOSITORY = "madminer-workflow-ph"
 ML_REPOSITORY = "madminer-workflow-ml"
 
@@ -57,3 +59,21 @@ yadage-run: yadage-clean
 		-p mlflow_username=$(MLFLOW_USERNAME) \
 		-d initdir=$(WORKFLOW_DIR) \
 		--toplevel $(WORKFLOW_DIR)
+	
+		
+.PHONY: yadage-multi-run
+yadage-multi-run: yadage-clean
+	@echo "Launching Yadage..."
+	@yadage-run $(YADAGE_WORKDIR) $(MULTI_WORKFLOW_FILE) \
+		-p input_file_ph="ph/input.yml" \
+		-p input_file_ml="ml/input.yml" \
+		-p num_procs_per_job="1" \
+		-p num_multi="[1,2,3]" \
+		-p mlflow_args_s="\"''\"" \
+		-p mlflow_args_t="\"''\"" \
+		-p mlflow_args_e="\"''\"" \
+		-p mlflow_server=$(MLFLOW_TRACKING_URI) \
+		-p mlflow_username=$(MLFLOW_USERNAME) \
+		-d initdir=$(WORKFLOW_DIR) \
+		--toplevel $(WORKFLOW_DIR) \
+		--visualize

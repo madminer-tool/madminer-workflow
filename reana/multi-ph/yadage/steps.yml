@@ -1,0 +1,19 @@
+########################################
+######### CONTAINER ENVIRONMENT ########
+########################################
+
+common_env_physics: &common_env_physics
+    environment_type: 'docker-encapsulated'
+    image: 'madminertool/madminer-workflow-ph'
+    imagetag: '0.5.4beta2'
+
+multi_combine:
+  environment: *common_env_physics
+  process:
+    process_type: string-interpolated-cmd
+    cmd: echo "before script " && /madminer/scripts/multi_combine.sh -p /madminer -i '{input_files}' -o {output_dir}
+  publisher:
+    publisher_type: 'fromglob-pub'
+    outputkey: combined_data_file
+    globexpression: 'data/multi_combined.h5'
+    
